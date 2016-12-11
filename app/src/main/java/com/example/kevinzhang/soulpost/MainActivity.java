@@ -11,7 +11,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class MainActivity extends AppCompatActivity {
 
-    Device device = new Device(123,456,7,"post1");
+    Device device = new Device(-148,49.6,3.5,"tokenpoken");
 
     Retrofit retrofit = new Retrofit.Builder()
             .baseUrl("http://soulcast.ml")

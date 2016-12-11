@@ -5,12 +5,12 @@ package com.example.kevinzhang.soulpost;
  */
 
 public class Device {
-    int longitude;
-    int latitude;
-    int radius;
+    double longitude;
+    double latitude;
+    double radius;
     String token;
 
-    public Device(int longitude, int latitude, int radius, String token) {
+    public Device(double longitude, double latitude, double radius, String token) {
         this.longitude = longitude;
         this.latitude = latitude;
         this.radius = radius;
