@@ -11,4 +11,6 @@ import retrofit2.http.POST;
 public interface SoulpostAPI {
     @POST("/devices")
     Call<Device> devicePost(@Body Device device);
+    @POST("/souls")
+    Call<Soul> soulPost(@Body Soul soul);
 }
