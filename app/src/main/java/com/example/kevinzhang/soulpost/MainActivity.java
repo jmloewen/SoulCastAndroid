@@ -24,8 +24,32 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        devicePost();
-        soulPost();
+//        devicePost();
+//        soulPost();
+        deviceUpdate();
+    }
+
+    private void deviceUpdate() {
+        mockChange();
+        // prepare call in Retrofit 2.0
+        SoulpostAPI soulpostAPI = retrofit.create(SoulpostAPI.class);
+        Call<Device> call = soulpostAPI.deviceUpdate(newdevice);
+        call.enqueue(new Callback<Device>() {
+            @Override
+            public void onResponse(Call<Device> call, Response<Device> response) {
+                //Log.d("SUCCESS SOUL POST", response.body().toString());
+            }
+
+            @Override
+            public void onFailure(Call<Device> call, Throwable t) {
+                //Log.d("FAIL SOUL POST", t.toString());
+            }
+        });
+    }
+
+    private void mockChange() {
+        newdevice.longitude = -777.7;
+        newdevice.latitude = 77.7;
     }
 
     private void soulPost() {
