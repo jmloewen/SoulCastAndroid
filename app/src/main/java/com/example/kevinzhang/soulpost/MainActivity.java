@@ -20,7 +20,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class MainActivity extends AppCompatActivity {
 
     private FirebaseRemoteConfig mFirebaseRemoteConfig;
-    Device newdevice = new Device(-80085,80.085,0.8, FirebaseInstanceId.getInstance().getToken());
+    Device newdevice = new Device(80085,-80.085,8.008, FirebaseInstanceId.getInstance().getToken());
     Soul newSoul = new Soul("SuccessAndroidSoul","S3keyMissing", 1000000000, -666,66.6,0.6,FirebaseInstanceId.getInstance().getToken());
 //    Device newdevice = new Device(-1,8,0.8,"android token not available");
 //    Soul newSoul = new Soul("Success:androidSoul","S3keyMissing", 1000000000, -666,66.6,0.6,"android token not available");
@@ -37,7 +37,7 @@ public class MainActivity extends AppCompatActivity {
         setupFirebase();
         devicePost();
         soulPost();
-//        deviceUpdate();
+        deviceUpdate();
     }
 
     private void setupFirebase() {
