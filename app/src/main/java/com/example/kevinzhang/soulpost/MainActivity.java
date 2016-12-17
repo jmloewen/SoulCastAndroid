@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
 
@@ -19,11 +20,10 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class MainActivity extends AppCompatActivity {
 
     private FirebaseRemoteConfig mFirebaseRemoteConfig;
-//    MyInstanceIDListenerService myInstanceIDListenerService;
-//    Device newdevice = new Device(-80085,80.085,0.8,myInstanceIDListenerService.deviceToken);
-//    Soul newSoul = new Soul("Success:androidSoul","S3keyMissing", 1000000000, -666,66.6,0.6,myInstanceIDListenerService.deviceToken);
-    Device newdevice = new Device(-1,8,0.8,"android token not available");
-    Soul newSoul = new Soul("Success:androidSoul","S3keyMissing", 1000000000, -666,66.6,0.6,"android token not available");
+    Device newdevice = new Device(-80085,80.085,0.8, FirebaseInstanceId.getInstance().getToken());
+    Soul newSoul = new Soul("SuccessAndroidSoul","S3keyMissing", 1000000000, -666,66.6,0.6,FirebaseInstanceId.getInstance().getToken());
+//    Device newdevice = new Device(-1,8,0.8,"android token not available");
+//    Soul newSoul = new Soul("Success:androidSoul","S3keyMissing", 1000000000, -666,66.6,0.6,"android token not available");
 
     Retrofit retrofit = new Retrofit.Builder()
             .baseUrl("http://soulcast.ml")
@@ -35,8 +35,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         setupFirebase();
-//        devicePost();
-//        soulPost();
+        devicePost();
+        soulPost();
 //        deviceUpdate();
     }
 
