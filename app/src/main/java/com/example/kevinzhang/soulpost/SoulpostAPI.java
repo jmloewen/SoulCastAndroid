@@ -14,6 +14,6 @@ public interface SoulpostAPI {
     Call<Device> devicePost(@Body Device device);
     @POST("/souls")
     Call<Soul> soulPost(@Body Soul soul);
-    @PATCH("/devices/1")
+    @PATCH("/devices/{id}")
     Call<Device> deviceUpdate(@Body Device device);
 }
