@@ -7,6 +7,7 @@ import android.util.Log;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
+import com.google.gson.Gson;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -20,9 +21,9 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class MainActivity extends AppCompatActivity {
 
     private FirebaseRemoteConfig mFirebaseRemoteConfig;
-    Device newdevice = new Device(80085,-80.085,8.008, FirebaseInstanceId.getInstance().getToken());
+//    Device newdevice = new Device(1.11,-1.11,1.11, FirebaseInstanceId.getInstance().getToken());
     Soul newSoul = new Soul("SuccessAndroidSoul","S3keyMissing", 1000000000, -666,66.6,0.6,FirebaseInstanceId.getInstance().getToken());
-//    Device newdevice = new Device(-1,8,0.8,"android token not available");
+    Device newdevice = new Device(1,8, (float) 0.8,"from Android serialized");
 //    Soul newSoul = new Soul("Success:androidSoul","S3keyMissing", 1000000000, -666,66.6,0.6,"android token not available");
 
     Retrofit retrofit = new Retrofit.Builder()
@@ -36,8 +37,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         setupFirebase();
         devicePost();
-        soulPost();
-        deviceUpdate();
+//        soulPost();
+//        deviceUpdate();
     }
 
     private void setupFirebase() {
@@ -57,26 +58,33 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void deviceUpdate() {
-        mockChange();
+//        mockChange();
         // prepare call in Retrofit 2.0
         SoulpostAPI soulpostAPI = retrofit.create(SoulpostAPI.class);
         Call<Device> call = soulpostAPI.deviceUpdate(newdevice);
         call.enqueue(new Callback<Device>() {
             @Override
             public void onResponse(Call<Device> call, Response<Device> response) {
-                //Log.d("SUCCESS SOUL POST", response.body().toString());
+                if (response.isSuccessful()){
+                    //Log.d("Server response success", new Gson().toJson(response));
+                    Log.d("ID is :",response.body().id + "");
+                }else {
+                    //some kind of server error
+                    //Log.d("Server response error",new Gson().toJson(response));
+                    Log.d("Server error :",response.body() + "");
+                }
             }
 
             @Override
             public void onFailure(Call<Device> call, Throwable t) {
-                //Log.d("FAIL SOUL POST", t.toString());
+                Log.d("FAIL SOUL POST", t.toString());
             }
         });
     }
 
     private void mockChange() {
-        newdevice.longitude = -777.7;
-        newdevice.latitude = 77.7;
+        newdevice.longitude = (float) -777.7;
+        newdevice.latitude = (float) 77.7;
     }
 
     private void soulPost() {
@@ -103,12 +111,20 @@ public class MainActivity extends AppCompatActivity {
         call.enqueue(new Callback<Device>() {
             @Override
             public void onResponse(Call<Device> call, Response<Device> response) {
-                //Log.d("SUCCESS SOUL POST", response.body().toString());
+                if (response.isSuccessful()){
+                    //Log.d("Server response success", new Gson().toJson(response));
+                    Log.d("ID is :",response.body().id + "");
+                }else {
+                    //some kind of server error
+                    Log.d("Server response error",new Gson().toJson(response));
+                    Log.d("ERIC Server error :",response.body() + "");
+                }
+
             }
 
             @Override
             public void onFailure(Call<Device> call, Throwable t) {
-                //Log.d("FAIL SOUL POST", t.toString());
+                Log.d("FAIL SOUL POST", t.toString());
             }
         });
     }
