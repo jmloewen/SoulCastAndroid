@@ -23,7 +23,7 @@ public class MainActivity extends AppCompatActivity {
     private FirebaseRemoteConfig mFirebaseRemoteConfig;
 //    Device newdevice = new Device(1.11,-1.11,1.11, FirebaseInstanceId.getInstance().getToken());
     Soul newSoul = new Soul("SuccessAndroidSoul","S3keyMissing", 1000000000, -666,66.6,0.6,FirebaseInstanceId.getInstance().getToken());
-    Device newdevice = new Device(1,8, (float) 0.8,"from Android serialized");
+    Device newdevice = new Device(1,8, (float) 0.8,"android headers added");
 //    Soul newSoul = new Soul("Success:androidSoul","S3keyMissing", 1000000000, -666,66.6,0.6,"android token not available");
 
     Retrofit retrofit = new Retrofit.Builder()
