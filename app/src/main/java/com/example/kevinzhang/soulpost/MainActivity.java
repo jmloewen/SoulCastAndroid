@@ -21,9 +21,9 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class MainActivity extends AppCompatActivity {
 
     private FirebaseRemoteConfig mFirebaseRemoteConfig;
-//    Device newdevice = new Device(1.11,-1.11,1.11, FirebaseInstanceId.getInstance().getToken());
+    Device newdevice = new Device((float)1.11,(float)-1.11,(float)1.11, FirebaseInstanceId.getInstance().getToken());
     Soul newSoul = new Soul("SuccessAndroidSoul","S3keyMissing", 1000000000, -666,66.6,0.6,FirebaseInstanceId.getInstance().getToken());
-    Device newdevice = new Device(1,8, (float) 0.8,"android headers added");
+//    Device newdevice = new Device(1,8, (float) 0.8,"android headers added");
 //    Soul newSoul = new Soul("Success:androidSoul","S3keyMissing", 1000000000, -666,66.6,0.6,"android token not available");
 
     Retrofit retrofit = new Retrofit.Builder()
@@ -36,9 +36,32 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         setupFirebase();
-        devicePost();
+//        devicePost();
 //        soulPost();
 //        deviceUpdate();
+        getNearby();
+    }
+
+    private void getNearby() {
+        SoulpostAPI soulpostAPI = retrofit.create(SoulpostAPI.class);
+        Call<Nearby> call = soulpostAPI.getNearby(newdevice.id);
+        call.enqueue(new Callback<Nearby>() {
+            @Override
+            public void onResponse(Call<Nearby> call, Response<Nearby> response) {
+                if (response.isSuccessful()){
+                    Log.d("Devices nearby:", response.body().devicesNearby + "");
+                }else{
+                    Log.d("Resp not success:", response.body().devicesNearby + "");
+                }
+
+            }
+
+            @Override
+            public void onFailure(Call<Nearby> call, Throwable t) {
+                //TODO Malform json
+                Log.d("Nearby call failed:", t.toString());
+            }
+        });
     }
 
     private void setupFirebase() {
@@ -61,13 +84,14 @@ public class MainActivity extends AppCompatActivity {
 //        mockChange();
         // prepare call in Retrofit 2.0
         SoulpostAPI soulpostAPI = retrofit.create(SoulpostAPI.class);
-        Call<Device> call = soulpostAPI.deviceUpdate(newdevice);
+        Call<Device> call = soulpostAPI.deviceUpdate(newdevice, newdevice.id);
         call.enqueue(new Callback<Device>() {
             @Override
             public void onResponse(Call<Device> call, Response<Device> response) {
                 if (response.isSuccessful()){
                     //Log.d("Server response success", new Gson().toJson(response));
                     Log.d("ID is :",response.body().id + "");
+                    newdevice.id = response.body().id;
                 }else {
                     //some kind of server error
                     //Log.d("Server response error",new Gson().toJson(response));
@@ -83,8 +107,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void mockChange() {
-        newdevice.longitude = (float) -777.7;
-        newdevice.latitude = (float) 77.7;
+        newdevice.id = 15;
+        newdevice.longitude = (float) -787.7;
+        newdevice.latitude = (float) 78.7;
     }
 
     private void soulPost() {
