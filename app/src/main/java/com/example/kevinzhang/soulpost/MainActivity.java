@@ -48,7 +48,7 @@ public class MainActivity extends AppCompatActivity {
         //Once this is finished, we want to getnearby.
 
         //this should maybe happen within the mapactivity, not here.
-        getNearby();
+        //getNearby();
     }
 
     private void getNearby() {
