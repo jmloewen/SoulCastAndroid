@@ -13,9 +13,12 @@
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+
+        <activity android:name=".MapActivity">
+            <!--Does anything need to go here? -Jon-->
         </activity>
         <service
             android:name=".MyFirebaseMessagingService">
@@ -24,7 +27,7 @@
             </intent-filter>
         </service>
         <service
-            android:name=".MyFirebaseInstanceIdService"
+            android:name=".MyInstanceIDListenerService"
             android:exported="false">
             <intent-filter>
                 <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />

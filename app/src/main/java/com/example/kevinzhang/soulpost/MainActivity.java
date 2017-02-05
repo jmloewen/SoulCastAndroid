@@ -1,5 +1,6 @@
 package com.example.kevinzhang.soulpost;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -20,6 +21,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class MainActivity extends AppCompatActivity {
 
+    private MapActivity mapActivity;
     private FirebaseRemoteConfig mFirebaseRemoteConfig;
     Device newdevice = new Device((float)1.11,(float)-1.11,(float)1.11, FirebaseInstanceId.getInstance().getToken());
     Soul newSoul = new Soul("SuccessAndroidSoul","S3keyMissing", 1000000000, -666,66.6,0.6,FirebaseInstanceId.getInstance().getToken());
@@ -39,6 +41,13 @@ public class MainActivity extends AppCompatActivity {
 //        devicePost();
 //        soulPost();
 //        deviceUpdate();
+
+        //This is where we want to open the map fragment in SoulCast-Proto.
+        Intent mapIntent = new Intent(this, MapActivity.class);
+        startActivity(mapIntent);
+        //Once this is finished, we want to getnearby.
+
+        //this should maybe happen within the mapactivity, not here.
         getNearby();
     }
 
