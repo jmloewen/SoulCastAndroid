@@ -102,18 +102,22 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
                                 if ((ContextCompat.checkSelfPermission(MapActivity.this, Manifest.permission.RECORD_AUDIO)
                                         == PackageManager.PERMISSION_GRANTED) && (ContextCompat.checkSelfPermission(MapActivity.this,
                                         Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)){
+                                    Log.d("TSTRCRD", "PRESTRTREC");
                                     mAudioRecorder.startRecording();
+                                    Log.d("TSTRCRD", "POSTSTRTREC");
                                 }
                             }
                         } else {
+                            Log.d("TSTRCRD", "Test Start Record");
                             mAudioRecorder.startRecording();
                         }
-
                         break;
                     case MotionEvent.ACTION_UP:
                         // User released the button
                         if (mAudioRecorder.mHasAudioRecordingBeenStarted) {
                             mAudioRecorder.stopRecording();
+                            Log.d("TSTRCRD", "Test Stop Record");
+
                         }
                         break;
                 }
@@ -242,7 +246,10 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
     }
 
     private void beginUpload(File audioFile){
-        mTransferUtility.upload(Constants.BUCKET_NAME, audioFile.getName(), audioFile);
+        Log.d("BGUPLD", "Pre Upload");
+        mTransferUtility.upload(Constants.BUCKET_NAME, "ABCDE.wav", audioFile);
+        Log.d("BGUPLD", "Post Upload");
+
     }
 
     private void checkLocationPermission() {

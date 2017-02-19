@@ -36,6 +36,9 @@
             </intent-filter>
         </service>
         <service
+            android:name="com.amazonaws.mobileconnectors.s3.transferutility.TransferService"
+            android:enabled="true" />
+        <service
             android:name=".MyInstanceIDListenerService"
             android:exported="false">
             <intent-filter>

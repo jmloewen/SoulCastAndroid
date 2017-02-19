@@ -47,12 +47,10 @@ public class APIUserConnect {
                     //Log.d("Server response success", new Gson().toJson(response));
                     Log.d("ID is :",response.body().id + "");
                     newdevice.id = response.body().id;
-                    Toast.makeText(context, "SUCREGDVCE", Toast.LENGTH_SHORT).show();
                 }else {
                     //some kind of server error
                     Log.d("Server response error",new Gson().toJson(response));
                     Log.d("ERIC Server error :",response.body() + "");
-                    Toast.makeText(context, "ELSEREGDVCE", Toast.LENGTH_SHORT).show();
                 }
 
             }
@@ -90,13 +88,11 @@ public class APIUserConnect {
             public void onResponse(Call<Device> call, Response<Device> response) {
                 if (response.isSuccessful()){
                     //Log.d("Server response success", new Gson().toJson(response));
-                    Toast.makeText(context, "UpdRespSucc", Toast.LENGTH_SHORT).show();
                     Log.d("UPDSUCC", response.message() + "|||" + response.body() + "|||" + response.code());
                     Log.d("ID is :",response.body().id + "");
                 }else {
                     //some kind of server error
                     //Log.d("Server response error",new Gson().toJson(response));
-                    Toast.makeText(context, "UpdRespNoSucc", Toast.LENGTH_SHORT).show();
                     Log.d("Server error :",response.body() + "");
                 }
             }
