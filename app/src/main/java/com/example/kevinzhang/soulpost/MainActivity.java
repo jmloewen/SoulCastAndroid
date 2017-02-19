@@ -21,9 +21,11 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class MainActivity extends AppCompatActivity {
 
-    private MapActivity mapActivity;
-    private FirebaseRemoteConfig mFirebaseRemoteConfig;
-    Device newdevice = new Device((float)1.11,(float)-1.11,(float)1.11, FirebaseInstanceId.getInstance().getToken());
+    //fake data registration - suppose user's location services are turned off.
+    Device newdevice;
+
+
+
     Soul newSoul = new Soul("SuccessAndroidSoul","S3keyMissing", 1000000000, -666,66.6,0.6,FirebaseInstanceId.getInstance().getToken());
 //    Device newdevice = new Device(1,8, (float) 0.8,"android headers added");
 //    Soul newSoul = new Soul("Success:androidSoul","S3keyMissing", 1000000000, -666,66.6,0.6,"android token not available");
@@ -37,18 +39,15 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        setupFirebase();
-//        devicePost();
-//        soulPost();
-//        deviceUpdate();
 
         //This is where we want to open the map fragment in SoulCast-Proto.
         Intent mapIntent = new Intent(this, MapActivity.class);
         startActivity(mapIntent);
-        //Once this is finished, we want to getnearby.
 
-        //this should maybe happen within the mapactivity, not here.
-        //getNearby();
+        //soulPost();
+
+        //this should be moved to mapactivity
+//        getNearby();
     }
 
     private void getNearby() {
@@ -69,48 +68,6 @@ public class MainActivity extends AppCompatActivity {
             public void onFailure(Call<Nearby> call, Throwable t) {
                 //TODO Malform json
                 Log.d("Nearby call failed:", t.toString());
-            }
-        });
-    }
-
-    private void setupFirebase() {
-        mFirebaseRemoteConfig = FirebaseRemoteConfig.getInstance();
-        //local var
-        FirebaseRemoteConfigSettings firebaseRemoteConfigSettings =
-                new FirebaseRemoteConfigSettings.Builder()
-                        .setDeveloperModeEnabled(true)
-                        .build();
-        // Define default config values. Defaults are used when fetched config values are not
-        // available. Eg: if an error occurred fetching values from the server.
-        Map<String, Object> defaultConfigMap = new HashMap<>();
-        defaultConfigMap.put("friendly_msg_length", 10L);
-        // Apply config settings and default values.
-        mFirebaseRemoteConfig.setConfigSettings(firebaseRemoteConfigSettings);
-        mFirebaseRemoteConfig.setDefaults(defaultConfigMap);
-    }
-
-    private void deviceUpdate() {
-//        mockChange();
-        // prepare call in Retrofit 2.0
-        SoulpostAPI soulpostAPI = retrofit.create(SoulpostAPI.class);
-        Call<Device> call = soulpostAPI.deviceUpdate(newdevice, newdevice.id);
-        call.enqueue(new Callback<Device>() {
-            @Override
-            public void onResponse(Call<Device> call, Response<Device> response) {
-                if (response.isSuccessful()){
-                    //Log.d("Server response success", new Gson().toJson(response));
-                    Log.d("ID is :",response.body().id + "");
-                    newdevice.id = response.body().id;
-                }else {
-                    //some kind of server error
-                    //Log.d("Server response error",new Gson().toJson(response));
-                    Log.d("Server error :",response.body() + "");
-                }
-            }
-
-            @Override
-            public void onFailure(Call<Device> call, Throwable t) {
-                Log.d("FAIL SOUL POST", t.toString());
             }
         });
     }
@@ -137,31 +94,4 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
-
-    private void devicePost()  {
-        // prepare call in Retrofit 2.0
-        SoulpostAPI soulpostAPI = retrofit.create(SoulpostAPI.class);
-        Call<Device> call = soulpostAPI.devicePost(newdevice);
-        call.enqueue(new Callback<Device>() {
-            @Override
-            public void onResponse(Call<Device> call, Response<Device> response) {
-                if (response.isSuccessful()){
-                    //Log.d("Server response success", new Gson().toJson(response));
-                    Log.d("ID is :",response.body().id + "");
-                }else {
-                    //some kind of server error
-                    Log.d("Server response error",new Gson().toJson(response));
-                    Log.d("ERIC Server error :",response.body() + "");
-                }
-
-            }
-
-            @Override
-            public void onFailure(Call<Device> call, Throwable t) {
-                Log.d("FAIL SOUL POST", t.toString());
-            }
-        });
-    }
-
-
 }

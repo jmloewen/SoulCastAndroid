@@ -1,8 +1,10 @@
 package com.example.kevinzhang.soulpost;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.location.LocationManager;
 import android.media.MediaRecorder;
 import android.os.Build;
 import android.os.Bundle;
@@ -11,6 +13,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
@@ -19,6 +22,7 @@ import android.widget.Toast;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferUtility;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.FusedLocationProviderApi;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
@@ -27,8 +31,12 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
+import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
 
 import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
 
 public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         GoogleApiClient.ConnectionCallbacks,
@@ -41,11 +49,15 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
     private GoogleMap mMap;
     private GoogleApiClient mGoogleApiClient;
     private LocationRequest mLocationRequest;
+    private LocationManager mLocationManager;
     private Location mLastLocation;
+    private FirebaseRemoteConfig mFirebaseRemoteConfig;
 
     private Button mRecordButton;
     private MediaRecorder mMediaRecorder;
     private AudioRecorder mAudioRecorder;
+
+    private Device userDevice = null;
 
     private TransferUtility mTransferUtility;
 
@@ -53,6 +65,11 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
+        setupFirebase();
+        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.map);
+        mapFragment.getMapAsync(this);
 
         mTransferUtility = Util.getTransferUtility(this);
 
@@ -103,11 +120,6 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
                 return false;
             }
         });
-
-        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
     }
 
     @Override
@@ -167,31 +179,54 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
     @Override
     public void onConnected(@Nullable Bundle bundle) {
         requestLocationUpdates();
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
+
+        }
+            LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
+            mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+            LatLng latLng = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
+            userDevice = APIUserConnect.RegisterDevice(latLng, this);
+
+        //Toast.makeText(this, "CNXN Established", Toast.LENGTH_LONG).show();
     }
 
 
     @Override
     public void onConnectionSuspended(int i) {
-
+        //Toast.makeText(this, "CNXN Suspended", Toast.LENGTH_LONG).show();
     }
 
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-
+        //Toast.makeText(this, "CNXN Fail", Toast.LENGTH_LONG).show();
     }
 
+    /**
+     * Currently, this is only being called on launch.  We need a locationlistener to listen for location changes.
+     */
     @Override
     public void onLocationChanged(Location location) {
+        //Toast.makeText(getApplicationContext(), "OLC Called", Toast.LENGTH_SHORT).show();
+        //this is done because we want to store the location for other purposes.
         mLastLocation = location;
-        LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
+        Log.d("oLC", "Location Changed");
+        if (userDevice == null) {
+            //we should never arrive here - here only for debugging purposes right now.
+            Toast.makeText(getApplicationContext(), "USER DEVICE IS NULL - SOMETHING IS WRONG", Toast.LENGTH_SHORT).show();
+        }
+        else{
+            //update the device location
+            userDevice.latitude = (float)mLastLocation.getLatitude();
+            userDevice.longitude = (float)mLastLocation.getLongitude();
 
-        //move map camera
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-        mMap.animateCamera(CameraUpdateFactory.zoomTo(11));
+            //update the device record on the server
+            APIUserConnect.UpdateDevice(userDevice, this);
 
-        //stop location updates
-        if (mGoogleApiClient != null) {
-            LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
+            //move the map appropriately.
+            mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude())));
+            mMap.animateCamera(CameraUpdateFactory.zoomTo(11));
         }
     }
 
@@ -199,12 +234,11 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         mLocationRequest = new LocationRequest();
         mLocationRequest.setInterval(1000);
         mLocationRequest.setFastestInterval(1000);
+
         mLocationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
-        if (ContextCompat.checkSelfPermission(this,
-                Manifest.permission.ACCESS_FINE_LOCATION)
-                == PackageManager.PERMISSION_GRANTED) {
-            LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
-        }
+
+        mLocationManager = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
+
     }
 
     private void beginUpload(File audioFile){
@@ -218,6 +252,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
                     new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                     LOCATION_PERMISSION_REQUEST_CODE);
         }
+
     }
 
     private void checkAudioAndStoragePermission() {
@@ -260,5 +295,24 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
 
             // other cases to check for other permissions this app might request.
         }
+    }
+
+    /**
+     * This sets up the connection between the user and our server.
+     */
+    private void setupFirebase() {
+        mFirebaseRemoteConfig = FirebaseRemoteConfig.getInstance();
+        //local var
+        FirebaseRemoteConfigSettings firebaseRemoteConfigSettings =
+                new FirebaseRemoteConfigSettings.Builder()
+                        .setDeveloperModeEnabled(true)
+                        .build();
+        // Define default config values. Defaults are used when fetched config values are not
+        // available. Eg: if an error occurred fetching values from the server.
+        Map<String, Object> defaultConfigMap = new HashMap<>();
+        defaultConfigMap.put("friendly_msg_length", 10L);
+        // Apply config settings and default values.
+        mFirebaseRemoteConfig.setConfigSettings(firebaseRemoteConfigSettings);
+        mFirebaseRemoteConfig.setDefaults(defaultConfigMap);
     }
 }

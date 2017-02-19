@@ -13,7 +13,7 @@ public class Device {
     @SerializedName("token") public String token;
     public int id;
 
-    public Device(float longitude, float latitude, float radius, String token) {
+    public Device(float latitude, float longitude, float radius, String token) {
         this.longitude = longitude;
         this.latitude = latitude;
         this.radius = radius;
