@@ -39,13 +39,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-<<<<<<< HEAD
-=======
-        setupFirebase();
-       devicePost();
-//        soulPost();
-//        deviceUpdate();
->>>>>>> origin/jasonBranch
 
         //This is where we want to open the map fragment in SoulCast-Proto.
         Intent mapIntent = new Intent(this, MapActivity.class);

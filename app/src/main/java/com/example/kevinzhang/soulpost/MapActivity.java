@@ -1,11 +1,10 @@
 package com.example.kevinzhang.soulpost;
 
 import android.Manifest;
-<<<<<<< HEAD
+
 import android.content.Context;
-=======
+
 import android.app.Activity;
->>>>>>> origin/jasonBranch
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationManager;
@@ -38,12 +37,9 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
-<<<<<<< HEAD
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
-=======
 import com.google.firebase.iid.FirebaseInstanceId;
->>>>>>> origin/jasonBranch
 
 import java.io.File;
 import java.util.HashMap;
@@ -271,12 +267,6 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
 
     }
 
-<<<<<<< HEAD
-    private void beginUpload(File audioFile){
-        Log.d("BGUPLD", "Pre Upload");
-        mTransferUtility.upload(Constants.BUCKET_NAME, "ABCDE.wav", audioFile);
-        Log.d("BGUPLD", "Post Upload");
-=======
     private void beginUpload(final File audioFile){
         TransferObserver observer = mTransferUtility.upload(Constants.BUCKET_NAME, audioFile.getName(), audioFile);
 
@@ -303,10 +293,6 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
                 e.printStackTrace();
             }
         });
-
-
->>>>>>> origin/jasonBranch
-
     }
 
     private void checkLocationPermission() {
@@ -360,8 +346,6 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
             // other cases to check for other permissions this app might request.
         }
     }
-
-<<<<<<< HEAD
     /**
      * This sets up the connection between the user and our server.
      */
@@ -379,10 +363,10 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         // Apply config settings and default values.
         mFirebaseRemoteConfig.setConfigSettings(firebaseRemoteConfigSettings);
         mFirebaseRemoteConfig.setDefaults(defaultConfigMap);
-=======
+    }
     void uploadSoulToServer(String fileName)
     {
-        Toast.makeText(MapActivity.this, "In uploadToServer. S3Key is: "+fileName, Toast.LENGTH_SHORT).show();
+        Toast.makeText(MapActivity.this, "In uploadToServer. S3Key is: "+ fileName, Toast.LENGTH_SHORT).show();
         SoulpostAPI myAPI = retrofit.create(SoulpostAPI.class);
         Soul mSoul = new Soul("Android",fileName, (int)System.currentTimeMillis()/1000, mLastLocation.getLongitude(), mLastLocation.getLatitude(), 1.0, FirebaseInstanceId.getInstance().getToken());
         Call<Soul> call = myAPI.soulPost(mSoul);
@@ -397,8 +381,6 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
             public void onFailure(Call<Soul> call, Throwable t) {
                 Toast.makeText(MapActivity.this, t.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
             }
-
         });
->>>>>>> origin/jasonBranch
     }
 }
