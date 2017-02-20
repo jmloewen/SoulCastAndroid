@@ -1,6 +1,7 @@
 package com.example.kevinzhang.soulpost;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.media.MediaRecorder;
@@ -11,11 +12,15 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.amazonaws.mobileconnectors.s3.transferutility.TransferListener;
+import com.amazonaws.mobileconnectors.s3.transferutility.TransferObserver;
+import com.amazonaws.mobileconnectors.s3.transferutility.TransferState;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferUtility;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -27,8 +32,18 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.firebase.iid.FirebaseInstanceId;
 
 import java.io.File;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
+
+import static com.amazonaws.mobileconnectors.s3.transferutility.TransferState.COMPLETED;
+import static java.lang.Integer.parseInt;
 
 public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         GoogleApiClient.ConnectionCallbacks,
@@ -48,6 +63,12 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
     private AudioRecorder mAudioRecorder;
 
     private TransferUtility mTransferUtility;
+    Activity mActivity = this;
+
+    Retrofit retrofit = new Retrofit.Builder()
+            .baseUrl("http://soulcast.ml")
+            .addConverterFactory(GsonConverterFactory.create())
+            .build();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -207,8 +228,35 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         }
     }
 
-    private void beginUpload(File audioFile){
-        mTransferUtility.upload(Constants.BUCKET_NAME, audioFile.getName(), audioFile);
+    private void beginUpload(final File audioFile){
+        TransferObserver observer = mTransferUtility.upload(Constants.BUCKET_NAME, audioFile.getName(), audioFile);
+
+        observer.setTransferListener(new TransferListener() {
+            @Override
+            public void onStateChanged(int id, TransferState newState) {
+                //Enum status = newState.valueOf("Completed");
+                switch(newState)
+                {
+                    case COMPLETED:
+                        Toast.makeText(mActivity,"Upload to S3 completed!",Toast.LENGTH_SHORT).show();
+                        uploadSoulToServer(audioFile.getName());
+                }
+               Log.v("transfer listener", "here");
+            }
+            @Override
+            public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
+                String str = Long.toString(bytesCurrent);
+                Log.v("transfer listener",str);
+            }
+
+            @Override
+            public void onError(int id, Exception e) {
+                e.printStackTrace();
+            }
+        });
+
+
+
     }
 
     private void checkLocationPermission() {
@@ -260,5 +308,26 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
 
             // other cases to check for other permissions this app might request.
         }
+    }
+
+    void uploadSoulToServer(String fileName)
+    {
+        Toast.makeText(MapActivity.this, "In uploadToServer. S3Key is: "+fileName, Toast.LENGTH_SHORT).show();
+        SoulpostAPI myAPI = retrofit.create(SoulpostAPI.class);
+        Soul mSoul = new Soul("Android",fileName, (int)System.currentTimeMillis()/1000, mLastLocation.getLongitude(), mLastLocation.getLatitude(), 1.0, FirebaseInstanceId.getInstance().getToken());
+        Call<Soul> call = myAPI.soulPost(mSoul);
+
+        call.enqueue(new Callback<Soul>() {
+            @Override
+            public void onResponse(Call<Soul> call, Response<Soul> response) {
+                Toast.makeText(MapActivity.this, " Soul uploaded to Soulcast server", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onFailure(Call<Soul> call, Throwable t) {
+                Toast.makeText(MapActivity.this, t.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+            }
+
+        });
     }
 }
