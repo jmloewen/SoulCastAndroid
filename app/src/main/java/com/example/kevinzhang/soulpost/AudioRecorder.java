@@ -1,5 +1,6 @@
 package com.example.kevinzhang.soulpost;
 
+import android.content.SharedPreferences;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.os.Environment;

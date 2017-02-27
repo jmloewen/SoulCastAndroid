@@ -5,14 +5,18 @@ import android.Manifest;
 import android.content.Context;
 
 import android.app.Activity;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationManager;
 import android.media.MediaRecorder;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
@@ -26,6 +30,9 @@ import com.amazonaws.mobileconnectors.s3.transferutility.TransferListener;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferObserver;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferState;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferUtility;
+import com.google.android.gms.appindexing.Action;
+import com.google.android.gms.appindexing.AppIndex;
+import com.google.android.gms.appindexing.Thing;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.FusedLocationProviderApi;
@@ -59,8 +66,12 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         GoogleApiClient.OnConnectionFailedListener,
         LocationListener {
 
+    private View.OnClickListener mOnClickListener;
+
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
     private final int AUDIO_AND_STORAGE_PERMISSION_REQUEST_CODE = 2;
+    private SharedPreferences prefs;
+    private SharedPreferences.Editor editor;
 
     private GoogleMap mMap;
     private GoogleApiClient mGoogleApiClient;
@@ -72,6 +83,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
     private Button mRecordButton;
     private MediaRecorder mMediaRecorder;
     private AudioRecorder mAudioRecorder;
+    private static final String SOULPREFS = "SoulcastPreferences";
 
     private Device userDevice = null;
 
@@ -82,11 +94,18 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
             .baseUrl("http://soulcast.ml")
             .addConverterFactory(GsonConverterFactory.create())
             .build();
+    /**
+     * ATTENTION: This was auto-generated to implement the App Indexing API.
+     * See https://g.co/AppIndexing/AndroidStudio for more information.
+     */
+    private GoogleApiClient client;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
+        prefs = getSharedPreferences(SOULPREFS, Context.MODE_PRIVATE);
+        editor = prefs.edit();
         setupFirebase();
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -123,7 +142,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
                                 checkAudioAndStoragePermission();
                                 if ((ContextCompat.checkSelfPermission(MapActivity.this, Manifest.permission.RECORD_AUDIO)
                                         == PackageManager.PERMISSION_GRANTED) && (ContextCompat.checkSelfPermission(MapActivity.this,
-                                        Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)){
+                                        Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)) {
                                     Log.d("TSTRCRD", "PRESTRTREC");
                                     mAudioRecorder.startRecording();
                                     Log.d("TSTRCRD", "POSTSTRTREC");
@@ -146,6 +165,16 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
                 return false;
             }
         });
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
+
+        mOnClickListener = new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+//                beginDownload("148814239037");
+            }
+        };
     }
 
     @Override
@@ -159,10 +188,15 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
 
     @Override
     protected void onStop() {
-        super.onStop();
+        super.onStop();// ATTENTION: This was auto-generated to implement the App Indexing API.
+// See https://g.co/AppIndexing/AndroidStudio for more information.
+        AppIndex.AppIndexApi.end(client, getIndexApiAction());
         if (mGoogleApiClient != null) {
             mGoogleApiClient.disconnect();
         }
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        client.disconnect();
     }
 
     /**
@@ -177,7 +211,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             //user is on SDK > 23
             if (ContextCompat.checkSelfPermission(this,
                     Manifest.permission.ACCESS_FINE_LOCATION)
@@ -210,10 +244,10 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
                 == PackageManager.PERMISSION_GRANTED) {
 
         }
-            LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
-            mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
-            LatLng latLng = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
-            userDevice = APIUserConnect.RegisterDevice(latLng, this);
+        LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
+        mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+        LatLng latLng = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
+        userDevice = APIUserConnect.RegisterDevice(latLng, this);
 
         //Toast.makeText(this, "CNXN Established", Toast.LENGTH_LONG).show();
     }
@@ -241,11 +275,10 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         if (userDevice == null) {
             //we should never arrive here - here only for debugging purposes right now.
             Toast.makeText(getApplicationContext(), "USER DEVICE IS NULL - SOMETHING IS WRONG", Toast.LENGTH_SHORT).show();
-        }
-        else{
+        } else {
             //update the device location
-            userDevice.latitude = (float)mLastLocation.getLatitude();
-            userDevice.longitude = (float)mLastLocation.getLongitude();
+            userDevice.latitude = (float) mLastLocation.getLatitude();
+            userDevice.longitude = (float) mLastLocation.getLongitude();
 
             //update the device record on the server
             APIUserConnect.UpdateDevice(userDevice, this);
@@ -254,38 +287,67 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
             mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude())));
             mMap.animateCamera(CameraUpdateFactory.zoomTo(11));
         }
+
+        displayIncomingMessages();
     }
 
-    private void requestLocationUpdates(){
+    private void requestLocationUpdates() {
         mLocationRequest = new LocationRequest();
         mLocationRequest.setInterval(1000);
         mLocationRequest.setFastestInterval(1000);
 
         mLocationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
 
-        mLocationManager = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
+        mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
     }
 
-    private void beginUpload(final File audioFile){
+    private void beginDownload(final File audioFile){
+        TransferObserver observer = mTransferUtility.download(Constants.BUCKET_NAME, audioFile.getName(), audioFile);
+        observer.setTransferListener(new TransferListener() {
+            @Override
+            public void onStateChanged(int id, TransferState newState) {
+                //Enum status = newState.valueOf("Completed");
+                switch (newState) {
+                    case COMPLETED:
+                        Toast.makeText(mActivity, "Download from S3 completed!", Toast.LENGTH_SHORT).show();
+  //                      mAudioRecorder.
+                }
+                Log.v("transfer listener", "here");
+            }
+
+            @Override
+            public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
+                String str = Long.toString(bytesCurrent);
+                Log.v("transfer listener", str);
+            }
+
+            @Override
+            public void onError(int id, Exception e) {
+                e.printStackTrace();
+            }
+        });
+    }
+
+    private void beginUpload(final File audioFile) {
         TransferObserver observer = mTransferUtility.upload(Constants.BUCKET_NAME, audioFile.getName(), audioFile);
 
         observer.setTransferListener(new TransferListener() {
             @Override
             public void onStateChanged(int id, TransferState newState) {
                 //Enum status = newState.valueOf("Completed");
-                switch(newState)
-                {
+                switch (newState) {
                     case COMPLETED:
-                        Toast.makeText(mActivity,"Upload to S3 completed!",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(mActivity, "Upload to S3 completed!", Toast.LENGTH_SHORT).show();
                         uploadSoulToServer(audioFile.getName());
                 }
-               Log.v("transfer listener", "here");
+                Log.v("transfer listener", "here");
             }
+
             @Override
             public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
                 String str = Long.toString(bytesCurrent);
-                Log.v("transfer listener",str);
+                Log.v("transfer listener", str);
             }
 
             @Override
@@ -309,7 +371,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         if ((ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO)
                 != PackageManager.PERMISSION_GRANTED) &&
                 (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                        != PackageManager.PERMISSION_GRANTED)){
+                        != PackageManager.PERMISSION_GRANTED)) {
             ActivityCompat.requestPermissions(this,
                     new String[]{Manifest.permission.RECORD_AUDIO, Manifest.permission.WRITE_EXTERNAL_STORAGE},
                     AUDIO_AND_STORAGE_PERMISSION_REQUEST_CODE);
@@ -342,10 +404,18 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
                     Toast.makeText(this, "Location permission denied", Toast.LENGTH_LONG).show();
                 }
             }
-
             // other cases to check for other permissions this app might request.
         }
     }
+
+    private void displayIncomingMessages() {
+        //a snackbar goes here, with a link to all messages generated since last update.
+        Snackbar.make(findViewById(android.R.id.content), "New Message!", Snackbar.LENGTH_LONG)
+                .setAction("OK", mOnClickListener)
+                .setActionTextColor(Color.RED)
+                .show();
+    }
+
     /**
      * This sets up the connection between the user and our server.
      */
@@ -364,11 +434,11 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         mFirebaseRemoteConfig.setConfigSettings(firebaseRemoteConfigSettings);
         mFirebaseRemoteConfig.setDefaults(defaultConfigMap);
     }
-    void uploadSoulToServer(String fileName)
-    {
-        Toast.makeText(MapActivity.this, "In uploadToServer. S3Key is: "+ fileName, Toast.LENGTH_SHORT).show();
+
+    void uploadSoulToServer(String fileName) {
+        Toast.makeText(MapActivity.this, "In uploadToServer. S3Key is: " + fileName, Toast.LENGTH_SHORT).show();
         SoulpostAPI myAPI = retrofit.create(SoulpostAPI.class);
-        Soul mSoul = new Soul("Android",fileName, (int)System.currentTimeMillis()/1000, mLastLocation.getLongitude(), mLastLocation.getLatitude(), 1.0, FirebaseInstanceId.getInstance().getToken());
+        Soul mSoul = new Soul("Android", fileName, (int) System.currentTimeMillis() / 1000, mLastLocation.getLongitude(), mLastLocation.getLatitude(), 1.0, FirebaseInstanceId.getInstance().getToken());
         Call<Soul> call = myAPI.soulPost(mSoul);
 
         call.enqueue(new Callback<Soul>() {
@@ -382,5 +452,31 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
                 Toast.makeText(MapActivity.this, t.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    /**
+     * ATTENTION: This was auto-generated to implement the App Indexing API.
+     * See https://g.co/AppIndexing/AndroidStudio for more information.
+     */
+    public Action getIndexApiAction() {
+        Thing object = new Thing.Builder()
+                .setName("Map Page") // TODO: Define a title for the content shown.
+                // TODO: Make sure this auto-generated URL is correct.
+                .setUrl(Uri.parse("http://[ENTER-YOUR-URL-HERE]"))
+                .build();
+        return new Action.Builder(Action.TYPE_VIEW)
+                .setObject(object)
+                .setActionStatus(Action.STATUS_TYPE_COMPLETED)
+                .build();
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        client.connect();
+        AppIndex.AppIndexApi.start(client, getIndexApiAction());
     }
 }

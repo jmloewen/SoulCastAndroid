@@ -1,27 +1,146 @@
 {
   "project_info": {
-    "project_number": "774173648652",
-    "firebase_url": "https://soulpost-e081c.firebaseio.com",
-    "project_id": "soulpost-e081c",
-    "storage_bucket": "soulpost-e081c.appspot.com"
+    "project_number": "1057959214390",
+    "firebase_url": "https://helloworld-d6256.firebaseio.com",
+    "project_id": "helloworld-d6256",
+    "storage_bucket": "helloworld-d6256.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:774173648652:android:6ccc3e3e7808daca",
+        "mobilesdk_app_id": "1:1057959214390:android:acdee0b7a4d4dc2a",
+        "android_client_info": {
+          "package_name": "com.example.kevinzhang.firebasehello"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1057959214390-6c7jvdlf03ug37micjpafkde0efkm10r.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyClgHCghxvRtwrKjjH9WD_y6obEs4euIGQ"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1057959214390:android:b5d75907de594a2d",
+        "android_client_info": {
+          "package_name": "com.google.firebase.codelab.friendlychat"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1057959214390-8rns4ggjr6c8von27fd4bjq618clqck2.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.google.firebase.codelab.friendlychat",
+            "certificate_hash": "9c727f2aa8f9cd0981c9c1fc56b996c102709a1d"
+          }
+        },
+        {
+          "client_id": "1057959214390-6c7jvdlf03ug37micjpafkde0efkm10r.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyClgHCghxvRtwrKjjH9WD_y6obEs4euIGQ"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1057959214390-6c7jvdlf03ug37micjpafkde0efkm10r.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1057959214390:android:366abf4f860a05b4",
+        "android_client_info": {
+          "package_name": "com.example.kevinzhang.soultoken"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1057959214390-oqebae9cf610ro6dd852lt0vdumvt6cc.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.kevinzhang.soultoken",
+            "certificate_hash": "9c727f2aa8f9cd0981c9c1fc56b996c102709a1d"
+          }
+        },
+        {
+          "client_id": "1057959214390-6c7jvdlf03ug37micjpafkde0efkm10r.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyClgHCghxvRtwrKjjH9WD_y6obEs4euIGQ"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1057959214390-6c7jvdlf03ug37micjpafkde0efkm10r.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1057959214390:android:6ccc3e3e7808daca",
         "android_client_info": {
           "package_name": "com.example.kevinzhang.soulpost"
         }
       },
       "oauth_client": [
         {
-          "client_id": "774173648652-5g650697ihivvgdlrfrlmvhgk4pu1rt9.apps.googleusercontent.com",
+          "client_id": "1057959214390-6c7jvdlf03ug37micjpafkde0efkm10r.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyCHwfmqxB1r5GsoCLWUhLxbHqggBaPebUI"
+          "current_key": "AIzaSyClgHCghxvRtwrKjjH9WD_y6obEs4euIGQ"
         }
       ],
       "services": {
