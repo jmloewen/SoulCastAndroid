@@ -2,6 +2,7 @@ package com.example.kevinzhang.soulpost;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.media.MediaPlayer;
 import android.os.Environment;
 import android.util.Log;
 import android.widget.Toast;
@@ -15,6 +16,7 @@ import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
 import java.io.File;
+import java.io.IOException;
 
 /**
  * Created by kevinzhang on 2016-12-17.
@@ -25,6 +27,12 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     private SharedPreferences prefs;
     private SharedPreferences.Editor editor;
     private static final String SOULPREFS = "SoulcastPreferences";
+
+    //custom variables to make soulcast work
+    private static MediaPlayer mMediaPlayer;
+    private static File mAudioFile;
+
+
     @Override
     /**
      * This is where we get a push notification from the server.
@@ -43,8 +51,28 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         editor.commit();
         Log.d(TAG, "S3Key: " + prefs.getString("PushS3Key", "NO KEY STORED"));
         beginDownload(prefs.getString("PushS3Key", "NO KEY STORED"));
+        playSoul(prefs.getString("PushS3Key", "NO KEY STORED"));
 
+    }
 
+    private void playSoul(final String S3key) {
+        mMediaPlayer = new MediaPlayer();
+        mAudioFile = new File(Environment.getExternalStorageDirectory().getAbsolutePath(),
+                String.valueOf(S3key));
+        try {
+            mMediaPlayer.setDataSource(mAudioFile.getAbsolutePath());
+            mMediaPlayer.prepare();
+            mMediaPlayer.start();
+
+            mMediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                @Override
+                public void onCompletion(MediaPlayer mediaPlayer) {
+                    mMediaPlayer.reset();
+                }
+            });
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void beginDownload(final String S3key){
