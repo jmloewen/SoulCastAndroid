@@ -56,18 +56,22 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     }
 
     private void playSoul(final String S3key) {
+        Log.d(TAG, "Begin playing soul");
         mMediaPlayer = new MediaPlayer();
         mAudioFile = new File(Environment.getExternalStorageDirectory().getAbsolutePath(),
                 String.valueOf(S3key));
         try {
+            Log.d(TAG, "Begin playing soul1");
             mMediaPlayer.setDataSource(mAudioFile.getAbsolutePath());
             mMediaPlayer.prepare();
+            Log.d(TAG, "Begin playing soul2");
             mMediaPlayer.start();
-
+            Log.d(TAG, "Begin playing soul3");
             mMediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 @Override
                 public void onCompletion(MediaPlayer mediaPlayer) {
                     mMediaPlayer.reset();
+                    Log.d(TAG, "Finished playing soul");
                 }
             });
         } catch (IOException e) {
