@@ -25,6 +25,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
+import java.lang.Object;
 
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferListener;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferObserver;
@@ -44,9 +45,12 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.wearable.Asset;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
 import com.google.firebase.iid.FirebaseInstanceId;
+
+import junit.framework.Assert;
 
 import java.io.File;
 import java.util.HashMap;
@@ -104,17 +108,87 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
+
+        //presistent store
         prefs = getSharedPreferences(SOULPREFS, Context.MODE_PRIVATE);
         editor = prefs.edit();
+
+        //firebase
         setupFirebase();
+
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
+        //S3
         mTransferUtility = Util.getTransferUtility(this);
 
+        setAudioRecorder();
+        //MediaPlayer
+//        mAudioRecorder = new AudioRecorder();
+//        mAudioRecorder.setmAudioRecorderListener(new AudioRecorder.AudioRecorderListener() {
+//            @Override
+//            public void onRecordingFinished(File audioFile) {
+//                //TODO Upload to S3
+//                beginUpload(audioFile);
+//            }
+//        });
 
+        permissionCheck();
+
+        buttonSetup();
+        //button setup
+//        mRecordButton = (Button) findViewById(R.id.record_button);
+//        mRecordButton.setOnTouchListener(new View.OnTouchListener() {
+//            @Override
+//            public boolean onTouch(View view, MotionEvent motionEvent) {
+//                switch (motionEvent.getAction()) {
+//                    case MotionEvent.ACTION_DOWN:
+//                        // User pressed down on the button
+//                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+//                            {
+//                                checkAudioAndStoragePermission();
+//                                if ((ContextCompat.checkSelfPermission(MapActivity.this, Manifest.permission.RECORD_AUDIO)
+//                                        == PackageManager.PERMISSION_GRANTED) && (ContextCompat.checkSelfPermission(MapActivity.this,
+//                                        Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)) {
+//                                    Log.d("TSTRCRD", "PRESTRTREC");
+//                                    mAudioRecorder.startRecording();
+//                                    Log.d("TSTRCRD", "POSTSTRTREC");
+//                                }
+//                            }
+//                        } else {
+//                            Log.d("TSTRCRD", "Test Start Record");
+//                            mAudioRecorder.startRecording();
+//                        }
+//                        break;
+//                    case MotionEvent.ACTION_UP:
+//                        // User released the button
+//                        if (mAudioRecorder.mHasAudioRecordingBeenStarted) {
+//                            mAudioRecorder.stopRecording();
+//                            Log.d("TSTRCRD", "Test Stop Record");
+//
+//                        }
+//                        break;
+//                }
+//                return false;
+//            }
+//        });
+//
+        //build api client
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+//        client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
+//
+//        mOnClickListener = new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+////                beginDownload("148814239037");
+//            }
+//        };
+    }
+
+    private void setAudioRecorder() {
         mAudioRecorder = new AudioRecorder();
         mAudioRecorder.setmAudioRecorderListener(new AudioRecorder.AudioRecorderListener() {
             @Override
@@ -123,13 +197,18 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
                 beginUpload(audioFile);
             }
         });
+    }
 
+    private void permissionCheck() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             {
                 checkLocationPermission();
             }
         }
+    }
 
+    private void buttonSetup() {
+        //button setup
         mRecordButton = (Button) findViewById(R.id.record_button);
         mRecordButton.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -140,47 +219,34 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                             {
                                 checkAudioAndStoragePermission();
-                                if ((ContextCompat.checkSelfPermission(MapActivity.this, Manifest.permission.RECORD_AUDIO)
-                                        == PackageManager.PERMISSION_GRANTED) && (ContextCompat.checkSelfPermission(MapActivity.this,
-                                        Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)) {
-                                    Log.d("TSTRCRD", "PRESTRTREC");
-                                    mAudioRecorder.startRecording();
-                                    Log.d("TSTRCRD", "POSTSTRTREC");
-                                }
+//                                if ((ContextCompat.checkSelfPermission(MapActivity.this, Manifest.permission.RECORD_AUDIO)
+//                                        == PackageManager.PERMISSION_GRANTED) && (ContextCompat.checkSelfPermission(MapActivity.this,
+//                                        Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)) {
+//                                    Log.d("TSTRCRD", "PRESTRTREC");
+//                                    mAudioRecorder.startRecording();
+//                                    Log.d("TSTRCRD", "POSTSTRTREC");
+//                                }
+                                mAudioRecorder.startRecording();
                             }
                         } else {
-                            Log.d("TSTRCRD", "Test Start Record");
                             mAudioRecorder.startRecording();
                         }
                         break;
                     case MotionEvent.ACTION_UP:
-                        // User released the button
                         if (mAudioRecorder.mHasAudioRecordingBeenStarted) {
                             mAudioRecorder.stopRecording();
-                            Log.d("TSTRCRD", "Test Stop Record");
-
                         }
                         break;
                 }
                 return false;
             }
         });
-        // ATTENTION: This was auto-generated to implement the App Indexing API.
-        // See https://g.co/AppIndexing/AndroidStudio for more information.
-        client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
 
-        mOnClickListener = new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-//                beginDownload("148814239037");
-            }
-        };
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-
         if (mGoogleApiClient != null && mGoogleApiClient.isConnected()) {
             LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
         }
@@ -211,18 +277,21 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            //user is on SDK > 23
-            if (ContextCompat.checkSelfPermission(this,
-                    Manifest.permission.ACCESS_FINE_LOCATION)
-                    == PackageManager.PERMISSION_GRANTED) {
-                buildGoogleAPIClient();
-                mMap.setMyLocationEnabled(true);
-            }
-        } else {
-            buildGoogleAPIClient();
-            mMap.setMyLocationEnabled(true);
-        }
+        buildGoogleAPIClient();
+        //mMap.setMyLocationEnabled(true);
+
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+//            //user is on SDK > 23
+//            if (ContextCompat.checkSelfPermission(this,
+//                    Manifest.permission.ACCESS_FINE_LOCATION)
+//                    == PackageManager.PERMISSION_GRANTED) {
+//                buildGoogleAPIClient();
+//                mMap.setMyLocationEnabled(true);
+//            }
+//        } else {
+//            buildGoogleAPIClient();
+//            mMap.setMyLocationEnabled(true);
+//        }
     }
 
     protected synchronized void buildGoogleAPIClient() {
@@ -242,14 +311,13 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED) {
-
+            LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
+            mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+            LatLng latLng = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
+            userDevice = APIUserConnect.RegisterDevice(latLng, this);
         }
-        LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
-        mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
-        LatLng latLng = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
-        userDevice = APIUserConnect.RegisterDevice(latLng, this);
 
-        //Toast.makeText(this, "CNXN Established", Toast.LENGTH_LONG).show();
+        Toast.makeText(this, "Connection Established", Toast.LENGTH_LONG).show();
     }
 
 
@@ -268,13 +336,11 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
      */
     @Override
     public void onLocationChanged(Location location) {
-        //Toast.makeText(getApplicationContext(), "OLC Called", Toast.LENGTH_SHORT).show();
         //this is done because we want to store the location for other purposes.
         mLastLocation = location;
-        Log.d("oLC", "Location Changed");
         if (userDevice == null) {
             //we should never arrive here - here only for debugging purposes right now.
-            Toast.makeText(getApplicationContext(), "USER DEVICE IS NULL - SOMETHING IS WRONG", Toast.LENGTH_SHORT).show();
+            throw new AssertionError("userDevice cannot be null during onlocation changed");
         } else {
             //update the device location
             userDevice.latitude = (float) mLastLocation.getLatitude();
@@ -285,7 +351,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
 
             //move the map appropriately.
             mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude())));
-            mMap.animateCamera(CameraUpdateFactory.zoomTo(11));
+            mMap.animateCamera(CameraUpdateFactory.zoomTo(20));
         }
 
         displayIncomingMessages();
