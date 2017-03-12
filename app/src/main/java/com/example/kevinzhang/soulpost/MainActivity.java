@@ -56,11 +56,6 @@ public class MainActivity extends AppCompatActivity {
             //get payload
             //give payload to Firebase Messaging
 
-//            mFirebaseMessagingService = FirebaseMessagingService();
-//            prefs = getSharedPreferences(SOULPREFS, Context.MODE_PRIVATE);
-//            editor = prefs.edit();
-//            editor.putString("PushS3Key", remoteMessage.getData().get("S3key"));
-//            editor.commit();
         }
     }
 

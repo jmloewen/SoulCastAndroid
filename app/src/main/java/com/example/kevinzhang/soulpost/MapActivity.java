@@ -286,7 +286,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
     private void moveMaptoCurrentLocation(Location mLastLocation) {
         //move the map appropriately.
         mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude())));
-        mMap.animateCamera(CameraUpdateFactory.zoomTo(20));
+        mMap.animateCamera(CameraUpdateFactory.zoomTo(18));
     }
 
     private void updateDeviceLocation(Location mLastLocation) {
@@ -308,33 +308,6 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
 
         mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
-    }
-
-    private void beginDownload(final File audioFile){
-        TransferObserver observer = mTransferUtility.download(Constants.BUCKET_NAME, audioFile.getName(), audioFile);
-        observer.setTransferListener(new TransferListener() {
-            @Override
-            public void onStateChanged(int id, TransferState newState) {
-                //Enum status = newState.valueOf("Completed");
-                switch (newState) {
-                    case COMPLETED:
-                        Toast.makeText(mActivity, "Download from S3 completed!", Toast.LENGTH_SHORT).show();
-  //                      mAudioRecorder.
-                }
-                Log.v("transfer listener", "here");
-            }
-
-            @Override
-            public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
-                String str = Long.toString(bytesCurrent);
-                Log.v("transfer listener", str);
-            }
-
-            @Override
-            public void onError(int id, Exception e) {
-                e.printStackTrace();
-            }
-        });
     }
 
     private void beginUpload(final File audioFile) {
@@ -383,12 +356,12 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
 
     private boolean audioGranted() {
         return (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO)
-                == PackageManager.PERMISSION_GRANTED)
+                == PackageManager.PERMISSION_GRANTED);
     }
 
     private boolean storageGranted() {
         return (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                == PackageManager.PERMISSION_GRANTED)
+                == PackageManager.PERMISSION_GRANTED);
     }
 
     private void requestAudioAndStoragePermissions() {
@@ -489,13 +462,4 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
                 .build();
     }
 
-    @Override
-    public void onStart() {
-        super.onStart();
-
-        // ATTENTION: This was auto-generated to implement the App Indexing API.
-        // See https://g.co/AppIndexing/AndroidStudio for more information.
-        client.connect();
-        AppIndex.AppIndexApi.start(client, getIndexApiAction());
-    }
 }
