@@ -125,67 +125,11 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         mTransferUtility = Util.getTransferUtility(this);
 
         setAudioRecorder();
-        //MediaPlayer
-//        mAudioRecorder = new AudioRecorder();
-//        mAudioRecorder.setmAudioRecorderListener(new AudioRecorder.AudioRecorderListener() {
-//            @Override
-//            public void onRecordingFinished(File audioFile) {
-//                //TODO Upload to S3
-//                beginUpload(audioFile);
-//            }
-//        });
 
         permissionCheck();
 
         buttonSetup();
-        //button setup
-//        mRecordButton = (Button) findViewById(R.id.record_button);
-//        mRecordButton.setOnTouchListener(new View.OnTouchListener() {
-//            @Override
-//            public boolean onTouch(View view, MotionEvent motionEvent) {
-//                switch (motionEvent.getAction()) {
-//                    case MotionEvent.ACTION_DOWN:
-//                        // User pressed down on the button
-//                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-//                            {
-//                                checkAudioAndStoragePermission();
-//                                if ((ContextCompat.checkSelfPermission(MapActivity.this, Manifest.permission.RECORD_AUDIO)
-//                                        == PackageManager.PERMISSION_GRANTED) && (ContextCompat.checkSelfPermission(MapActivity.this,
-//                                        Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)) {
-//                                    Log.d("TSTRCRD", "PRESTRTREC");
-//                                    mAudioRecorder.startRecording();
-//                                    Log.d("TSTRCRD", "POSTSTRTREC");
-//                                }
-//                            }
-//                        } else {
-//                            Log.d("TSTRCRD", "Test Start Record");
-//                            mAudioRecorder.startRecording();
-//                        }
-//                        break;
-//                    case MotionEvent.ACTION_UP:
-//                        // User released the button
-//                        if (mAudioRecorder.mHasAudioRecordingBeenStarted) {
-//                            mAudioRecorder.stopRecording();
-//                            Log.d("TSTRCRD", "Test Stop Record");
-//
-//                        }
-//                        break;
-//                }
-//                return false;
-//            }
-//        });
-//
-        //build api client
-        // ATTENTION: This was auto-generated to implement the App Indexing API.
-        // See https://g.co/AppIndexing/AndroidStudio for more information.
-//        client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
-//
-//        mOnClickListener = new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-////                beginDownload("148814239037");
-//            }
-//        };
+
     }
 
     private void setAudioRecorder() {
@@ -278,20 +222,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
         buildGoogleAPIClient();
-        //mMap.setMyLocationEnabled(true);
 
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-//            //user is on SDK > 23
-//            if (ContextCompat.checkSelfPermission(this,
-//                    Manifest.permission.ACCESS_FINE_LOCATION)
-//                    == PackageManager.PERMISSION_GRANTED) {
-//                buildGoogleAPIClient();
-//                mMap.setMyLocationEnabled(true);
-//            }
-//        } else {
-//            buildGoogleAPIClient();
-//            mMap.setMyLocationEnabled(true);
-//        }
     }
 
     protected synchronized void buildGoogleAPIClient() {
@@ -311,10 +242,13 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED) {
+
             LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
             mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
             LatLng latLng = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
+
             userDevice = APIUserConnect.RegisterDevice(latLng, this);
+
         }
 
         Toast.makeText(this, "Connection Established", Toast.LENGTH_LONG).show();
@@ -342,19 +276,27 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
             //we should never arrive here - here only for debugging purposes right now.
             throw new AssertionError("userDevice cannot be null during onlocation changed");
         } else {
-            //update the device location
-            userDevice.latitude = (float) mLastLocation.getLatitude();
-            userDevice.longitude = (float) mLastLocation.getLongitude();
-
-            //update the device record on the server
-            APIUserConnect.UpdateDevice(userDevice, this);
-
-            //move the map appropriately.
-            mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude())));
-            mMap.animateCamera(CameraUpdateFactory.zoomTo(20));
+            updateDeviceLocation(mLastLocation);
+            moveMaptoCurrentLocation(mLastLocation);
         }
 
         displayIncomingMessages();
+    }
+
+    private void moveMaptoCurrentLocation(Location mLastLocation) {
+        //move the map appropriately.
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude())));
+        mMap.animateCamera(CameraUpdateFactory.zoomTo(20));
+    }
+
+    private void updateDeviceLocation(Location mLastLocation) {
+        //update the device location
+        userDevice.latitude = (float) mLastLocation.getLatitude();
+        userDevice.longitude = (float) mLastLocation.getLongitude();
+
+        //update the device record on the server
+        APIUserConnect.UpdateDevice(userDevice, this);
+
     }
 
     private void requestLocationUpdates() {
@@ -434,14 +376,25 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
     }
 
     private void checkAudioAndStoragePermission() {
-        if ((ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO)
-                != PackageManager.PERMISSION_GRANTED) &&
-                (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                        != PackageManager.PERMISSION_GRANTED)) {
-            ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.RECORD_AUDIO, Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                    AUDIO_AND_STORAGE_PERMISSION_REQUEST_CODE);
+        if (!audioGranted() && !storageGranted()) {
+            requestAudioAndStoragePermissions();
         }
+    }
+
+    private boolean audioGranted() {
+        return (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO)
+                == PackageManager.PERMISSION_GRANTED)
+    }
+
+    private boolean storageGranted() {
+        return (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                == PackageManager.PERMISSION_GRANTED)
+    }
+
+    private void requestAudioAndStoragePermissions() {
+        ActivityCompat.requestPermissions(this,
+                new String[]{Manifest.permission.RECORD_AUDIO, Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                AUDIO_AND_STORAGE_PERMISSION_REQUEST_CODE);
     }
 
     @Override

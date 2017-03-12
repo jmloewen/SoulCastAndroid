@@ -40,20 +40,25 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        startMapActivity();
+        handleRemoteNotifications();
+    }
 
-        //This is where we want to open the map fragment in SoulCast-Proto.
+    private void startMapActivity() {
         Intent mapIntent = new Intent(this, MapActivity.class);
         startActivity(mapIntent);
+    }
 
-        //Handle push notifications
+    private void handleRemoteNotifications() {
         Bundle bundle = getIntent().getExtras();
         if (bundle != null) {
             Log.d(TAG, "push notification recognized, action here");
+            //get payload
+            //give payload to Firebase Messaging
+
 //            mFirebaseMessagingService = FirebaseMessagingService();
 //            prefs = getSharedPreferences(SOULPREFS, Context.MODE_PRIVATE);
 //            editor = prefs.edit();
-//
-//            //this is the S3 key of the message pushed from the server.
 //            editor.putString("PushS3Key", remoteMessage.getData().get("S3key"));
 //            editor.commit();
         }
