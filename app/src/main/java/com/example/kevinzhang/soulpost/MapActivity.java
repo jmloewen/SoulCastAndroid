@@ -6,6 +6,7 @@ import android.content.Context;
 
 import android.app.Activity;
 import android.content.SharedPreferences;
+import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Location;
@@ -108,6 +109,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
         //presistent store
         prefs = getSharedPreferences(SOULPREFS, Context.MODE_PRIVATE);
@@ -279,8 +281,6 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
             updateDeviceLocation(mLastLocation);
             moveMaptoCurrentLocation(mLastLocation);
         }
-
-        displayIncomingMessages();
     }
 
     private void moveMaptoCurrentLocation(Location mLastLocation) {
@@ -398,14 +398,6 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
             }
             // other cases to check for other permissions this app might request.
         }
-    }
-
-    private void displayIncomingMessages() {
-        //a snackbar goes here, with a link to all messages generated since last update.
-        Snackbar.make(findViewById(android.R.id.content), "New Message!", Snackbar.LENGTH_LONG)
-                .setAction("OK", mOnClickListener)
-                .setActionTextColor(Color.RED)
-                .show();
     }
 
     /**
