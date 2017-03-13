@@ -7,11 +7,11 @@ import com.google.gson.annotations.SerializedName;
  */
 
 public class Device {
-    @SerializedName("longitude") public float longitude;
-    @SerializedName("latitude") public float latitude;
-    @SerializedName("radius") public float radius;
-    @SerializedName("token") public String token;
-    public int id;
+    @SerializedName("longitude") private float longitude;
+    @SerializedName("latitude") private float latitude;
+    @SerializedName("radius") private float radius;
+    @SerializedName("token") private String token;
+    private int id;
 
     public Device(float latitude, float longitude, float radius, String token) {
         this.longitude = longitude;
@@ -19,6 +19,19 @@ public class Device {
         this.radius = radius;
         this.token = token;
     }
+
+    public void setLongitude(float longitude){this.longitude = longitude;}
+    public void setLatitude(float latitude){this.latitude = latitude;}
+    public void setRadius(float radius){this.radius = radius;}
+    public void setToken(String token){this.token = token;}
+    public void setId(int id){this.id = id;}
+    public float getLongitude(){return longitude;}
+    public float getLatitude(){return latitude;}
+    public float getRadius(){return radius;}
+    public String getToken(){return token;}
+    public int getId(){return id;}
+
+
 
 //    public void setID(int idFromServer){
 //        id = idFromServer;

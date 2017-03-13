@@ -26,7 +26,7 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-    Soul newSoul = new Soul("SuccessAndroidSoul","S3keyMissing", 1000000000, -666,66.6,0.6,FirebaseInstanceId.getInstance().getToken());
+    Soul newSoul;
 //    Device newdevice = new Device(1,8, (float) 0.8,"android headers added");
 //    Soul newSoul = new Soul("Success:androidSoul","S3keyMissing", 1000000000, -666,66.6,0.6,"android token not available");
 
@@ -52,7 +52,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void getNearby() {
         SoulpostAPI soulpostAPI = retrofit.create(SoulpostAPI.class);
-        Call<Nearby> call = soulpostAPI.getNearby(newdevice.id);
+        Call<Nearby> call = soulpostAPI.getNearby(newdevice.getId());
         call.enqueue(new Callback<Nearby>() {
             @Override
             public void onResponse(Call<Nearby> call, Response<Nearby> response) {
@@ -73,9 +73,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void mockChange() {
-        newdevice.id = 15;
-        newdevice.longitude = (float) -787.7;
-        newdevice.latitude = (float) 78.7;
+        newdevice.setId(15);
+        newdevice.setLongitude(-787.7f);
+        newdevice.setLatitude(78.7f);
     }
 
     private void soulPost() {

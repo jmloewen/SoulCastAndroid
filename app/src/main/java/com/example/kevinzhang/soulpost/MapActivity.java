@@ -11,7 +11,10 @@ import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationManager;
 import android.media.MediaRecorder;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
+import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -35,6 +38,7 @@ import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.appindexing.Thing;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.drive.Permission;
 import com.google.android.gms.location.FusedLocationProviderApi;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
@@ -66,29 +70,35 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         GoogleApiClient.OnConnectionFailedListener,
         LocationListener {
 
-    private View.OnClickListener mOnClickListener;
-
+    //permission request codes
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
     private final int AUDIO_AND_STORAGE_PERMISSION_REQUEST_CODE = 2;
+    private final float DEFAULT_USER_RADIUS = 1.0f;
+
+    //sharedpreferences
     private SharedPreferences prefs;
     private SharedPreferences.Editor editor;
+    private static final String SOULPREFS = "SoulcastPreferences";
 
+    //Variables for location handling
     private GoogleMap mMap;
     private GoogleApiClient mGoogleApiClient;
     private LocationRequest mLocationRequest;
     private LocationManager mLocationManager;
     private Location mLastLocation;
-    private FirebaseRemoteConfig mFirebaseRemoteConfig;
+
+    //Variables for Audio Up / Audio Down.
 
     private Button mRecordButton;
-    private MediaRecorder mMediaRecorder;
     private AudioRecorder mAudioRecorder;
-    private static final String SOULPREFS = "SoulcastPreferences";
 
+    //The user's device
     private Device userDevice = null;
 
     private TransferUtility mTransferUtility;
-    Activity mActivity = this;
+    private Activity mActivity = this;
+    private boolean mIsConnected = false;
+    private ConnectivityManager gCm;
 
     Retrofit retrofit = new Retrofit.Builder()
             .baseUrl("http://soulcast.ml")
@@ -98,12 +108,17 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
      * ATTENTION: This was auto-generated to implement the App Indexing API.
      * See https://g.co/AppIndexing/AndroidStudio for more information.
      */
-    private GoogleApiClient client;
+    private GoogleApiClient mClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
+
+        gCm = (ConnectivityManager)getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        mIsConnected = gCm.getActiveNetworkInfo() != null && gCm.getActiveNetworkInfo().isConnected();
+
+
         prefs = getSharedPreferences(SOULPREFS, Context.MODE_PRIVATE);
         editor = prefs.edit();
         setupFirebase();
@@ -113,8 +128,6 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         mapFragment.getMapAsync(this);
 
         mTransferUtility = Util.getTransferUtility(this);
-
-
         mAudioRecorder = new AudioRecorder();
         mAudioRecorder.setmAudioRecorderListener(new AudioRecorder.AudioRecorderListener() {
             @Override
@@ -136,10 +149,13 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
             public boolean onTouch(View view, MotionEvent motionEvent) {
                 switch (motionEvent.getAction()) {
                     case MotionEvent.ACTION_DOWN:
-                        // User pressed down on the button
+
+                        // User pressed down on the button - if we're at an API that needs to check for perms, do so.
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                             {
-                                checkAudioAndStoragePermission();
+                                //checkAudioAndStoragePermission();
+                                checkAudioPermission();
+                                checkStoragePermission();
                                 if ((ContextCompat.checkSelfPermission(MapActivity.this, Manifest.permission.RECORD_AUDIO)
                                         == PackageManager.PERMISSION_GRANTED) && (ContextCompat.checkSelfPermission(MapActivity.this,
                                         Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)) {
@@ -158,7 +174,6 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
                         if (mAudioRecorder.mHasAudioRecordingBeenStarted) {
                             mAudioRecorder.stopRecording();
                             Log.d("TSTRCRD", "Test Stop Record");
-
                         }
                         break;
                 }
@@ -167,14 +182,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         });
         // ATTENTION: This was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
-        client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
-
-        mOnClickListener = new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-//                beginDownload("148814239037");
-            }
-        };
+        mClient = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
     }
 
     @Override
@@ -190,13 +198,13 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
     protected void onStop() {
         super.onStop();// ATTENTION: This was auto-generated to implement the App Indexing API.
 // See https://g.co/AppIndexing/AndroidStudio for more information.
-        AppIndex.AppIndexApi.end(client, getIndexApiAction());
+        AppIndex.AppIndexApi.end(mClient, getIndexApiAction());
         if (mGoogleApiClient != null) {
             mGoogleApiClient.disconnect();
         }
         // ATTENTION: This was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
-        client.disconnect();
+        mClient.disconnect();
     }
 
     /**
@@ -247,7 +255,28 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
         mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
         LatLng latLng = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
-        userDevice = APIUserConnect.RegisterDevice(latLng, this);
+
+        //if we can connect to the internet, do so & register.
+        mIsConnected = gCm.getActiveNetworkInfo() != null && gCm.getActiveNetworkInfo().isConnected();
+
+        if (mIsConnected && userDevice == null){
+            userDevice = APIUserConnect.RegisterDevice(latLng, this);
+            mRecordButton.setEnabled(true);
+        }
+        else if (userDevice == null){
+            //tell the user they dont have internet available.
+            Toast.makeText(getApplicationContext(), "Please enable Internet connectivity", Toast.LENGTH_LONG);
+            mRecordButton.setEnabled(false);
+        }
+        else if (!mIsConnected && userDevice != null){
+            //userdevice is not null and user is not connected.
+            //Tell the user to connect to the internet.
+        }
+        else{
+            //userdevice is not null and the user is connected to the internet - everything is good.
+            mRecordButton.setEnabled(true);
+        }
+
 
         //Toast.makeText(this, "CNXN Established", Toast.LENGTH_LONG).show();
     }
@@ -273,12 +302,21 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         mLastLocation = location;
         Log.d("oLC", "Location Changed");
         if (userDevice == null) {
+            mIsConnected = gCm.getActiveNetworkInfo() != null && gCm.getActiveNetworkInfo().isConnected();
             //we should never arrive here - here only for debugging purposes right now.
-            Toast.makeText(getApplicationContext(), "USER DEVICE IS NULL - SOMETHING IS WRONG", Toast.LENGTH_SHORT).show();
+            if (mIsConnected){
+                LatLng latLng = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
+                userDevice = APIUserConnect.RegisterDevice(latLng, this);
+                mRecordButton.setEnabled(true);
+            }else {
+                Toast.makeText(getApplicationContext(), "Please enable Internet connectivity", Toast.LENGTH_LONG);
+                mRecordButton.setEnabled(false);
+            }
         } else {
             //update the device location
-            userDevice.latitude = (float) mLastLocation.getLatitude();
-            userDevice.longitude = (float) mLastLocation.getLongitude();
+            userDevice.setLatitude((float)mLastLocation.getLatitude());
+            userDevice.setLongitude((float)mLastLocation.getLongitude());
+            userDevice.setRadius(DEFAULT_USER_RADIUS);
 
             //update the device record on the server
             APIUserConnect.UpdateDevice(userDevice, this);
@@ -287,46 +325,15 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
             mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude())));
             mMap.animateCamera(CameraUpdateFactory.zoomTo(11));
         }
-
-        displayIncomingMessages();
     }
 
     private void requestLocationUpdates() {
         mLocationRequest = new LocationRequest();
         mLocationRequest.setInterval(1000);
         mLocationRequest.setFastestInterval(1000);
-
         mLocationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
-
+        //Do we ever need to check this?  Is there a point where we need the location manager?
         mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-
-    }
-
-    private void beginDownload(final File audioFile){
-        TransferObserver observer = mTransferUtility.download(Constants.BUCKET_NAME, audioFile.getName(), audioFile);
-        observer.setTransferListener(new TransferListener() {
-            @Override
-            public void onStateChanged(int id, TransferState newState) {
-                //Enum status = newState.valueOf("Completed");
-                switch (newState) {
-                    case COMPLETED:
-                        Toast.makeText(mActivity, "Download from S3 completed!", Toast.LENGTH_SHORT).show();
-  //                      mAudioRecorder.
-                }
-                Log.v("transfer listener", "here");
-            }
-
-            @Override
-            public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
-                String str = Long.toString(bytesCurrent);
-                Log.v("transfer listener", str);
-            }
-
-            @Override
-            public void onError(int id, Exception e) {
-                e.printStackTrace();
-            }
-        });
     }
 
     private void beginUpload(final File audioFile) {
@@ -358,24 +365,24 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
     }
 
     private void checkLocationPermission() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                    LOCATION_PERMISSION_REQUEST_CODE);
-        }
-
+        checkPermission(Manifest.permission.ACCESS_FINE_LOCATION, LOCATION_PERMISSION_REQUEST_CODE);
     }
 
-    private void checkAudioAndStoragePermission() {
-        if ((ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO)
-                != PackageManager.PERMISSION_GRANTED) &&
-                (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                        != PackageManager.PERMISSION_GRANTED)) {
-            ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.RECORD_AUDIO, Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                    AUDIO_AND_STORAGE_PERMISSION_REQUEST_CODE);
+    private void checkAudioPermission(){
+        checkPermission(Manifest.permission.RECORD_AUDIO, AUDIO_AND_STORAGE_PERMISSION_REQUEST_CODE);
+    }
+
+    private void checkStoragePermission(){
+        checkPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE, AUDIO_AND_STORAGE_PERMISSION_REQUEST_CODE);
+    }
+
+    private void checkPermission(String permissionType, int requestCode){
+        if (ContextCompat.checkSelfPermission(this, permissionType) != PackageManager.PERMISSION_GRANTED){
+            requestPermission(permissionType, requestCode);
         }
+    }
+    private void requestPermission(String permissionType, int requestCode){
+        ActivityCompat.requestPermissions(this, new String[]{permissionType}, requestCode);
     }
 
     @Override
@@ -408,19 +415,12 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         }
     }
 
-    private void displayIncomingMessages() {
-        //a snackbar goes here, with a link to all messages generated since last update.
-        Snackbar.make(findViewById(android.R.id.content), "New Message!", Snackbar.LENGTH_LONG)
-                .setAction("OK", mOnClickListener)
-                .setActionTextColor(Color.RED)
-                .show();
-    }
-
     /**
      * This sets up the connection between the user and our server.
      */
     private void setupFirebase() {
-        mFirebaseRemoteConfig = FirebaseRemoteConfig.getInstance();
+        FirebaseRemoteConfig firebaseRemoteConfig;
+        firebaseRemoteConfig = FirebaseRemoteConfig.getInstance();
         //local var
         FirebaseRemoteConfigSettings firebaseRemoteConfigSettings =
                 new FirebaseRemoteConfigSettings.Builder()
@@ -431,14 +431,26 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         Map<String, Object> defaultConfigMap = new HashMap<>();
         defaultConfigMap.put("friendly_msg_length", 10L);
         // Apply config settings and default values.
-        mFirebaseRemoteConfig.setConfigSettings(firebaseRemoteConfigSettings);
-        mFirebaseRemoteConfig.setDefaults(defaultConfigMap);
+        firebaseRemoteConfig.setConfigSettings(firebaseRemoteConfigSettings);
+        firebaseRemoteConfig.setDefaults(defaultConfigMap);
     }
 
     void uploadSoulToServer(String fileName) {
         Toast.makeText(MapActivity.this, "In uploadToServer. S3Key is: " + fileName, Toast.LENGTH_SHORT).show();
         SoulpostAPI myAPI = retrofit.create(SoulpostAPI.class);
-        Soul mSoul = new Soul("Android", fileName, (int) System.currentTimeMillis() / 1000, mLastLocation.getLongitude(), mLastLocation.getLatitude(), 1.0, FirebaseInstanceId.getInstance().getToken());
+
+        try
+        {
+            Log.d("USTS", System.currentTimeMillis() + "");
+            Toast.makeText(getApplicationContext(), System.currentTimeMillis() + "", Toast.LENGTH_LONG);
+        }
+        catch(Exception e)
+        {
+            Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG);
+        }
+
+
+        Soul mSoul = new Soul("Android", fileName, System.currentTimeMillis(), userDevice);
         Call<Soul> call = myAPI.soulPost(mSoul);
 
         call.enqueue(new Callback<Soul>() {
@@ -473,10 +485,9 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
     @Override
     public void onStart() {
         super.onStart();
-
         // ATTENTION: This was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
-        client.connect();
-        AppIndex.AppIndexApi.start(client, getIndexApiAction());
+        mClient.connect();
+        AppIndex.AppIndexApi.start(mClient, getIndexApiAction());
     }
 }
