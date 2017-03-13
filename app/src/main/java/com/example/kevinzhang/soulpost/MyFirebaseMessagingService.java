@@ -70,10 +70,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         mAudioFile = new File(Environment.getExternalStorageDirectory().getAbsolutePath(),
                 String.valueOf(S3key));
         try {
-            Log.d(TAG, "Path: " + mAudioFile.getAbsolutePath());
-
-            Log.d(TAG, "Begin playing soul1");
-
             FileInputStream fd = openFile(mAudioFile);
             mMediaPlayer.setDataSource(fd.getFD());
             Log.d(TAG, "Path: " + mAudioFile.getAbsolutePath());
@@ -101,7 +97,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         return fos;
     }
 
-    private void beginDownload(final String S3key){
+    public void beginDownload(final String S3key){
         Log.d(TAG, "Download has begun");
 
         TransferUtility mTransferUtility;
