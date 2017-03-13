@@ -38,15 +38,15 @@ public class APIUserConnect {
         SoulpostAPI soulpostAPI = retrofit.create(SoulpostAPI.class);
         final Device newdevice;
         newdevice = new Device((float)latLng.latitude,(float)latLng.longitude,(float)0.03, FirebaseInstanceId.getInstance().getToken());
-        Log.d("Token", FirebaseInstanceId.getInstance().getToken());
+        Log.d("Token", FirebaseInstanceId.getInstance().getToken() + "");
         Call<Device> call = soulpostAPI.devicePost(newdevice);
         call.enqueue(new Callback<Device>() {
             @Override
             public void onResponse(Call<Device> call, Response<Device> response) {
                 if (response.isSuccessful()){
                     //Log.d("Server response success", new Gson().toJson(response));
-                    Log.d("ID is :",response.body().id + "");
-                    newdevice.id = response.body().id;
+                    Log.d("ID is :",response.body().getId() + "");
+                    newdevice.setId(response.body().getId());
                 }else {
                     //some kind of server error
                     Log.d("Server response error",new Gson().toJson(response));
@@ -82,14 +82,14 @@ public class APIUserConnect {
                 .build();
         Log.d("Update", "Update Function");
         SoulpostAPI soulpostAPI = retrofit.create(SoulpostAPI.class);
-        Call<Device> call = soulpostAPI.deviceUpdate(userDevice, userDevice.id);
+        Call<Device> call = soulpostAPI.deviceUpdate(userDevice, userDevice.getId());
         call.enqueue(new Callback<Device>() {
             @Override
             public void onResponse(Call<Device> call, Response<Device> response) {
                 if (response.isSuccessful()){
                     //Log.d("Server response success", new Gson().toJson(response));
                     Log.d("UPDSUCC", response.message() + "|||" + response.body() + "|||" + response.code());
-                    Log.d("ID is :",response.body().id + "");
+                    Log.d("ID is :",response.body().getId() + "");
                 }else {
                     //some kind of server error
                     //Log.d("Server response error",new Gson().toJson(response));

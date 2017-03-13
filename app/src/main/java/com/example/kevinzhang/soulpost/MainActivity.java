@@ -1,8 +1,6 @@
 package com.example.kevinzhang.soulpost;
 
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -23,13 +21,14 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class MainActivity extends AppCompatActivity {
 
+    //fake data registration - suppose user's location services are turned off.
     Device newdevice;
-    private static final String TAG = "Debug information:";
-    MyFirebaseMessagingService mFirebaseMessagingService;
-    private SharedPreferences prefs;
-    private SharedPreferences.Editor editor;
-    private static final String SOULPREFS = "SoulcastPreferences";
-    Soul newSoul = new Soul("SuccessAndroidSoul","S3keyMissing", 1000000000, -666,66.6,0.6,FirebaseInstanceId.getInstance().getToken());
+
+
+
+    Soul newSoul;
+//    Device newdevice = new Device(1,8, (float) 0.8,"android headers added");
+//    Soul newSoul = new Soul("Success:androidSoul","S3keyMissing", 1000000000, -666,66.6,0.6,"android token not available");
 
     Retrofit retrofit = new Retrofit.Builder()
             .baseUrl("http://soulcast.ml")
@@ -39,28 +38,21 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        startMapActivity();
-        handleRemoteNotifications();
-    }
+        setContentView(R.layout.activity_main);
 
-    private void startMapActivity() {
+        //This is where we want to open the map fragment in SoulCast-Proto.
         Intent mapIntent = new Intent(this, MapActivity.class);
         startActivity(mapIntent);
-    }
 
-    private void handleRemoteNotifications() {
-        Bundle bundle = getIntent().getExtras();
-        if (bundle != null) {
-            Log.d(TAG, "push notification recognized, action here");
-            //get payload
-            //give payload to Firebase Messaging
+        //soulPost();
 
-        }
+        //this should be moved to mapactivity
+//        getNearby();
     }
 
     private void getNearby() {
         SoulpostAPI soulpostAPI = retrofit.create(SoulpostAPI.class);
-        Call<Nearby> call = soulpostAPI.getNearby(newdevice.id);
+        Call<Nearby> call = soulpostAPI.getNearby(newdevice.getId());
         call.enqueue(new Callback<Nearby>() {
             @Override
             public void onResponse(Call<Nearby> call, Response<Nearby> response) {
@@ -80,11 +72,10 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void mockChange()
-    {
-        newdevice.id = 15;
-        newdevice.longitude = (float) -787.7;
-        newdevice.latitude = (float) 78.7;
+    private void mockChange() {
+        newdevice.setId(15);
+        newdevice.setLongitude(-787.7f);
+        newdevice.setLatitude(78.7f);
     }
 
     private void soulPost() {
