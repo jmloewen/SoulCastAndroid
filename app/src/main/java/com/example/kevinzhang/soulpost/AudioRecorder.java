@@ -4,6 +4,7 @@ import android.content.SharedPreferences;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.os.Environment;
+import android.os.FileObserver;
 import android.util.Log;
 
 import java.io.File;
@@ -17,12 +18,15 @@ public class AudioRecorder {
     public boolean mHasAudioRecordingBeenStarted = false;
     private long recordingStartedTimeInMillis;
     private long recordingFinishedTimeInMillis;
-
+    private String filePath;
     private AudioRecorderListener mAudioRecorderListener;
 
-    public AudioRecorder(){
+
+    public AudioRecorder(String fileP, File audioFile){
         mMediaRecorder =  new MediaRecorder();
         mMediaPlayer = new MediaPlayer();
+        filePath = fileP;
+        mAudioFile = audioFile;
         mAudioRecorderListener = null;
     }
 
@@ -32,9 +36,6 @@ public class AudioRecorder {
 
     public void startRecording(){
         try{
-            recordingStartedTimeInMillis = System.currentTimeMillis();
-            mAudioFile = new File(Environment.getExternalStorageDirectory().getAbsolutePath(),
-                    String.valueOf(recordingStartedTimeInMillis));
             setRecorder();
             mMediaRecorder.prepare();
             mMediaRecorder.start();
@@ -68,12 +69,12 @@ public class AudioRecorder {
         if (recordingTimeDifference > 500){
             //start playing
             Log.d("ARSTPREC", "STOP RECORD 5");
-            startPlaying();
+
             Log.d("ARSTPREC", "STOP RECORD 6");
         }
     }
 
-    public void startPlaying(){
+    /*public void startPlaying(){
         try {
             mAudioRecorderListener.onRecordingFinished(mAudioFile);
             mMediaPlayer.setDataSource(mAudioFile.getAbsolutePath());
@@ -91,7 +92,7 @@ public class AudioRecorder {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
+    }*/
 
     private void setRecorder(){
         mMediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);

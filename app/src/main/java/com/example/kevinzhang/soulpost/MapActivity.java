@@ -86,8 +86,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
     private FirebaseRemoteConfig mFirebaseRemoteConfig;
 
     private Button mRecordButton;
-    private MediaRecorder mMediaRecorder;
-    private AudioRecorder mAudioRecorder;
+    private AudioPipeline mPipeLine = new AudioPipeline();
     private static final String SOULPREFS = "SoulcastPreferences";
 
     private Device userDevice = null;
@@ -126,15 +125,16 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         //S3
         mTransferUtility = Util.getTransferUtility(this);
 
-        setAudioRecorder();
+        //setAudioRecorder();
 
         permissionCheck();
+        checkAudioAndStoragePermission();
 
         buttonSetup();
 
     }
 
-    private void setAudioRecorder() {
+   /* private void setAudioRecorder() {
         mAudioRecorder = new AudioRecorder();
         mAudioRecorder.setmAudioRecorderListener(new AudioRecorder.AudioRecorderListener() {
             @Override
@@ -143,7 +143,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
                 beginUpload(audioFile);
             }
         });
-    }
+    }*/
 
     private void permissionCheck() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -172,16 +172,16 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
 //                                    mAudioRecorder.startRecording();
 //                                    Log.d("TSTRCRD", "POSTSTRTREC");
 //                                }
-                                mAudioRecorder.startRecording();
+                                mPipeLine.startRecording();
                             }
                         } else {
-                            mAudioRecorder.startRecording();
+                            mPipeLine.startRecording();
                         }
                         break;
                     case MotionEvent.ACTION_UP:
-                        if (mAudioRecorder.mHasAudioRecordingBeenStarted) {
-                            mAudioRecorder.stopRecording();
-                        }
+
+                            mPipeLine.stopRecording();
+
                         break;
                 }
                 return false;

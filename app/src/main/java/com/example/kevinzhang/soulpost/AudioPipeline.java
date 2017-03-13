@@ -3,6 +3,7 @@ package com.example.kevinzhang.soulpost;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.os.Environment;
+import android.os.FileObserver;
 import android.util.Log;
 
 import java.io.File;
@@ -13,98 +14,35 @@ import java.io.IOException;
  */
 
 public class AudioPipeline {
-    private static MediaRecorder mMediaRecorder;
-    private static MediaPlayer mMediaPlayer;
-    private static File mAudioFile;
+
+
     public boolean mHasAudioRecordingBeenStarted = false;
-    private long recordingStartedTimeInMillis;
+    private long recordingStartedTimeInMillis = System.currentTimeMillis();
     private long recordingFinishedTimeInMillis;
-
-    private AudioRecorder.AudioRecorderListener mAudioRecorderListener;
-
-    public AudioPipeline() {
-        mMediaRecorder =  new MediaRecorder();
-        mMediaPlayer = new MediaPlayer();
-        mAudioRecorderListener = null;
-    }
-
-    public void setmAudioRecorderListener(AudioRecorder.AudioRecorderListener audioRecorderListener){
-        mAudioRecorderListener = audioRecorderListener;
-    }
+    private String filePath = Environment.getExternalStorageDirectory().getAbsolutePath()+String.valueOf(recordingStartedTimeInMillis);
+    File mAudioFile = new File(filePath);
+    MyFileObserver fb = new MyFileObserver(filePath, FileObserver.CLOSE_WRITE);
+    private AudioRecorder mMediaRecorder = new AudioRecorder(filePath, mAudioFile);
+    AudioPlayer mAudioPlayer = new AudioPlayer();
 
     public void startRecording(){
-        try{
-            recordingStartedTimeInMillis = System.currentTimeMillis();
-            mAudioFile = new File(Environment.getExternalStorageDirectory().getAbsolutePath(),
-                    String.valueOf(recordingStartedTimeInMillis));
-            setRecorder();
-            mMediaRecorder.prepare();
-            mMediaRecorder.start();
-            mHasAudioRecordingBeenStarted = true;
-        } catch (IOException e){
-            e.printStackTrace();
-        }
+        mMediaRecorder.startRecording();
     }
 
     public void stopRecording(){
-        try {
-            mMediaRecorder.stop();
-            Log.d("ARSTPREC", "STOP RECORD 1");
-            if (mAudioRecorderListener != null){
-            }
-            recordingFinishedTimeInMillis = System.currentTimeMillis();
-            Log.d("ARSTPREC", "STOP RECORD 2");
+        mMediaRecorder.stopRecording();
+    }
 
-        } catch (RuntimeException ex){
-            Log.d("ARSTPREC", "STOP RECORD CATCH");
+    class MyFileObserver extends FileObserver {
 
+        public MyFileObserver (String path, int mask) {
+            super(path, mask);
         }
-        mMediaRecorder.reset();
-        Log.d("ARSTPREC", "STOP RECORD 3");
 
-        mHasAudioRecordingBeenStarted = false;
+        public void onEvent(int event, String path) {
 
-        long recordingTimeDifference = recordingFinishedTimeInMillis - recordingStartedTimeInMillis;
-        Log.d("ARSTPREC", "STOP RECORD 4");
-
-        if (recordingTimeDifference > 500){
-            //start playing
-            Log.d("ARSTPREC", "STOP RECORD 5");
-            startPlaying();
-            Log.d("ARSTPREC", "STOP RECORD 6");
+            mAudioPlayer.startPlaying(mAudioFile);
         }
     }
 
-    public void startPlaying(){
-        try {
-            mAudioRecorderListener.onRecordingFinished(mAudioFile);
-            mMediaPlayer.setDataSource(mAudioFile.getAbsolutePath());
-
-            mMediaPlayer.prepare();
-            mMediaPlayer.start();
-
-            mMediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mediaPlayer) {
-                    mMediaPlayer.reset();
-                }
-            });
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void setRecorder(){
-        mMediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-        mMediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
-        mMediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
-        mMediaRecorder.setAudioSamplingRate(44100);
-        mMediaRecorder.setAudioEncodingBitRate(96000);
-        mMediaRecorder.setOutputFile(mAudioFile.getAbsolutePath());
-    }
-
-    public interface AudioRecorderListener{
-        void onRecordingFinished(File audioFile);
-    }
 }
