@@ -24,13 +24,11 @@ public class SoulService {
                 .baseUrl("http://soulcast.ml")
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
-        new Soul("SuccessAndroidSoul","S3keyMissing", 1000000000, -666,66.6,0.6, FirebaseInstanceId.getInstance().getToken());
-
     }
 
     public void getNearby() {
         SoulpostAPI soulpostAPI = retrofit.create(SoulpostAPI.class);
-        Call<Nearby> call = soulpostAPI.getNearby(newdevice.id);
+        Call<Nearby> call = soulpostAPI.getNearby(newdevice.getId());
         call.enqueue(new Callback<Nearby>() {
             @Override
             public void onResponse(Call<Nearby> call, Response<Nearby> response) {
@@ -48,12 +46,6 @@ public class SoulService {
                 Log.d("Nearby call failed:", t.toString());
             }
         });
-    }
-
-    public void mockChange() {
-        newdevice.id = 15;
-        newdevice.longitude = (float) -787.7;
-        newdevice.latitude = (float) 78.7;
     }
 
     public void soulPost() {
