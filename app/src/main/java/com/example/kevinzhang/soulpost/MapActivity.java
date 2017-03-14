@@ -72,7 +72,6 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
 
     //permission request codes
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
-    private final int AUDIO_AND_STORAGE_PERMISSION_REQUEST_CODE = 2;
     private final float DEFAULT_USER_RADIUS = 1.0f;
 
     //sharedpreferences
@@ -90,7 +89,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
     //Variables for Audio Up / Audio Down.
 
     private Button mRecordButton;
-    private AudioRecorder mAudioRecorder;
+    private AudioPipeline mPipeLine = new AudioPipeline();
 
     //The user's device
     private Device userDevice = null;
@@ -128,19 +127,20 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         mapFragment.getMapAsync(this);
 
         mTransferUtility = Util.getTransferUtility(this);
-        mAudioRecorder = new AudioRecorder();
+        /*mAudioRecorder = new AudioRecorder();
         mAudioRecorder.setmAudioRecorderListener(new AudioRecorder.AudioRecorderListener() {
             @Override
             public void onRecordingFinished(File audioFile) {
                 //TODO Upload to S3
                 beginUpload(audioFile);
             }
-        });
+        });*/
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             {
                 checkLocationPermission();
-            }
+           }
+
         }
 
         mRecordButton = (Button) findViewById(R.id.record_button);
@@ -153,26 +153,26 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
                         // User pressed down on the button - if we're at an API that needs to check for perms, do so.
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                             {
-                                //checkAudioAndStoragePermission();
-                                checkAudioPermission();
-                                checkStoragePermission();
                                 if ((ContextCompat.checkSelfPermission(MapActivity.this, Manifest.permission.RECORD_AUDIO)
                                         == PackageManager.PERMISSION_GRANTED) && (ContextCompat.checkSelfPermission(MapActivity.this,
                                         Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)) {
                                     Log.d("TSTRCRD", "PRESTRTREC");
-                                    mAudioRecorder.startRecording();
+                                   //instantiate mPipeLine since all permissions granted
+                                     mPipeLine.startRecording();
                                     Log.d("TSTRCRD", "POSTSTRTREC");
                                 }
                             }
                         } else {
                             Log.d("TSTRCRD", "Test Start Record");
-                            mAudioRecorder.startRecording();
+                          //  mPipeLine.startRecording();
                         }
                         break;
                     case MotionEvent.ACTION_UP:
                         // User released the button
-                        if (mAudioRecorder.mHasAudioRecordingBeenStarted) {
-                            mAudioRecorder.stopRecording();
+                        if ((ContextCompat.checkSelfPermission(MapActivity.this, Manifest.permission.RECORD_AUDIO)
+                                == PackageManager.PERMISSION_GRANTED) && (ContextCompat.checkSelfPermission(MapActivity.this,
+                                Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)) {
+                              mPipeLine.stopRecording();
                             Log.d("TSTRCRD", "Test Stop Record");
                         }
                         break;
@@ -368,14 +368,6 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         checkPermission(Manifest.permission.ACCESS_FINE_LOCATION, LOCATION_PERMISSION_REQUEST_CODE);
     }
 
-    private void checkAudioPermission(){
-        checkPermission(Manifest.permission.RECORD_AUDIO, AUDIO_AND_STORAGE_PERMISSION_REQUEST_CODE);
-    }
-
-    private void checkStoragePermission(){
-        checkPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE, AUDIO_AND_STORAGE_PERMISSION_REQUEST_CODE);
-    }
-
     private void checkPermission(String permissionType, int requestCode){
         if (ContextCompat.checkSelfPermission(this, permissionType) != PackageManager.PERMISSION_GRANTED){
             requestPermission(permissionType, requestCode);
@@ -389,7 +381,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
     public void onRequestPermissionsResult(int requestCode,
                                            String permissions[], int[] grantResults) {
         switch (requestCode) {
-            case LOCATION_PERMISSION_REQUEST_CODE: {
+            case LOCATION_PERMISSION_REQUEST_CODE:
                 // If request is cancelled, the result arrays are empty.
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
@@ -410,8 +402,6 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
                     // Permission denied, Disable the functionality that depends on this permission.
                     Toast.makeText(this, "Location permission denied", Toast.LENGTH_LONG).show();
                 }
-            }
-            // other cases to check for other permissions this app might request.
         }
     }
 
@@ -489,5 +479,6 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         // See https://g.co/AppIndexing/AndroidStudio for more information.
         mClient.connect();
         AppIndex.AppIndexApi.start(mClient, getIndexApiAction());
+
     }
 }

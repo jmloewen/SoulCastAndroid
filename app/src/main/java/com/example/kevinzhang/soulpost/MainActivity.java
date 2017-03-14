@@ -1,9 +1,15 @@
 package com.example.kevinzhang.soulpost;
 
+import android.*;
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
@@ -35,14 +41,23 @@ public class MainActivity extends AppCompatActivity {
             .addConverterFactory(GsonConverterFactory.create())
             .build();
 
+    private final int AUDIO_AND_STORAGE_PERMISSION_REQUEST_CODE = 1;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        // must get audio and storage permission before mapActivity since record button is initialized in mapActivity's onCreate()
+        ActivityCompat.requestPermissions(this, new String[]{
+                android.Manifest.permission.RECORD_AUDIO,
+                android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                android.Manifest.permission.READ_EXTERNAL_STORAGE},
+                AUDIO_AND_STORAGE_PERMISSION_REQUEST_CODE);
+
 
         //This is where we want to open the map fragment in SoulCast-Proto.
-        Intent mapIntent = new Intent(this, MapActivity.class);
-        startActivity(mapIntent);
+       // Intent mapIntent = new Intent(this, MapActivity.class);
+        //startActivity(mapIntent);
 
         //soulPost();
 
@@ -93,5 +108,47 @@ public class MainActivity extends AppCompatActivity {
                 Log.d("onFail", "Fail SoulPost");
             }
         });
+    }
+
+    private void checkAudio_Storage_Permissions(){
+        checkPermission(android.Manifest.permission.RECORD_AUDIO, AUDIO_AND_STORAGE_PERMISSION_REQUEST_CODE);
+    }
+
+    private void checkStoragePermission(){
+        checkPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE, AUDIO_AND_STORAGE_PERMISSION_REQUEST_CODE);
+    }
+
+    private void checkPermission(String permissionType, int requestCode){
+        if (ContextCompat.checkSelfPermission(this, permissionType) != PackageManager.PERMISSION_GRANTED){
+            requestPermission(permissionType, requestCode);
+        }
+    }
+    private void requestPermission(String permissionType, int requestCode){
+        ActivityCompat.requestPermissions(this, new String[]{permissionType}, requestCode);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+        if(requestCode == 1){
+            if (grantResults.length > 0
+                    && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                // permission was granted
+                Log.v("Audio_storage_perm","granted");
+                Intent mapIntent = new Intent(this, MapActivity.class);
+                startActivity(mapIntent);
+
+
+            } else {
+
+                // Permission denied, Disable the functionality that depends on this permission.
+                Toast.makeText(this, "Audio and Storage permissions denied", Toast.LENGTH_LONG).show();
+               //finish(); //exit the app
+
+            }
+
+            // other cases to check for other permissions this app might request.
+        }
     }
 }

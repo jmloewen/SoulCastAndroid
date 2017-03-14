@@ -19,30 +19,27 @@ public class AudioPipeline {
     public boolean mHasAudioRecordingBeenStarted = false;
     private long recordingStartedTimeInMillis = System.currentTimeMillis();
     private long recordingFinishedTimeInMillis;
-    private String filePath = Environment.getExternalStorageDirectory().getAbsolutePath()+String.valueOf(recordingStartedTimeInMillis);
-    File mAudioFile = new File(filePath);
-    MyFileObserver fb = new MyFileObserver(filePath, FileObserver.CLOSE_WRITE);
-    private AudioRecorder mMediaRecorder = new AudioRecorder(filePath, mAudioFile);
-    AudioPlayer mAudioPlayer = new AudioPlayer();
+    private String filePath;
+    File mAudioFile;
+    private AudioRecorder mMediaRecorder;
+    AudioPlayer mAudioPlayer;
+
+    public AudioPipeline(){
+         filePath = Environment.getExternalStorageDirectory().getAbsolutePath()+"/"+String.valueOf(recordingStartedTimeInMillis);
+       //  mAudioFile = new File(filePath);
+         mMediaRecorder = new AudioRecorder();
+         mAudioPlayer = new AudioPlayer();
+    }
 
     public void startRecording(){
-        mMediaRecorder.startRecording();
+        filePath = Environment.getExternalStorageDirectory().getAbsolutePath()+"/"+String.valueOf(recordingStartedTimeInMillis);
+        mMediaRecorder.startRecording(filePath);
     }
 
     public void stopRecording(){
+
         mMediaRecorder.stopRecording();
-    }
-
-    class MyFileObserver extends FileObserver {
-
-        public MyFileObserver (String path, int mask) {
-            super(path, mask);
-        }
-
-        public void onEvent(int event, String path) {
-
-            mAudioPlayer.startPlaying(mAudioFile);
-        }
+        mAudioPlayer.startPlaying(filePath);
     }
 
 }

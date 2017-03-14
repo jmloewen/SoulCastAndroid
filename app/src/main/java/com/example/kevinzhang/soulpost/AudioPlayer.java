@@ -12,22 +12,21 @@ import java.io.IOException;
 public class AudioPlayer{
 
     private static MediaPlayer mMediaPlayer;
-    private static File mAudioFile;
 
     public AudioPlayer(){
         mMediaPlayer = new MediaPlayer();
     }
 
-    public void startPlaying(File audioFile){
+    public void startPlaying(String filePath){
 
 
         try {
-            mAudioFile = audioFile;
-            mMediaPlayer.setDataSource(mAudioFile.getAbsolutePath());
 
+            mMediaPlayer.setDataSource(filePath);
+            Log.d("AudioPlayer","start AudioPlayer");
             mMediaPlayer.prepare();
             mMediaPlayer.start();
-
+            Log.d("AudioPlayer","stop AudioPlayer");
             mMediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 @Override
                 public void onCompletion(MediaPlayer mediaPlayer) {
