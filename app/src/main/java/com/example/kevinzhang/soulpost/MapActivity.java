@@ -87,7 +87,8 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
 
     //Variables for Audio Up / Audio Down.
     private Button mRecordButton;
-    private AudioRecorder mAudioRecorder;
+//    private AudioRecorder mAudioRecorder;
+    private AudioPipeline mAudioPipeline;
 
     //The user's device
     private Device userDevice = null;
@@ -126,27 +127,22 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         //S3
         mTransferUtility = Util.getTransferUtility(this);
 
-        setAudioRecorder();
+        setupAudioPipeline();
+
+//        setAudioRecorder();
 
         permissionCheck();
         
-        mockbuttonSetup();
+//        mockbuttonSetup();
 
         buttonSetup();
     }
 
-    private void mockbuttonSetup() {
-        Button mockButton = new Button(this);
-        //layout this button
-        
-    }
-
-    private void setAudioRecorder() {
-        mAudioRecorder = new AudioRecorder();
-        mAudioRecorder.setmAudioRecorderListener(new AudioRecorder.AudioRecorderListener() {
+    private void setupAudioPipeline() {
+        mAudioPipeline = new AudioPipeline();
+        mAudioPipeline.setmAudioPipelineListener(new AudioPipeline.AudioPipelineListener() {
             @Override
             public void onRecordingFinished(File audioFile) {
-                //TODO Upload to S3
                 beginUpload(audioFile);
             }
         });
@@ -173,14 +169,14 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
                         // User pressed down on the button
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                                 checkAudioAndStoragePermission();
-                                mAudioRecorder.startRecording();
+                            mAudioPipeline.startRecording();
                         } else {
-                            mAudioRecorder.startRecording();
+                            mAudioPipeline.startRecording();
                         }
                         break;
                     case MotionEvent.ACTION_UP:
-                        if (mAudioRecorder.mHasAudioRecordingBeenStarted) {
-                            mAudioRecorder.stopRecording();
+                        if (mAudioPipeline.mHasAudioRecordingBeenStarted) {
+                            mAudioPipeline.stopRecording();
                         }
                         break;
                 }
