@@ -20,16 +20,16 @@ public class AudioPipeline {
     private long recordingStartedTimeInMillis;
     private long recordingFinishedTimeInMillis;
 
-    private AudioRecorder.AudioRecorderListener mAudioRecorderListener;
+    private AudioPipeline.AudioPipelineListener mAudioPipelineListener;
 
     public AudioPipeline() {
         mMediaRecorder =  new MediaRecorder();
         mMediaPlayer = new MediaPlayer();
-        mAudioRecorderListener = null;
+        mAudioPipelineListener = null;
     }
 
-    public void setmAudioRecorderListener(AudioRecorder.AudioRecorderListener audioRecorderListener){
-        mAudioRecorderListener = audioRecorderListener;
+    public void setmAudioPipelineListener(AudioPipeline.AudioPipelineListener audioPipelineListener){
+        mAudioPipelineListener = audioPipelineListener;
     }
 
     public void startRecording(){
@@ -50,7 +50,7 @@ public class AudioPipeline {
         try {
             mMediaRecorder.stop();
             Log.d("ARSTPREC", "STOP RECORD 1");
-            if (mAudioRecorderListener != null){
+            if (mAudioPipelineListener != null){
             }
             recordingFinishedTimeInMillis = System.currentTimeMillis();
             Log.d("ARSTPREC", "STOP RECORD 2");
@@ -77,7 +77,7 @@ public class AudioPipeline {
 
     public void startPlaying(){
         try {
-            mAudioRecorderListener.onRecordingFinished(mAudioFile);
+            mAudioPipelineListener.onRecordingFinished(mAudioFile);
             mMediaPlayer.setDataSource(mAudioFile.getAbsolutePath());
 
             mMediaPlayer.prepare();
@@ -104,7 +104,7 @@ public class AudioPipeline {
         mMediaRecorder.setOutputFile(mAudioFile.getAbsolutePath());
     }
 
-    public interface AudioRecorderListener{
+    public interface AudioPipelineListener{
         void onRecordingFinished(File audioFile);
     }
 }
