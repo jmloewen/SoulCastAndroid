@@ -87,7 +87,6 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
 
     //Variables for Audio Up / Audio Down.
     private Button mRecordButton;
-//    private AudioRecorder mAudioRecorder;
     private AudioPipeline mAudioPipeline;
 
     //The user's device
@@ -111,31 +110,27 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
 
         gCm = (ConnectivityManager)getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
         mIsConnected = gCm.getActiveNetworkInfo() != null && gCm.getActiveNetworkInfo().isConnected();
+        mTransferUtility = Util.getTransferUtility(this);
 
+        setPerfences();
+        setupFirebase();
+        setupMapFragment();
+        setupAudioPipeline();
+        permissionCheck();
+        buttonSetup();
+    }
+
+    private void setPerfences() {
         //presistent store
         prefs = getSharedPreferences(SOULPREFS, Context.MODE_PRIVATE);
         editor = prefs.edit();
+    }
 
-        //firebase
-        setupFirebase();
-
+    private void setupMapFragment() {
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-
-        //S3
-        mTransferUtility = Util.getTransferUtility(this);
-
-        setupAudioPipeline();
-
-//        setAudioRecorder();
-
-        permissionCheck();
-        
-//        mockbuttonSetup();
-
-        buttonSetup();
     }
 
     private void setupAudioPipeline() {
@@ -150,9 +145,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
 
     private void permissionCheck() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            {
                 checkLocationPermission();
-            }
         }
     }
 
@@ -198,7 +191,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
     protected void onStop() {
         super.onStop();// ATTENTION: This was auto-generated to implement the App Indexing API.
 // See https://g.co/AppIndexing/AndroidStudio for more information.
-        AppIndex.AppIndexApi.end(mGoogleApiClient, getIndexApiAction());
+//        AppIndex.AppIndexApi.end(mGoogleApiClient, getIndexApiAction());
         if (mGoogleApiClient != null) {
             mGoogleApiClient.disconnect();
         }
