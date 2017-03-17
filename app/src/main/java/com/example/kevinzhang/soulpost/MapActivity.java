@@ -110,12 +110,11 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
 
         gCm = (ConnectivityManager)getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
         mIsConnected = gCm.getActiveNetworkInfo() != null && gCm.getActiveNetworkInfo().isConnected();
+        mTransferUtility = Util.getTransferUtility(this);
 
         setPerfences();
         setupFirebase();
         setupMapFragment();
-
-        mTransferUtility = Util.getTransferUtility(this);
         setupAudioPipeline();
         permissionCheck();
         buttonSetup();
@@ -146,9 +145,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
 
     private void permissionCheck() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            {
                 checkLocationPermission();
-            }
         }
     }
 
@@ -194,7 +191,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
     protected void onStop() {
         super.onStop();// ATTENTION: This was auto-generated to implement the App Indexing API.
 // See https://g.co/AppIndexing/AndroidStudio for more information.
-        AppIndex.AppIndexApi.end(mGoogleApiClient, getIndexApiAction());
+//        AppIndex.AppIndexApi.end(mGoogleApiClient, getIndexApiAction());
         if (mGoogleApiClient != null) {
             mGoogleApiClient.disconnect();
         }
