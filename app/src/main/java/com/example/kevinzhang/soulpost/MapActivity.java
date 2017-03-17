@@ -87,7 +87,6 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
 
     //Variables for Audio Up / Audio Down.
     private Button mRecordButton;
-//    private AudioRecorder mAudioRecorder;
     private AudioPipeline mAudioPipeline;
 
     //The user's device
@@ -112,30 +111,27 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         gCm = (ConnectivityManager)getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
         mIsConnected = gCm.getActiveNetworkInfo() != null && gCm.getActiveNetworkInfo().isConnected();
 
+        setPerfences();
+        setupFirebase();
+        setupMapFragment();
+
+        mTransferUtility = Util.getTransferUtility(this);
+        setupAudioPipeline();
+        permissionCheck();
+        buttonSetup();
+    }
+
+    private void setPerfences() {
         //presistent store
         prefs = getSharedPreferences(SOULPREFS, Context.MODE_PRIVATE);
         editor = prefs.edit();
+    }
 
-        //firebase
-        setupFirebase();
-
+    private void setupMapFragment() {
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-
-        //S3
-        mTransferUtility = Util.getTransferUtility(this);
-
-        setupAudioPipeline();
-
-//        setAudioRecorder();
-
-        permissionCheck();
-        
-//        mockbuttonSetup();
-
-        buttonSetup();
     }
 
     private void setupAudioPipeline() {

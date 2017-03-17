@@ -13,6 +13,8 @@ import java.io.IOException;
  */
 
 public class AudioPipeline {
+    private static final String TAG = "AudioPipeline";
+
     private static MediaRecorder mMediaRecorder;
     private static MediaPlayer mMediaPlayer;
     private static File mAudioFile;
@@ -34,9 +36,7 @@ public class AudioPipeline {
 
     public void startRecording(){
         try{
-            recordingStartedTimeInMillis = System.currentTimeMillis();
-            mAudioFile = new File(Environment.getExternalStorageDirectory().getAbsolutePath(),
-                    String.valueOf(recordingStartedTimeInMillis));
+            setNewFile();
             setRecorder();
             mMediaRecorder.prepare();
             mMediaRecorder.start();
@@ -46,32 +46,33 @@ public class AudioPipeline {
         }
     }
 
+    private void setNewFile() {
+        recordingStartedTimeInMillis = System.currentTimeMillis();
+        mAudioFile = new File(Environment.getExternalStorageDirectory().getAbsolutePath(),
+                String.valueOf(recordingStartedTimeInMillis));
+    }
+
     public void stopRecording(){
         try {
             mMediaRecorder.stop();
-            Log.d("ARSTPREC", "STOP RECORD 1");
             if (mAudioPipelineListener != null){
             }
             recordingFinishedTimeInMillis = System.currentTimeMillis();
-            Log.d("ARSTPREC", "STOP RECORD 2");
 
         } catch (RuntimeException ex){
-            Log.d("ARSTPREC", "STOP RECORD CATCH");
+            Log.d(TAG, "STOP RECORD CATCH");
 
         }
         mMediaRecorder.reset();
-        Log.d("ARSTPREC", "STOP RECORD 3");
 
         mHasAudioRecordingBeenStarted = false;
 
         long recordingTimeDifference = recordingFinishedTimeInMillis - recordingStartedTimeInMillis;
-        Log.d("ARSTPREC", "STOP RECORD 4");
 
         if (recordingTimeDifference > 500){
             //start playing
-            Log.d("ARSTPREC", "STOP RECORD 5");
             startPlaying();
-            Log.d("ARSTPREC", "STOP RECORD 6");
+            Log.d(TAG, "Audiopipeline startPlaying() called from stopRecording");
         }
     }
 

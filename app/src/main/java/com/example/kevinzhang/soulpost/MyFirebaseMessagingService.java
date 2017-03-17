@@ -31,60 +31,67 @@ import java.util.Date;
 
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
     private static final String TAG = "MyFMService";
+
     private SharedPreferences prefs;
     private SharedPreferences.Editor editor;
     private static final String SOULPREFS = "SoulcastPreferences";
-
-    //custom variables to make soulcast work
     private static MediaPlayer mMediaPlayer;
     private static File mAudioFile;
 
 
-
-    @Override
     /**
      * This is where we get a push notification from the server.
      */
+    @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
-        // Handle data payload of FCM messages.
-        Log.d(TAG, "FCM Message Id: " + remoteMessage.getMessageId());
-        Log.d(TAG, "FCM Notification Message: " +
-                remoteMessage.getNotification());
-        Log.d(TAG, "FCM Data Message: " + remoteMessage.getData());
+        printFCMMessage(remoteMessage);
+        savePrefs(remoteMessage);
+        beginDownload(prefs.getString("PushS3Key", "NO KEY STORED"));
+    }
+
+    private void printFCMMessage(RemoteMessage remoteMessage) {
+//         Handle data payload of FCM messages.
+         Log.d(TAG, "FCM Message Id: " + remoteMessage.getMessageId());
+         Log.d(TAG, "FCM Notification Message: " +
+               remoteMessage.getNotification());
+               Log.d(TAG, "FCM Data Message: " + remoteMessage.getData());
+    }
+
+    private void savePrefs(RemoteMessage remoteMessage) {
+
         prefs = getSharedPreferences(SOULPREFS, Context.MODE_PRIVATE);
         editor = prefs.edit();
-
-        //this is the S3 key of the message pushed from the server.
         editor.putString("PushS3Key", remoteMessage.getData().get("S3key"));
         editor.commit();
         Log.d(TAG, "S3Key: " + prefs.getString("PushS3Key", "NO KEY STORED"));
-        beginDownload(prefs.getString("PushS3Key", "NO KEY STORED"));
-       // playSoul(prefs.getString("PushS3Key", "NO KEY STORED"));
 
     }
 
     private void playSoul(final String S3key) {
         Log.d(TAG, "Begin playing soul");
-        mMediaPlayer = new MediaPlayer();
 
+        mMediaPlayer = new MediaPlayer();
         mAudioFile = new File(Environment.getExternalStorageDirectory().getAbsolutePath(),
                 String.valueOf(S3key));
+
         try {
             FileInputStream fd = openFile(mAudioFile);
             mMediaPlayer.setDataSource(fd.getFD());
-            Log.d(TAG, "Path: " + mAudioFile.getAbsolutePath());
+//            Log.d(TAG, "Path: " + mAudioFile.getAbsolutePath());
             mMediaPlayer.prepare();
-            Log.d(TAG, "Begin playing soul2");
             mMediaPlayer.start();
-            Log.d(TAG, "Begin playing soul3");
             mMediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 @Override
                 public void onCompletion(MediaPlayer mediaPlayer) {
                     mMediaPlayer.reset();
-                    Log.d(TAG, "Finished playing soul");
+                    Log.d(TAG, "Finished playing soul. reset mediaPlayer");
                 }
+
+
             });
+
         } catch (IOException e) {
+
             e.printStackTrace();
             Log.d(TAG, e.getMessage());
             Log.d(TAG, e.toString());
@@ -100,8 +107,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     public void beginDownload(final String S3key){
         Log.d(TAG, "Download has begun");
 
-        TransferUtility mTransferUtility;
-        mTransferUtility = Util.getTransferUtility(this);
+        TransferUtility mTransferUtility = Util.getTransferUtility(this);
         File audioFile = new File(Environment.getExternalStorageDirectory().getAbsolutePath(),
                 String.valueOf(S3key));
 
@@ -110,14 +116,11 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         observer.setTransferListener(new TransferListener() {
             @Override
             public void onStateChanged(int id, TransferState newState) {
-                //Enum status = newState.valueOf("Completed");
-                Log.v("transferListener","In OnstateChanged");
                 switch (newState) {
                     case COMPLETED:
                         Log.v("transferListener", " download completed");
                         playSoul(S3key);
                 }
-                Log.v("transfer listener", "here");
             }
 
             @Override
