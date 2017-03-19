@@ -99,7 +99,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
     private TransferUtility mTransferUtility;
     private Activity mActivity = this;
     private boolean mIsConnected = false;
-    private ConnectivityManager gCm;
+    private ConnectivityManager mCm;
 
     Retrofit retrofit = new Retrofit.Builder()
             .baseUrl("http://soulcast.ml")
@@ -112,11 +112,11 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         setContentView(R.layout.activity_map);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
-        gCm = (ConnectivityManager)getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
-        mIsConnected = gCm.getActiveNetworkInfo() != null && gCm.getActiveNetworkInfo().isConnected();
+        mCm = (ConnectivityManager)getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        mIsConnected = mCm.getActiveNetworkInfo() != null && mCm.getActiveNetworkInfo().isConnected();
         mTransferUtility = Util.getTransferUtility(this);
 
-        setPerfences();
+        setPreferences();
         setupFirebase();
         setupMapFragment();
         setupAudioPipeline();
@@ -124,7 +124,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         buttonSetup();
     }
 
-    private void setPerfences() {
+    private void setPreferences() {
         //presistent store
         prefs = getSharedPreferences(SOULPREFS, Context.MODE_PRIVATE);
         editor = prefs.edit();
@@ -257,7 +257,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
 
     private void provideCastButton(LatLng latLng) {
         //if we can connect to the internet, do so & register.
-        mIsConnected = gCm.getActiveNetworkInfo() != null && gCm.getActiveNetworkInfo().isConnected();
+        mIsConnected = mCm.getActiveNetworkInfo() != null && mCm.getActiveNetworkInfo().isConnected();
 
         if (mIsConnected && userDevice == null){
             userDevice = APIUserConnect.RegisterDevice(latLng, this);
@@ -450,17 +450,6 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
     void uploadSoulToServer(String fileName) {
         Toast.makeText(MapActivity.this, "In uploadToServer. S3Key is: " + fileName, Toast.LENGTH_SHORT).show();
         SoulpostAPI myAPI = retrofit.create(SoulpostAPI.class);
-
-        try
-        {
-            Log.d("USTS", System.currentTimeMillis() + "");
-            Toast.makeText(getApplicationContext(), System.currentTimeMillis() + "", Toast.LENGTH_LONG);
-        }
-        catch(Exception e)
-        {
-            Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG);
-        }
-
 
         Soul mSoul = new Soul("Android", fileName, System.currentTimeMillis(), userDevice);
         Call<Soul> call = myAPI.soulPost(mSoul);
