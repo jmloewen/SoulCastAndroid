@@ -24,11 +24,6 @@ public class APIUserConnect {
      * This is for first time user connection, creates a registration with a location-device id tuple.
      */
     public static Device RegisterDevice(LatLng latLng, final Context context){
-        //get location
-        //get device token
-        //create the tuple - device and location
-        //send to the server.
-        //server responds, parse response.
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl("http://soulcast.ml")
                 .addConverterFactory(GsonConverterFactory.create())

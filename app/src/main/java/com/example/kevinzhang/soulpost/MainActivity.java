@@ -12,7 +12,6 @@ public class MainActivity extends AppCompatActivity {
 
         Intent mapIntent = new Intent(this, MapActivity.class);
         startActivity(mapIntent);
-
     }
 
 }
