@@ -86,7 +86,8 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
     private Location mLastLocation;
 
     //Variables for Audio Up / Audio Down.
-    private Button mRecordButton;
+    private RecordButton tempRecordButton;
+    private RecordButton mRecordButton;
     private AudioPipeline mAudioPipeline;
 
     //The user's device
@@ -152,7 +153,8 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
     private void buttonSetup() {
         //button setup
         //xml layout
-        mRecordButton = (Button) findViewById(R.id.record_button);
+        mRecordButton = (RecordButton) findViewById(R.id.record_button);
+        //mRecordButton = (RecordButton) findViewById(R.id.record_button);
 
         mRecordButton.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -176,7 +178,6 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
                 return false;
             }
         });
-
     }
 
     @Override
