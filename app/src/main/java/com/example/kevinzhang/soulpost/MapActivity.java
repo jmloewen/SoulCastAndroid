@@ -45,6 +45,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
@@ -85,6 +86,8 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
     private LocationRequest mLocationRequest;
     private LocationManager mLocationManager;
     private Location mLastLocation;
+    Marker currentLocationMarker;
+
 
     //Variables for Audio Up / Audio Down.
     private Button mRecordButton;
@@ -213,8 +216,9 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+        mMap.getUiSettings().setScrollGesturesEnabled(false);
+        mMap.animateCamera(CameraUpdateFactory.zoomTo(17));
         buildGoogleAPIClient();
-
     }
 
     protected synchronized void buildGoogleAPIClient() {
@@ -301,13 +305,19 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
     }
 
     private void moveMaptoCurrentLocation(Location mLastLocation) {
+
         //move the map appropriately.
         LatLng currentLatLng = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
         mMap.moveCamera(CameraUpdateFactory.newLatLng(currentLatLng));
-        mMap.animateCamera(CameraUpdateFactory.zoomTo(17));
-        mMap.addMarker(new MarkerOptions()
-                .position(currentLatLng)
-                .title("Current Location"));
+
+        if (currentLocationMarker == null){
+            currentLocationMarker = mMap.addMarker(new MarkerOptions()
+                    .position(currentLatLng)
+                    .title("Current Location"));
+        }else{
+            currentLocationMarker.setPosition(currentLatLng);
+        }
+
     }
 
     private void updateDeviceLocation(Location mLastLocation) {
