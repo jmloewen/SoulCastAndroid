@@ -45,6 +45,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
 import com.google.firebase.iid.FirebaseInstanceId;
@@ -301,8 +302,12 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
 
     private void moveMaptoCurrentLocation(Location mLastLocation) {
         //move the map appropriately.
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude())));
+        LatLng currentLatLng = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(currentLatLng));
         mMap.animateCamera(CameraUpdateFactory.zoomTo(17));
+        mMap.addMarker(new MarkerOptions()
+                .position(currentLatLng)
+                .title("Current Location"));
     }
 
     private void updateDeviceLocation(Location mLastLocation) {
