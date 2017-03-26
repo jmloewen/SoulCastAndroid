@@ -47,6 +47,7 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
 import com.google.firebase.iid.FirebaseInstanceId;
@@ -445,6 +446,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         // Apply config settings and default values.
         mFirebaseRemoteConfig.setConfigSettings(firebaseRemoteConfigSettings);
         mFirebaseRemoteConfig.setDefaults(defaultConfigMap);
+        FirebaseMessaging.getInstance().subscribeToTopic("friendly_engage");
     }
 
     void uploadSoulToServer(String fileName) {
