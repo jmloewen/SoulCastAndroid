@@ -45,6 +45,9 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
 import com.google.firebase.iid.FirebaseInstanceId;
@@ -84,6 +87,8 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
     private LocationRequest mLocationRequest;
     private LocationManager mLocationManager;
     private Location mLastLocation;
+    Marker currentLocationMarker;
+
 
     //Variables for Audio Up / Audio Down.
     private RecordButton tempRecordButton;
@@ -213,8 +218,9 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+        mMap.getUiSettings().setScrollGesturesEnabled(false);
+        mMap.animateCamera(CameraUpdateFactory.zoomTo(17));
         buildGoogleAPIClient();
-
     }
 
     protected synchronized void buildGoogleAPIClient() {
@@ -301,9 +307,19 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
     }
 
     private void moveMaptoCurrentLocation(Location mLastLocation) {
+
         //move the map appropriately.
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude())));
-        mMap.animateCamera(CameraUpdateFactory.zoomTo(17));
+        LatLng currentLatLng = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(currentLatLng));
+
+        if (currentLocationMarker == null){
+            currentLocationMarker = mMap.addMarker(new MarkerOptions()
+                    .position(currentLatLng)
+                    .title("Current Location"));
+        }else{
+            currentLocationMarker.setPosition(currentLatLng);
+        }
+
     }
 
     private void updateDeviceLocation(Location mLastLocation) {
@@ -431,6 +447,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         // Apply config settings and default values.
         mFirebaseRemoteConfig.setConfigSettings(firebaseRemoteConfigSettings);
         mFirebaseRemoteConfig.setDefaults(defaultConfigMap);
+        FirebaseMessaging.getInstance().subscribeToTopic("friendly_engage");
     }
 
     void uploadSoulToServer(String fileName) {
