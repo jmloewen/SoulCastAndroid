@@ -5,4 +5,6 @@ package com.example.kevinzhang.soulpost;
  */
 
 public class StaticObjectReferences {
+    public static AudioPipeline mAudioPipeline;
+    public static RecordButton mRecordButton;
 }

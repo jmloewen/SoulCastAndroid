@@ -24,6 +24,7 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 import java.lang.Object;
 
@@ -45,6 +46,9 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
 import com.google.firebase.iid.FirebaseInstanceId;
@@ -84,6 +88,8 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
     private LocationRequest mLocationRequest;
     private LocationManager mLocationManager;
     private Location mLastLocation;
+    Marker currentLocationMarker;
+
 
     //Variables for Audio Up / Audio Down.
     private RecordButton tempRecordButton;
@@ -92,6 +98,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
 
     //The user's device
     private Device userDevice = null;
+    private PermissionsHandler ph;
 
     private TransferUtility mTransferUtility;
     private Activity mActivity = this;
@@ -113,12 +120,16 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         mIsConnected = mCm.getActiveNetworkInfo() != null && mCm.getActiveNetworkInfo().isConnected();
         mTransferUtility = Util.getTransferUtility(this);
 
+        RelativeLayout mapLayout = (RelativeLayout)findViewById(R.id.activity_map);
+        ph = new PermissionsHandler();
+        ph.locationPermissionCheck(getApplicationContext(), this);
         setPreferences();
         setupFirebase();
         setupMapFragment();
         setupAudioPipeline();
-        permissionCheck();
         buttonSetup();
+        mapLayout.addView(mRecordButton);
+
     }
 
     private void setPreferences() {
@@ -142,42 +153,16 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
                 beginUpload(audioFile);
             }
         });
-    }
-
-    private void permissionCheck() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                checkLocationPermission();
-        }
+        StaticObjectReferences.mAudioPipeline = mAudioPipeline;
     }
 
     private void buttonSetup() {
         //button setup
         //xml layout
-        mRecordButton = (RecordButton) findViewById(R.id.record_button);
+        mRecordButton = new RecordButton(getApplicationContext(), null, ph);
         //mRecordButton = (RecordButton) findViewById(R.id.record_button);
 
-        mRecordButton.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View view, MotionEvent motionEvent) {
-                switch (motionEvent.getAction()) {
-                    case MotionEvent.ACTION_DOWN:
-                        // User pressed down on the button
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                                checkAudioAndStoragePermission();
-                            mAudioPipeline.startRecording();
-                        } else {
-                            mAudioPipeline.startRecording();
-                        }
-                        break;
-                    case MotionEvent.ACTION_UP:
-                        if (mAudioPipeline.mHasAudioRecordingBeenStarted) {
-                            mAudioPipeline.stopRecording();
-                        }
-                        break;
-                }
-                return false;
-            }
-        });
+
     }
 
     @Override
@@ -213,8 +198,9 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+        mMap.getUiSettings().setScrollGesturesEnabled(false);
+        mMap.animateCamera(CameraUpdateFactory.zoomTo(17));
         buildGoogleAPIClient();
-
     }
 
     protected synchronized void buildGoogleAPIClient() {
@@ -231,7 +217,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
     @Override
     public void onConnected(@Nullable Bundle bundle) {
         requestLocationUpdates();
-        if (fineLocationGranted()) {
+        if (ph.fineLocationGranted()) {
 
             LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
             mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
@@ -239,7 +225,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
             registerNewUserDevice();
 
         }else{
-            requestFineLocationPermissions();
+            ph.requestFineLocationPermissions();
         }
     }
 
@@ -301,9 +287,19 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
     }
 
     private void moveMaptoCurrentLocation(Location mLastLocation) {
+
         //move the map appropriately.
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude())));
-        mMap.animateCamera(CameraUpdateFactory.zoomTo(17));
+        LatLng currentLatLng = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(currentLatLng));
+
+        if (currentLocationMarker == null){
+            currentLocationMarker = mMap.addMarker(new MarkerOptions()
+                    .position(currentLatLng)
+                    .title("Current Location"));
+        }else{
+            currentLocationMarker.setPosition(currentLatLng);
+        }
+
     }
 
     private void updateDeviceLocation(Location mLastLocation) {
@@ -354,66 +350,6 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         });
     }
 
-    private void checkLocationPermission() {
-        if (!fineLocationGranted()) {
-            requestFineLocationPermissions();
-        }
-    }
-
-    private boolean fineLocationGranted() {
-        return (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-                == PackageManager.PERMISSION_GRANTED);
-    }
-
-    private void requestFineLocationPermissions() {
-        ActivityCompat.requestPermissions(this,
-                new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                LOCATION_PERMISSION_REQUEST_CODE);
-    }
-
-    private void checkAudioAndStoragePermission() {
-        if (!audioGranted() && !storageGranted()) {
-            requestAudioAndStoragePermissions();
-        }
-    }
-
-    private boolean audioGranted() {
-        return (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO)
-                == PackageManager.PERMISSION_GRANTED);
-    }
-
-    private boolean storageGranted() {
-        return (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                == PackageManager.PERMISSION_GRANTED);
-    }
-
-    private void requestAudioAndStoragePermissions() {
-        ActivityCompat.requestPermissions(this,
-                new String[]{Manifest.permission.RECORD_AUDIO, Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                AUDIO_AND_STORAGE_PERMISSION_REQUEST_CODE);
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           String permissions[], int[] grantResults) {
-        switch (requestCode) {
-            case LOCATION_PERMISSION_REQUEST_CODE: {
-                // If request is cancelled, the result arrays are empty.
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    //Permission granted
-                    if (fineLocationGranted()) {
-                            buildGoogleAPIClient();
-                    }
-                } else {
-                    // Permission denied, Disable the functionality that depends on this permission.
-                    Toast.makeText(this, "Location permission denied", Toast.LENGTH_LONG).show();
-                }
-            }
-            // other cases to check for other permissions this app might request.
-        }
-    }
-
     /**
      * This sets up the connection between the user and our server.
      */
@@ -431,6 +367,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         // Apply config settings and default values.
         mFirebaseRemoteConfig.setConfigSettings(firebaseRemoteConfigSettings);
         mFirebaseRemoteConfig.setDefaults(defaultConfigMap);
+        FirebaseMessaging.getInstance().subscribeToTopic("friendly_engage");
     }
 
     void uploadSoulToServer(String fileName) {
@@ -469,4 +406,24 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
                 .build();
     }
 
+
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case LOCATION_PERMISSION_REQUEST_CODE: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    //Permission granted
+                    if (ph.fineLocationGranted()) {
+                        buildGoogleAPIClient();
+                    }
+                } else {
+                    // Permission denied, Disable the functionality that depends on this permission.
+                    Toast.makeText(this, "Location permission denied", Toast.LENGTH_LONG).show();
+                }
+            }
+            // other cases to check for other permissions this app might request.
+        }
+    }
 }

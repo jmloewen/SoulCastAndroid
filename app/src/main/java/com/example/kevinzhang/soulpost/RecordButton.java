@@ -1,7 +1,9 @@
 package com.example.kevinzhang.soulpost;
 
+import android.os.Build;
 import android.support.v4.view.MarginLayoutParamsCompat;
 import android.view.MotionEvent;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.content.Context;
@@ -24,27 +26,45 @@ public class RecordButton extends Button {
     /**
      * @param context - the context of the activity the button sits in.
      */
-    public RecordButton(Context context, AttributeSet attrs){
+    PermissionsHandler ph;
+
+    public RecordButton(Context context, AttributeSet attrs, PermissionsHandler ph){
         super(context, attrs);
-        /*
-        this.setWidth(60);
-        this.setHeight(60);
+
         //this.setLayoutParams()
         RelativeLayout.LayoutParams rlParams = new RelativeLayout.LayoutParams(60, 60);
         rlParams.setMargins(0, 0, 0, 24);
         rlParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
         rlParams.addRule(RelativeLayout.CENTER_HORIZONTAL);
+        rlParams.width = 200;
+        rlParams.height = 200;
         this.setTag("record_button");
         this.setLayoutParams(rlParams);
-
         this.setBackgroundResource(R.drawable.record_button_states);
-        */
+
+        this.ph = ph;
+        StaticObjectReferences.mRecordButton = this;
     }
 
     @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        Toast.makeText(getContext(), "ABCFDSSDFS", Toast.LENGTH_LONG).show();
-        return super.onTouchEvent(event);
+    public boolean onTouchEvent(MotionEvent motionEvent) {
+        switch (motionEvent.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+                // User pressed down on the button
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    ph.checkAudioAndStoragePermission();
+                    //StaticObjectReferences.mAudioPipeline.startRecording();
+                } else {
+                    StaticObjectReferences.mAudioPipeline.startRecording();
+                }
+                break;
+            case MotionEvent.ACTION_UP:
+                if (StaticObjectReferences.mAudioPipeline.mHasAudioRecordingBeenStarted) {
+                    StaticObjectReferences.mAudioPipeline.stopRecording();
+                }
+                break;
+        }
+        return true;
     }
 
     /*
@@ -62,5 +82,6 @@ public class RecordButton extends Button {
     //some function for animations
     //some function for click events
     //some function for setting up the audio pipeline
-
 }
+
+
