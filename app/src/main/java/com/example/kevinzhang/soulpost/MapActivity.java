@@ -5,16 +5,19 @@ import android.Manifest;
 import android.content.Context;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationManager;
+import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
@@ -25,6 +28,10 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
+
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.lang.Object;
 
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferListener;
@@ -102,6 +109,8 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
     private Activity mActivity = this;
     private boolean mIsConnected = false;
     private ConnectivityManager mCm;
+    private static File mAudioFile;
+    private static File receiveNotificationAudioFile;
 
     Retrofit retrofit = new Retrofit.Builder()
             .baseUrl("http://soulcast.ml")
@@ -124,6 +133,23 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         setupAudioPipeline();
         permissionCheck();
         buttonSetup();
+        Intent myIntent = getIntent();
+        String S3key = myIntent.getStringExtra("S3key");
+        playNotificationMessage(S3key);
+
+
+
+        if(S3key != null)
+        {
+
+        }
+        try{
+
+
+        }catch(Exception e){
+
+        }
+
     }
 
     private void setPreferences() {
@@ -484,6 +510,71 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
                 .setObject(object)
                 .setActionStatus(Action.STATUS_TYPE_COMPLETED)
                 .build();
+    }
+
+    private void playNotificationMessage(String S3key){
+        if(S3key == null)
+        {
+            return;
+        }
+
+        receiveNotificationAudioFile = new File(Environment.getExternalStorageDirectory().getAbsolutePath(),S3key);
+
+        TransferObserver observer = mTransferUtility.download(Constants.BUCKET_NAME, receiveNotificationAudioFile.getName(), receiveNotificationAudioFile);
+
+        observer.setTransferListener(new TransferListener() {
+            @Override
+            public void onStateChanged(int id, TransferState newState) {
+                //Enum status = newState.valueOf("Completed");
+                switch (newState) {
+                    case COMPLETED:
+                        Toast.makeText(mActivity, "Download to S3 completed!", Toast.LENGTH_SHORT).show();
+
+                        final MediaPlayer mMediaPlayer = new MediaPlayer();
+
+                        try {
+                            FileInputStream fd = openFile(receiveNotificationAudioFile);
+                            mMediaPlayer.setDataSource(fd.getFD());
+//            Log.d(TAG, "Path: " + mAudioFile.getAbsolutePath());
+                            mMediaPlayer.prepare();
+                            mMediaPlayer.start();
+                            mMediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                                @Override
+                                public void onCompletion(MediaPlayer mediaPlayer) {
+                                    mMediaPlayer.reset();
+                                    Log.d("receiveNotificationDL", "Finished playing downloaded audio File");
+                                }
+
+
+                            });
+
+                        } catch (IOException e) {
+
+                            e.printStackTrace();
+                            Log.d("receiveNotificationDL", e.getMessage());
+                            Log.d("receiveNotificationDL", e.toString());
+                        }
+                }
+            }
+
+            @Override
+            public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
+                String str = Long.toString(bytesCurrent);
+                Log.v("transfer listener", str);
+            }
+
+            @Override
+            public void onError(int id, Exception e) {
+                e.printStackTrace();
+            }
+        });
+
+    }
+
+    private FileInputStream openFile(File file) throws FileNotFoundException, IOException {
+        FileInputStream fos = new FileInputStream(file);
+        // remember th 'fos' reference somewhere for later closing it
+        return fos;
     }
 
 }
