@@ -56,8 +56,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
        Log.v("myToken","msgreceived");
         printFCMMessage(remoteMessage);
         savePrefs(remoteMessage);
-        beginDownload(prefs.getString("PushS3Key", "NO KEY STORED"));
-
     }
 
     private void printFCMMessage(RemoteMessage remoteMessage) {
