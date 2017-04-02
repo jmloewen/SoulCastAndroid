@@ -120,12 +120,10 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     }
 
     public void beginDownload(final String S3key){
-        Log.d(TAG, "Download has begun");
 
         TransferUtility mTransferUtility = Util.getTransferUtility(this);
         File audioFile = new File(Environment.getExternalStorageDirectory().getAbsolutePath(),
                 String.valueOf(S3key));
-
         TransferObserver observer = mTransferUtility.download(Constants.BUCKET_NAME, S3key, audioFile);
 
         observer.setTransferListener(new TransferListener() {
@@ -165,9 +163,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 .setSound(defaultSoundUri)
                 .setContentIntent(pendingIntent);
 
-        NotificationManager notificationManager =
-                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        Log.v("sendNotification","finished building notification");
+        NotificationManager notificationManager = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
+        Log.v("Notification:","finished building notification");
         notificationManager.notify(0 /* ID of notification */, notificationBuilder.build());
     }
 
