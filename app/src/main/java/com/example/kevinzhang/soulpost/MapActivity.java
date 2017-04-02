@@ -137,19 +137,6 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         String S3key = myIntent.getStringExtra("S3key");
         playNotificationMessage(S3key);
 
-
-
-        if(S3key != null)
-        {
-
-        }
-        try{
-
-
-        }catch(Exception e){
-
-        }
-
     }
 
     private void setPreferences() {
@@ -515,21 +502,23 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
     private void playNotificationMessage(String S3key){
         if(S3key == null)
         {
+            Log.v("S3KeyNull","S3key is null");
             return;
         }
 
         receiveNotificationAudioFile = new File(Environment.getExternalStorageDirectory().getAbsolutePath(),S3key);
-
+        Log.v("KeyNotNull",S3key);
         TransferObserver observer = mTransferUtility.download(Constants.BUCKET_NAME, receiveNotificationAudioFile.getName(), receiveNotificationAudioFile);
 
         observer.setTransferListener(new TransferListener() {
             @Override
             public void onStateChanged(int id, TransferState newState) {
                 //Enum status = newState.valueOf("Completed");
+                //Log.v("in OnStateChanged","In onstate changed");
                 switch (newState) {
                     case COMPLETED:
                         Toast.makeText(mActivity, "Download to S3 completed!", Toast.LENGTH_SHORT).show();
-
+                        Log.v("DownloadStateComplete"," Download completed");
                         final MediaPlayer mMediaPlayer = new MediaPlayer();
 
                         try {
