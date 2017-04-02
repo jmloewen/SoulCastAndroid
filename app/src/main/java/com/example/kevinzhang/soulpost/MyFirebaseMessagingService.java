@@ -132,7 +132,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 switch (newState) {
                     case COMPLETED:
                         Log.v("transferListener", " download completed");
-                        playSoul(S3key);
+                        //playSoul(S3key);
                 }
             }
 
