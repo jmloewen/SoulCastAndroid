@@ -163,9 +163,9 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
     }
 
     private void permissionCheck() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                checkLocationPermission();
-        }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    checkLocationPermission();
+            }
     }
 
     private void buttonSetup() {

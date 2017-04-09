@@ -7,11 +7,21 @@ import android.util.Log;
 
 public class MainActivity extends AppCompatActivity {
 
+    PermissionsManager permissionsMan;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Intent mapIntent = new Intent(this, MapActivity.class);
-        startActivity(mapIntent);
+        permissionsMan = new PermissionsManager();
+        if (permissionsMan.hasAllPermissions() == true) {
+            Intent mapIntent = new Intent(this, MapActivity.class);
+            startActivity(mapIntent);
+        }else{
+            permissionsMan.getAllPermissions();
+        }
+
+//        Intent mapIntent = new Intent(this, MapActivity.class);
+//        startActivity(mapIntent);
     }
 
 }
