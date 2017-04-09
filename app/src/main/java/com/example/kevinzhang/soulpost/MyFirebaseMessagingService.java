@@ -56,6 +56,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
        Log.v("myToken","msgreceived");
         printFCMMessage(remoteMessage);
         savePrefs(remoteMessage);
+        sendNotification(prefs.getString("PushS3Key", "NO KEY STORED"));
     }
 
     private void printFCMMessage(RemoteMessage remoteMessage) {
@@ -76,8 +77,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         //editor.putString("PushS3Key", remoteMessage.getData().get("S3key"));
         editor.commit();
         Log.d(TAG, "S3Key: " + prefs.getString("PushS3Key", "NO KEY STORED"));
-        sendNotification(prefs.getString("PushS3Key", "NO KEY STORED"));
-
     }
 
     private void playSoul(final String S3key) {
@@ -130,7 +129,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 switch (newState) {
                     case COMPLETED:
                         Log.v("transferListener", " download completed");
-                        //playSoul(S3key);
+                        playSoul(S3key);
                 }
             }
 
