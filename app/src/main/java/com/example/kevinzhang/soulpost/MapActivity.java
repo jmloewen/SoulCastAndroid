@@ -2,6 +2,7 @@ package com.example.kevinzhang.soulpost;
 
 import android.Manifest;
 
+import android.app.Fragment;
 import android.content.Context;
 
 import android.app.Activity;
@@ -24,8 +25,10 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.Toast;
 
@@ -263,11 +266,18 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
     }
 
     private void registerNewUserDevice() {
-        LatLng latLng = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
-        userDevice = APIUserConnect.RegisterDevice(latLng, this);
-        provideCastButton(latLng);
+        LatLng latLng;
 
-        Toast.makeText(this, "Connection Established", Toast.LENGTH_LONG).show();
+        try {
+            latLng = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
+            userDevice = APIUserConnect.RegisterDevice(latLng, this);
+            provideCastButton(latLng);
+
+            Toast.makeText(this, "Connection Established", Toast.LENGTH_LONG).show();
+        } catch(NullPointerException e){
+            e.printStackTrace();
+            latLng = new LatLng(0.000, 0.000);
+        }
     }
 
     private void provideCastButton(LatLng latLng) {
@@ -483,22 +493,6 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         });
     }
 
-    /**
-     * ATTENTION: This was auto-generated to implement the App Indexing API.
-     * See https://g.co/AppIndexing/AndroidStudio for more information.
-     */
-    public Action getIndexApiAction() {
-        Thing object = new Thing.Builder()
-                .setName("Map Page") // TODO: Define a title for the content shown.
-                // TODO: Make sure this auto-generated URL is correct.
-                .setUrl(Uri.parse("http://[ENTER-YOUR-URL-HERE]"))
-                .build();
-        return new Action.Builder(Action.TYPE_VIEW)
-                .setObject(object)
-                .setActionStatus(Action.STATUS_TYPE_COMPLETED)
-                .build();
-    }
-
     private void playNotificationMessage(String S3key){
         if(S3key == null)
         {
@@ -558,6 +552,22 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
             }
         });
 
+    }
+
+    /**
+     * ATTENTION: This was auto-generated to implement the App Indexing API.
+     * See https://g.co/AppIndexing/AndroidStudio for more information.
+     */
+    public Action getIndexApiAction() {
+        Thing object = new Thing.Builder()
+                .setName("Map Page") // TODO: Define a title for the content shown.
+                // TODO: Make sure this auto-generated URL is correct.
+                .setUrl(Uri.parse("http://[ENTER-YOUR-URL-HERE]"))
+                .build();
+        return new Action.Builder(Action.TYPE_VIEW)
+                .setObject(object)
+                .setActionStatus(Action.STATUS_TYPE_COMPLETED)
+                .build();
     }
 
     private FileInputStream openFile(File file) throws FileNotFoundException, IOException {
