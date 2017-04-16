@@ -135,7 +135,6 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         setupMapFragment();
         setupAudioPipeline();
         permissionCheck();
-        buttonSetup();
         Intent myIntent = getIntent();
         String S3key = myIntent.getStringExtra("S3key");
         playNotificationMessage(S3key);
@@ -171,35 +170,6 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         }
     }
 
-    private void buttonSetup() {
-        //button setup
-        //xml layout
-        mRecordButton = (RecordButton) findViewById(R.id.record_button);
-        //mRecordButton = (RecordButton) findViewById(R.id.record_button);
-
-        mRecordButton.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View view, MotionEvent motionEvent) {
-                switch (motionEvent.getAction()) {
-                    case MotionEvent.ACTION_DOWN:
-                        // User pressed down on the button
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                                checkAudioAndStoragePermission();
-                            mAudioPipeline.startRecording();
-                        } else {
-                            mAudioPipeline.startRecording();
-                        }
-                        break;
-                    case MotionEvent.ACTION_UP:
-                        if (mAudioPipeline.mHasAudioRecordingBeenStarted) {
-                            mAudioPipeline.stopRecording();
-                        }
-                        break;
-                }
-                return false;
-            }
-        });
-    }
 
     @Override
     protected void onPause() {
