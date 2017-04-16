@@ -133,10 +133,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         permissionCheck();
         buttonSetup();
 
-<<<<<<< HEAD
-=======
 
->>>>>>> d0148e0887351f4f194d9698095587a0fef8a3c7
         Intent myIntent = getIntent();
         String S3key = myIntent.getStringExtra("S3key");
         playNotificationMessage(S3key);
