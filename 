@@ -1,0 +1,380 @@
+[33mcommit 6cc113151a45f6edb2ffa8f5244b2b99c4312714[m
+Merge: b8f5efd 872d2e9
+Author: jla497 <jaehonglee86@gmail.com>
+Date:   Sun Apr 2 15:08:53 2017 -0700
+
+    Merge branch 'jaesDev2' into dev
+
+[33mcommit 872d2e95b5d5723f12621e0503c3b9cacfd3bcac[m
+Author: jla497 <jaehonglee86@gmail.com>
+Date:   Sun Apr 2 15:08:34 2017 -0700
+
+    play audiofile on push notification
+
+[33mcommit b8f5efd3cb72b20b82f37e32f08c1bdd5067e578[m
+Merge: 402db01 b6544e2
+Author: jla497 <jaehonglee86@gmail.com>
+Date:   Sun Apr 2 14:50:33 2017 -0700
+
+    Merge branch 'jaesDev2' into dev
+
+[33mcommit b6544e23276dc410738b03168fd5651ee167f331[m
+Author: jla497 <jaehonglee86@gmail.com>
+Date:   Sun Apr 2 14:50:10 2017 -0700
+
+    minor change
+
+[33mcommit 402db01ac51fc1a8ee89100e6e28a793a2199902[m
+Merge: 60a9a50 c43b6dc
+Author: jla497 <jaehonglee86@gmail.com>
+Date:   Sun Apr 2 14:31:45 2017 -0700
+
+    Merge branch 'dev' of https://github.com/jmloewen/SoulCastAndroid into dev
+
+[33mcommit 60a9a50ac3672207b7910a152f00ee0e4ce107a5[m
+Author: jla497 <jaehonglee86@gmail.com>
+Date:   Sun Apr 2 14:20:36 2017 -0700
+
+    audio play upon receiving new push notification
+
+[33mcommit c43b6dc13f45ecb45003802542cd4cda83898fa3[m
+Merge: 7ceac2a 34c04fb
+Author: Kevin Zhang <kevin.c.t.zhang@gmail.com>
+Date:   Sun Mar 26 17:08:40 2017 -0700
+
+    try to merge jon's branch
+     Merge branch 'dev' of https://github.com/jmloewen/SoulCastAndroid into ExtractButton
+
+[33mcommit 7ceac2a02144fa0884bc6f99c1e2d731b751dd72[m
+Author: Jonathan Loewen <jmloewen@sfu.ca>
+Date:   Sun Mar 26 17:06:15 2017 -0700
+
+    Button class has been partially extracted.
+    
+    Permissions have been partially extracted.
+
+[33mcommit 34c04fbb9e2241c1e4bcabb3da2f45e2f76ec7b2[m
+Merge: 1b1cd63 f37b970
+Author: jla497 <jaehonglee86@gmail.com>
+Date:   Sun Mar 26 16:30:29 2017 -0700
+
+    Merge branch 'master' of https://github.com/jmloewen/SoulCastAndroid
+
+[33mcommit 1b1cd632da650640fe4d4200bd3de8180ea9a7cd[m
+Author: jla497 <jaehonglee86@gmail.com>
+Date:   Sun Mar 26 16:30:24 2017 -0700
+
+    push notification. on click opens app and plays the audio file
+
+[33mcommit f37b970d14837fefcef279211347a63c1ccf2696[m
+Author: Kevin Zhang <kevin.c.t.zhang@gmail.com>
+Date:   Sat Mar 25 18:37:08 2017 -0700
+
+    .idea/misc.xml file autoaupdated
+
+[33mcommit 972f1fcb8addee47437c1577813760034d13abfa[m
+Author: Kevin Zhang <kevin.c.t.zhang@gmail.com>
+Date:   Sat Mar 25 18:31:33 2017 -0700
+
+    app name changed
+
+[33mcommit 2c60738b2aaa4bd38e11b07267e7f43b55c6945d[m
+Author: Jonathan Loewen <jmloewen@sfu.ca>
+Date:   Sun Mar 19 16:57:22 2017 -0700
+
+    made custom button class that inherits from button
+
+[33mcommit 7f031964507cbaf8d8efb5551da1604baeaa875c[m
+Merge: 31ac9cb 5b58ec0
+Author: Kevin Zhang <kevin.c.t.zhang@gmail.com>
+Date:   Sun Mar 19 16:05:28 2017 -0700
+
+    to resolve merge conflicts after map camera update
+
+[33mcommit 31ac9cb35ab383864fdde646921d489537e3cedc[m
+Author: Kevin Zhang <kevin.c.t.zhang@gmail.com>
+Date:   Sun Mar 19 16:00:42 2017 -0700
+
+    disabled map scrolling, fix multiple marker issue
+
+[33mcommit 79aa7b1ed04b415ad7faeda584cb89f1a85298bd[m
+Author: Kevin Zhang <kevin.c.t.zhang@gmail.com>
+Date:   Sun Mar 19 14:51:00 2017 -0700
+
+    added marker for current location
+
+[33mcommit 22ec71d29b446f53c8a4ea3633c25a6a6708086e[m
+Merge: afe8b1f 470787f
+Author: Kevin Zhang <kevin.c.t.zhang@gmail.com>
+Date:   Sun Mar 19 14:08:38 2017 -0700
+
+    Jon removed redunant imports from main, renamed gCm, fixed naming typos Merge branch 'master' into kzdev
+
+[33mcommit afe8b1ff21d1a49b47dbfc08ce0b8795f8a08915[m
+Author: Kevin Zhang <kevin.c.t.zhang@gmail.com>
+Date:   Sun Mar 19 14:08:32 2017 -0700
+
+    commit before change
+
+[33mcommit 5b58ec08a12944986761228aeaac8456755f4d80[m
+Author: Jonathan Loewen <jmloewen@sfu.ca>
+Date:   Sun Mar 19 14:06:09 2017 -0700
+
+    fixed some typos, removed some redundant code
+
+[33mcommit 470787f6cbd55266aaced39cc5240ea1d4b19ed0[m
+Merge: ed4b5e2 c876b93
+Author: Kevin Zhang <kevin.c.t.zhang@gmail.com>
+Date:   Thu Mar 16 20:23:56 2017 -0700
+
+    try merge kzdev
+
+[33mcommit c876b93e5b249c3abe2c7c330ecd651e1711c35a[m
+Author: Kevin Zhang <kevin.c.t.zhang@gmail.com>
+Date:   Thu Mar 16 20:15:33 2017 -0700
+
+    refactored mainActivity, but permission check is still unreliable
+
+[33mcommit 4b24c1c35e1d93834648dff0c98d0d6aeb7a2f0c[m
+Author: Kevin Zhang <kevin.c.t.zhang@gmail.com>
+Date:   Thu Mar 16 19:52:00 2017 -0700
+
+    onMessageReceived Class Refactored
+
+[33mcommit ed4b5e22c7427d18a438d9f77dec527409c704d6[m
+Merge: faf4954 3d778c3
+Author: Kevin Zhang <kevin.c.t.zhang@gmail.com>
+Date:   Wed Mar 15 20:32:30 2017 -0700
+
+    audiopipleline now used compoents funtional but not tested Merge branch 'kzdev'
+
+[33mcommit 3d778c3b0d33c443c3bbf99ff697a44374871643[m
+Author: Kevin Zhang <kevin.c.t.zhang@gmail.com>
+Date:   Wed Mar 15 20:31:51 2017 -0700
+
+    audiorecorder now called audiopipeline
+
+[33mcommit faf4954df70a24c3748a85266f8cf12f2343935d[m
+Merge: 37553bc 7151188
+Author: Kevin Zhang <kevin.c.t.zhang@gmail.com>
+Date:   Sun Mar 12 19:09:13 2017 -0700
+
+    to resolve git conflicts on map activity Merge branch 'kzdev'
+
+[33mcommit 7151188a8e3fce394b714eed062fa1faeb1696a6[m
+Author: Kevin Zhang <kevin.c.t.zhang@gmail.com>
+Date:   Sun Mar 12 19:08:47 2017 -0700
+
+    manually merge all the files and work from jon
+
+[33mcommit 37553bcb02f88be8bb5777986f84230ae3f8e56e[m
+Author: Kevin Zhang <kevin.c.t.zhang@gmail.com>
+Date:   Sun Mar 12 18:30:10 2017 -0700
+
+    refactor main activity
+
+[33mcommit fabf691df62922e0a4427bf32c3b483200089388[m
+Merge: d7135e4 f489a3a
+Author: Kevin Zhang <kevin.c.t.zhang@gmail.com>
+Date:   Sun Mar 12 18:12:15 2017 -0700
+
+    merge master with kzdev
+
+[33mcommit f489a3ad67e9e4ebf9392b14c729c8323c071c99[m
+Author: Kai Zhang <kai@d207-023-179-140.wireless.sfu.ca>
+Date:   Sun Mar 12 18:10:04 2017 -0700
+
+    conform to getters/setters
+
+[33mcommit d62e0da2b29772bcee21875270142226f339fb77[m
+Author: Kai Zhang <kai@d207-023-179-140.wireless.sfu.ca>
+Date:   Sun Mar 12 17:40:16 2017 -0700
+
+    rebase perm with kzdev
+
+[33mcommit cb92366f11d3b20883c767dfe9b981b745fb773c[m
+Author: Jonathan Loewen <jmloewen@sfu.ca>
+Date:   Sun Mar 12 17:19:42 2017 -0700
+
+    Refactored Soul, Device objects, as well as permissions checks, internet and user device object checks.  App will spam the user to tell them to connect to the internet if they are not.
+
+[33mcommit d7135e43b3bf155740f5fba88bda5dcc29141708[m
+Author: Kai Zhang <kai@d207-023-179-140.wireless.sfu.ca>
+Date:   Sun Mar 12 16:02:43 2017 -0700
+
+    screen orientation fixed, ready to merge to master, incoming not tested
+
+[33mcommit db961e7f14b33b4b26b6d51efea77fa94542a3f5[m
+Author: Kai Zhang <kai@d207-023-179-140.wireless.sfu.ca>
+Date:   Sun Mar 12 15:34:41 2017 -0700
+
+    app builds, screen orientation will crash the app
+
+[33mcommit 975213072cb635e16aea0c78f06ca883cfaa5d50[m
+Author: Kai Zhang <kai@d207-023-179-140.wireless.sfu.ca>
+Date:   Sun Mar 12 14:14:55 2017 -0700
+
+    WIP maps activity
+
+[33mcommit 195706a3d179445142714b2d25c47269de2353b8[m
+Author: Kai Zhang <kai@Kais-MacBook.local>
+Date:   Fri Mar 10 15:21:35 2017 -0800
+
+    refactoring map activity WIP
+
+[33mcommit fa274f9a7d7f6a53cf52045ddacc97899fbb97ce[m
+Author: Kai Zhang <kai@Kais-MacBook.local>
+Date:   Wed Mar 8 23:49:24 2017 -0800
+
+    working on refactoring soulservice extration
+
+[33mcommit c3586647c05b1c87d5a0fc41409d38e5e7418efe[m
+Author: Kai Zhang <kai@d207-023-179-144.wireless.sfu.ca>
+Date:   Sun Mar 5 15:53:01 2017 -0800
+
+    download file playback fixed
+
+[33mcommit e61b359d91a22badb2f0afabfa4a0b2a9a2d2d47[m
+Author: Kai Zhang <kai@d207-023-179-144.wireless.sfu.ca>
+Date:   Sun Mar 5 14:20:14 2017 -0800
+
+    add some logs playsoul not working
+
+[33mcommit e6f883cb916459643dbbe6395da943a90935fe8d[m
+Author: Kai Zhang <kai@d207-023-179-144.wireless.sfu.ca>
+Date:   Sun Mar 5 13:00:16 2017 -0800
+
+    upon receiving push, file should play. but is not tested
+
+[33mcommit ef7786b1fbdf097e85c30b372155f28448afa5f5[m
+Author: Kai Zhang <kai@d207-023-222-131.wireless.sfu.ca>
+Date:   Sun Feb 26 16:56:59 2017 -0800
+
+    soul catched from s3 upon receiving notification
+
+[33mcommit ed525357022858d343f7b92ffc50e46c33909d9a[m
+Author: Jonathan Loewen <jmloewen@sfu.ca>
+Date:   Sun Feb 26 16:08:45 2017 -0800
+
+    can now grab the s3 key from a firebase push notification.
+
+[33mcommit 8389e6a33576227650dfff010c7cf95916580574[m
+Author: Jonathan Loewen <jmloewen@sfu.ca>
+Date:   Sun Feb 19 17:19:45 2017 -0800
+
+    resolved merge conflicts
+
+[33mcommit f039040a5cae5f7db2e5c0f30c9de01716b5c62b[m
+Merge: b6d7205 23e67f0
+Author: Kai Zhang <kai@d207-023-177-053.wireless.sfu.ca>
+Date:   Sun Feb 19 17:02:54 2017 -0800
+
+    git conflict
+
+[33mcommit 23e67f0bf4b52089194650c1fe5c93f9a1eb4622[m
+Author: jla497 <jaehonglee86@gmail.com>
+Date:   Sun Feb 19 16:56:43 2017 -0800
+
+    soul upload to S3 and soulCast server
+
+[33mcommit b6d720507e93a277a1989c7d5813c8f5a3d5081e[m
+Author: Jonathan Loewen <jmloewen@sfu.ca>
+Date:   Sun Feb 19 15:41:19 2017 -0800
+
+    uploading audio files now works - later want some indication of playback
+
+[33mcommit 34947ed31de415fad79146f68f4d7fd2a2ff3651[m
+Author: Jonathan Loewen <jmloewen@sfu.ca>
+Date:   Sun Feb 19 14:49:10 2017 -0800
+
+    register and update location finally work, and are properly updating on serverside.
+
+[33mcommit e0c08e344a901cfd40748feab62901249837253b[m
+Author: Jonathan Loewen <jmloewen@sfu.ca>
+Date:   Sun Feb 5 17:45:36 2017 -0800
+
+    User Registration and Update functionality moved to APIUserConnect static class, Maps are now properly overlaid.  Working on lat/lng update for Devices.
+
+[33mcommit 3de2f9be63c1a295876a242e8805c41ebba3775f[m
+Author: Kai Zhang <kai@d207-023-223-138.wireless.sfu.ca>
+Date:   Sun Feb 5 14:08:36 2017 -0800
+
+    gitignore update
+
+[33mcommit cacc2ca92a54861d3ff79ed33612edeb468cf5ad[m
+Author: Kai Zhang <kai@d207-023-223-138.wireless.sfu.ca>
+Date:   Sun Feb 5 13:56:29 2017 -0800
+
+    update manifest
+
+[33mcommit 66f6de52db904590968d0348afb04e8a50130eb3[m
+Author: Jonathan Loewen <jmloewen@sfu.ca>
+Date:   Sun Feb 5 13:18:55 2017 -0800
+
+    First Commit of SoulCast Android
+
+[33mcommit 956a2d0a39cfed4a9027ce1831123d767c0f2e1f[m
+Author: Jonathan Loewen <jmloewen@sfu.ca>
+Date:   Sun Jan 29 16:46:51 2017 -0800
+
+    combined soulposter and soulcast-proto into one application
+
+[33mcommit d418d4b84374fab413c178e41ced3d2cebe83dce[m
+Author: Kevin Zhang <kevinctzhang@gmail.com>
+Date:   Thu Dec 22 18:37:24 2016 -0800
+
+    wip nearby call
+
+[33mcommit fdbfd5f6ccfcf82551eb834990c93e383a05f745[m
+Author: Kevin Zhang <kevinctzhang@gmail.com>
+Date:   Mon Dec 19 17:01:27 2016 -0800
+
+    response id can now be retreieved from server
+
+[33mcommit 55937a5d8adbcf2effc1563955c82aee5c29a25f[m
+Author: Kevin Zhang <kevinctzhang@gmail.com>
+Date:   Mon Dec 19 15:39:09 2016 -0800
+
+    networking call failed
+
+[33mcommit f944814d42d2e2a9ec1a2fec33765f74812998c5[m
+Author: Kevin Zhang <kevinctzhang@gmail.com>
+Date:   Sat Dec 17 13:33:11 2016 -0800
+
+    patch works with id need to extract id from response
+
+[33mcommit f8dba4067de1cd21802640d0e0b76a58651d3132[m
+Author: Kevin Zhang <kevinctzhang@gmail.com>
+Date:   Sat Dec 17 12:01:28 2016 -0800
+
+    token extracted and now posted to server
+
+[33mcommit 9743f3dc87c1d05a904eae72d83ea13adc7565e2[m
+Author: Kevin Zhang <kevinctzhang@gmail.com>
+Date:   Sat Dec 17 11:29:07 2016 -0800
+
+    firebase notifications added. next we need to extract and post the android token to the server
+
+[33mcommit 94b371c722ae253f593d7fc11b8832c32c0ef126[m
+Author: Kevin Zhang <kevinctzhang@gmail.com>
+Date:   Wed Dec 14 13:35:49 2016 -0800
+
+    deviceUpdate patch fails
+
+[33mcommit ce894026911e46436f77f6db97dcb3bd20c62424[m
+Author: Kevin Zhang <kevinctzhang@gmail.com>
+Date:   Wed Dec 14 13:00:07 2016 -0800
+
+    added soul posting call
+
+[33mcommit 41a2f9499699f26c9f29629c6e0c01240f1257c2[m
+Author: Kevin Zhang <kevinctzhang@gmail.com>
+Date:   Sat Dec 10 19:06:13 2016 -0800
+
+    interface update to double
+
+[33mcommit d91b30e1c79402b57ed78df3b5041b02eda97df0[m
+Author: Kevin Zhang <kevinctzhang@gmail.com>
+Date:   Sat Dec 10 18:57:24 2016 -0800
+
+    initial commit
