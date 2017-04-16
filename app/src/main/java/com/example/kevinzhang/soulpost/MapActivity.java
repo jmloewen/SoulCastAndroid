@@ -79,7 +79,8 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
-        LocationListener {
+        LocationListener,
+        buttonFragment.OnRecordButtonClickListener{
 
     //firebase
     private FirebaseRemoteConfig mFirebaseRemoteConfig;
@@ -580,6 +581,23 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         FileInputStream fos = new FileInputStream(file);
         // remember th 'fos' reference somewhere for later closing it
         return fos;
+    }
+
+    @Override
+    public void onButtonPressed() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            checkAudioAndStoragePermission();
+            mAudioPipeline.startRecording();
+        } else {
+            mAudioPipeline.startRecording();
+        }
+    }
+
+    @Override
+    public void onButtonReleased() {
+        if (mAudioPipeline.mHasAudioRecordingBeenStarted) {
+            mAudioPipeline.stopRecording();
+        }
     }
 
 }
