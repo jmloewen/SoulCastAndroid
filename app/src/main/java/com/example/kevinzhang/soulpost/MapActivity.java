@@ -480,6 +480,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         FirebaseMessaging.getInstance().subscribeToTopic("friendly_engage");
     }
 
+    //TODO: be refactored out
     void uploadSoulToServer(String fileName) {
         Toast.makeText(MapActivity.this, "In uploadToServer. S3Key is: " + fileName, Toast.LENGTH_SHORT).show();
         SoulpostAPI myAPI = retrofit.create(SoulpostAPI.class);
