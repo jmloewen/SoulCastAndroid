@@ -22,8 +22,8 @@ public class MainActivity extends AppCompatActivity {
             permissionsMan.getAllPermissions();
         }
 
-//        Intent mapIntent = new Intent(this, MapActivity.class);
-//        startActivity(mapIntent);
+        Intent mapIntent = new Intent(this, MapActivity.class);
+        startActivity(mapIntent);
 
     }
 

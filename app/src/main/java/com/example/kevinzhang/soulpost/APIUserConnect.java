@@ -68,6 +68,7 @@ public class APIUserConnect {
                 .baseUrl("http://soulcast.ml")
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
+
         Log.d("Update", "Update Function");
         SoulpostAPI soulpostAPI = retrofit.create(SoulpostAPI.class);
         Call<Device> call = soulpostAPI.deviceUpdate(userDevice, userDevice.getId());

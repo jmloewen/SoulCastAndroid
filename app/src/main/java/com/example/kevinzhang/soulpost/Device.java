@@ -7,6 +7,7 @@ import com.google.gson.annotations.SerializedName;
  */
 
 public class Device {
+    @SerializedName("os") private String os;
     @SerializedName("longitude") private float longitude;
     @SerializedName("latitude") private float latitude;
     @SerializedName("radius") private float radius;
