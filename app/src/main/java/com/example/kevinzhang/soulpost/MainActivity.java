@@ -12,6 +12,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         permissionsMan = new PermissionsManager();
         if (permissionsMan.hasAllPermissions() == true) {
             Intent mapIntent = new Intent(this, MapActivity.class);
@@ -23,6 +24,7 @@ public class MainActivity extends AppCompatActivity {
 
 //        Intent mapIntent = new Intent(this, MapActivity.class);
 //        startActivity(mapIntent);
+
     }
 
 }

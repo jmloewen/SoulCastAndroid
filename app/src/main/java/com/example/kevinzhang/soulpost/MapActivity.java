@@ -26,7 +26,6 @@ import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.Button;
 import android.widget.Toast;
 
 import java.io.FileInputStream;
@@ -134,6 +133,10 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         permissionCheck();
         buttonSetup();
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> d0148e0887351f4f194d9698095587a0fef8a3c7
         Intent myIntent = getIntent();
         String S3key = myIntent.getStringExtra("S3key");
         playNotificationMessage(S3key);
@@ -164,14 +167,14 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
     }
 
     private void permissionCheck() {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    checkLocationPermission();
-            }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            checkLocationPermission();
+            checkAudioAndStoragePermission();
+        }
     }
 
     private void buttonSetup() {
-        //button setup
-        //xml layout
+
         mRecordButton = (RecordButton) findViewById(R.id.record_button);
         //mRecordButton = (RecordButton) findViewById(R.id.record_button);
 
@@ -180,13 +183,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
             public boolean onTouch(View view, MotionEvent motionEvent) {
                 switch (motionEvent.getAction()) {
                     case MotionEvent.ACTION_DOWN:
-                        // User pressed down on the button
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                                checkAudioAndStoragePermission();
                             mAudioPipeline.startRecording();
-                        } else {
-                            mAudioPipeline.startRecording();
-                        }
                         break;
                     case MotionEvent.ACTION_UP:
                         if (mAudioPipeline.mHasAudioRecordingBeenStarted) {
@@ -367,6 +364,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
                     case COMPLETED:
                         Toast.makeText(mActivity, "Upload to S3 completed!", Toast.LENGTH_SHORT).show();
                         uploadSoulToServer(audioFile.getName());
+                        Toast.makeText(mActivity, "Soul Casted to Server", Toast.LENGTH_SHORT).show();
                 }
                 Log.v("transfer listener", "here");
             }

@@ -4,9 +4,12 @@ import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.os.Environment;
 import android.util.Log;
+import android.widget.Toast;
 
 import java.io.File;
 import java.io.IOException;
+
+import static java.security.AccessController.getContext;
 
 /**
  * Created by kai on 2017-03-12.
@@ -66,6 +69,8 @@ public class AudioPipeline {
         if (recordingTimeDifference > 500){
             startPlaying();
             Log.d(TAG, "Audiopipeline startPlaying() called from stopRecording");
+        }else {
+//            Toast.makeText(getContext(), "Soul too short", Toast.LENGTH_LONG).show();
         }
     }
 
