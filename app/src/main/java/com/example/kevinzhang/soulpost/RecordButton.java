@@ -43,7 +43,7 @@ public class RecordButton extends Button {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        Toast.makeText(getContext(), "ABCFDSSDFS", Toast.LENGTH_LONG).show();
+        Toast.makeText(getContext(), "Extracted Button Touched Down", Toast.LENGTH_SHORT).show();
         return super.onTouchEvent(event);
     }
 

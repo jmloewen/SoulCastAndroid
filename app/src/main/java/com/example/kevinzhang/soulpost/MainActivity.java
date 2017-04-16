@@ -10,9 +10,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        MyInstanceIDListenerService temp = new MyInstanceIDListenerService();
 
-        Log.v("deviceToken: ",temp.getToken());
         Intent mapIntent = new Intent(this, MapActivity.class);
         startActivity(mapIntent);
     }
