@@ -17,6 +17,7 @@ public class MainActivity extends AppCompatActivity {
             Intent mapIntent = new Intent(this, MapActivity.class);
             startActivity(mapIntent);
         }else{
+            //upon completion of getting all permissions, start map activity
             permissionsMan.getAllPermissions();
         }
 

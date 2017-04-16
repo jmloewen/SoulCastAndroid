@@ -55,22 +55,15 @@ public class AudioPipeline {
     public void stopRecording(){
         try {
             mMediaRecorder.stop();
-            if (mAudioPipelineListener != null){
-            }
             recordingFinishedTimeInMillis = System.currentTimeMillis();
-
         } catch (RuntimeException ex){
-            Log.d(TAG, "STOP RECORD CATCH");
-
+            Log.d(TAG, "mMediaRecorder stop recording Runtimeexception");
         }
         mMediaRecorder.reset();
-
         mHasAudioRecordingBeenStarted = false;
-
         long recordingTimeDifference = recordingFinishedTimeInMillis - recordingStartedTimeInMillis;
 
         if (recordingTimeDifference > 500){
-            //start playing
             startPlaying();
             Log.d(TAG, "Audiopipeline startPlaying() called from stopRecording");
         }
@@ -80,7 +73,6 @@ public class AudioPipeline {
         try {
             mAudioPipelineListener.onRecordingFinished(mAudioFile);
             mMediaPlayer.setDataSource(mAudioFile.getAbsolutePath());
-
             mMediaPlayer.prepare();
             mMediaPlayer.start();
 
@@ -90,7 +82,6 @@ public class AudioPipeline {
                     mMediaPlayer.reset();
                 }
             });
-
         } catch (IOException e) {
             e.printStackTrace();
         }

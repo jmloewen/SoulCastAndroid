@@ -133,6 +133,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         setupAudioPipeline();
         permissionCheck();
         buttonSetup();
+
         Intent myIntent = getIntent();
         String S3key = myIntent.getStringExtra("S3key");
         playNotificationMessage(S3key);
