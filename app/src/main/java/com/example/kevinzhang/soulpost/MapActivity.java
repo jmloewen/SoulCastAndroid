@@ -549,11 +549,19 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
 
     @Override
     public void onButtonPressed() {
-        
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            checkAudioAndStoragePermission();
+            mAudioPipeline.startRecording();
+        } else {
+            mAudioPipeline.startRecording();
+        }
     }
 
     @Override
     public void onButtonReleased() {
-
+        if (mAudioPipeline.mHasAudioRecordingBeenStarted) {
+            mAudioPipeline.stopRecording();
+        }
     }
+
 }
