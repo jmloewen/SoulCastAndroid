@@ -76,7 +76,8 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
-        LocationListener {
+        LocationListener,
+        buttonFragment.OnRecordButtonClickListener{
 
     //firebase
     private FirebaseRemoteConfig mFirebaseRemoteConfig;
@@ -546,4 +547,13 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         return fos;
     }
 
+    @Override
+    public void onButtonPressed() {
+        
+    }
+
+    @Override
+    public void onButtonReleased() {
+
+    }
 }
