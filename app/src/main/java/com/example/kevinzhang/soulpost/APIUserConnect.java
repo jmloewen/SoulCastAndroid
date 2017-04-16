@@ -52,7 +52,7 @@ public class APIUserConnect {
 
             @Override
             public void onFailure(Call<Device> call, Throwable t) {
-                Toast.makeText(context, "CNXNFLREGDVCEs", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, "Register Device fail", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -63,13 +63,6 @@ public class APIUserConnect {
      * This is for updating user geolocation, minute to minute.
      */
     public static void UpdateDevice(Device userDevice, final Context context){
-        //this simply updates the location, using the ID from the server.
-
-        //get location
-        //get ID
-        //send ID and location to server
-
-        //server responds with status 200
 
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl("http://soulcast.ml")
@@ -83,7 +76,7 @@ public class APIUserConnect {
             public void onResponse(Call<Device> call, Response<Device> response) {
                 if (response.isSuccessful()){
                     //Log.d("Server response success", new Gson().toJson(response));
-                    Log.d("UPDSUCC", response.message() + "|||" + response.body() + "|||" + response.code());
+                    Log.d("Upload Success", response.message() + "|||" + response.body() + "|||" + response.code());
                     Log.d("ID is :",response.body().getId() + "");
                 }else {
                     //some kind of server error
@@ -94,7 +87,7 @@ public class APIUserConnect {
 
             @Override
             public void onFailure(Call<Device> call, Throwable t) {
-                Toast.makeText(context, "UpdRespFail", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, "Update received failure", Toast.LENGTH_SHORT).show();
 
             }
         });
