@@ -28,11 +28,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
-<<<<<<< HEAD
-import android.view.ViewGroup;
-import android.widget.Button;
-=======
->>>>>>> d0148e0887351f4f194d9698095587a0fef8a3c7
+
 import android.widget.Toast;
 
 import java.io.FileInputStream;
@@ -139,12 +135,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         setupMapFragment();
         setupAudioPipeline();
         permissionCheck();
-<<<<<<< HEAD
-=======
-        buttonSetup();
 
-
->>>>>>> d0148e0887351f4f194d9698095587a0fef8a3c7
         Intent myIntent = getIntent();
         String S3key = myIntent.getStringExtra("S3key");
         playNotificationMessage(S3key);
@@ -181,31 +172,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         }
     }
 
-<<<<<<< HEAD
-=======
-    private void buttonSetup() {
 
-        mRecordButton = (RecordButton) findViewById(R.id.record_button);
-        //mRecordButton = (RecordButton) findViewById(R.id.record_button);
-
-        mRecordButton.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View view, MotionEvent motionEvent) {
-                switch (motionEvent.getAction()) {
-                    case MotionEvent.ACTION_DOWN:
-                            mAudioPipeline.startRecording();
-                        break;
-                    case MotionEvent.ACTION_UP:
-                        if (mAudioPipeline.mHasAudioRecordingBeenStarted) {
-                            mAudioPipeline.stopRecording();
-                        }
-                        break;
-                }
-                return false;
-            }
-        });
-    }
->>>>>>> d0148e0887351f4f194d9698095587a0fef8a3c7
 
     @Override
     protected void onPause() {
