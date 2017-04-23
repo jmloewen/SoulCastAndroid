@@ -14,17 +14,25 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         permissionsMan = new PermissionsManager(this);
-        if (permissionsMan.hasAllPermissions() == true) {
+        if (permissionsMan.hasAllPermissions()) {
             Intent mapIntent = new Intent(this, MapActivity.class);
             startActivity(mapIntent);
         }else{
+
             //upon completion of getting all permissions, start map activity
             permissionsMan.getAllPermissions();
         }
 
-        Intent mapIntent = new Intent(this, MapActivity.class);
-        startActivity(mapIntent);
+    }
+
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults){
+        //here'
+        Log.d("Test", "Test");
 
     }
+
 
 }

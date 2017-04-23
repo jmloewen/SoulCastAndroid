@@ -1,10 +1,12 @@
 package com.example.kevinzhang.soulpost;
 
 import android.*;
+import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Build;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 
 /**
@@ -23,15 +25,41 @@ public class PermissionsManager {
         callerContext = context;
     }
 
-    public static void getAllPermissions() {
+    public void getAllPermissions() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-//            checkLocationPermission();
+            getLocationPermission();
+           getAudioPermission();
+          getStoragePermission();
         }
 
     }
 
+    private void getStoragePermission() {
+        ActivityCompat.requestPermissions((Activity) callerContext,
+                new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                STORAGE_PERMISSION_REQUEST_CODE);
+
+    }
+
+    private void getAudioPermission() {
+        ActivityCompat.requestPermissions((Activity) callerContext,
+                new String[]{Manifest.permission.RECORD_AUDIO},
+                AUDIO_PERMISSION_REQUEST_CODE);
+
+    }
+
+    private void getLocationPermission() {
+        ActivityCompat.requestPermissions((Activity) callerContext,
+                new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                LOCATION_PERMISSION_REQUEST_CODE);
+    }
+
     public boolean hasAllPermissions() {
         boolean hasAllPermissions = false;
+
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+            return true;
+        }
 
         if (hasLocationPermission() && hasAudioPermission() && hasStoragePermission()){
 
@@ -51,8 +79,9 @@ public class PermissionsManager {
     }
 
     private boolean hasLocationPermission() {
-        return false;
+        return true;
     }
+
 
 
 }
