@@ -18,6 +18,8 @@ public class PermissionsManager {
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1 ;
     private final int AUDIO_PERMISSION_REQUEST_CODE = 2;
     private final int STORAGE_PERMISSION_REQUEST_CODE = 3;
+
+    private final int LOCATION_AUDIO_STORAGE_PERMISSION_REQUEST_CODE = 1;
     private Context callerContext;
 
 
@@ -27,9 +29,15 @@ public class PermissionsManager {
 
     public void getAllPermissions() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            getLocationPermission();
-           getAudioPermission();
-          getStoragePermission();
+
+            ActivityCompat.requestPermissions((Activity) callerContext,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION,
+                                 Manifest.permission.RECORD_AUDIO,
+                                 Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                    LOCATION_AUDIO_STORAGE_PERMISSION_REQUEST_CODE);
+//            getLocationPermission();
+//            getAudioPermission();
+//            getStoragePermission();
         }
 
     }
