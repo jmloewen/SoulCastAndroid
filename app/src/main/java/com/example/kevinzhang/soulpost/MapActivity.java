@@ -95,10 +95,6 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
     private Location mLastLocation;
     Marker currentLocationMarker;
 
-
-    //Variables for Audio Up / Audio Down.
-    private RecordButton tempRecordButton;
-    private RecordButton mRecordButton;
     private AudioPipeline mAudioPipeline;
 
     //The user's device
@@ -106,7 +102,6 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
 
     private TransferUtility mTransferUtility;
     private Activity mActivity = this;
-    private boolean mIsConnected = false;
     private static File mAudioFile;
     private static File receiveNotificationAudioFile;
 
@@ -120,7 +115,6 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-
         mTransferUtility = Util.getTransferUtility(this);
 
         setPreferences();
@@ -129,13 +123,12 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         setupAudioPipeline();
 
         Intent myIntent = getIntent();
-        String S3key = myIntent.getStringExtra("S3key");
+        String S3key = getIntent().getStringExtra("S3key");
         playNotificationMessage(S3key);
 
     }
 
     private void setPreferences() {
-        //presistent store
         prefs = getSharedPreferences(SOULPREFS, Context.MODE_PRIVATE);
         editor = prefs.edit();
     }
@@ -156,7 +149,6 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
             }
         });
     }
-
 
     @Override
     protected void onPause() {
@@ -210,21 +202,15 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
     @Override
     public void onConnected(@Nullable Bundle bundle) {
         requestLocationUpdates();
-        if (fineLocationGranted()) {
 
-            LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
-            mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
-            //button enable here
-            registerNewUserDevice();
+        LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
+        mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
 
-        }else{
-            requestFineLocationPermissions();
-        }
+        registerNewUserDevice();
     }
 
     private void registerNewUserDevice() {
         LatLng latLng;
-
         try {
             latLng = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
             userDevice = APIUserConnect.RegisterDevice(latLng, this);
@@ -234,27 +220,21 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         }
     }
 
-
-
     @Override
     public void onConnectionSuspended(int i) {
-        //Toast.makeText(this, "CNXN Suspended", Toast.LENGTH_LONG).show();
+        //TODO update device location
     }
 
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-        //Toast.makeText(this, "CNXN Fail", Toast.LENGTH_LONG).show();
+        Toast.makeText(this, "Connection Failed, try again", Toast.LENGTH_LONG).show();
     }
 
-    /**
-     * Currently, this is only being called on launch.  We need a locationlistener to listen for location changes.
-     */
     @Override
     public void onLocationChanged(Location location) {
-        //this is done because we want to store the location for other purposes.
         mLastLocation = location;
         if (userDevice == null) {
-            throw new AssertionError("userDevice cannot be null during onlocation changed");
+            throw new AssertionError("userDevice cannot be null during onLocationChanged");
         } else {
             updateDeviceLocation(mLastLocation);
             moveMaptoCurrentLocation(mLastLocation);
@@ -262,11 +242,10 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
     }
 
     private void moveMaptoCurrentLocation(Location mLastLocation) {
-
-        //move the map appropriately.
         LatLng currentLatLng = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
         mMap.moveCamera(CameraUpdateFactory.newLatLng(currentLatLng));
-
+        mMap.animateCamera(CameraUpdateFactory.zoomTo(17));
+        //Set Marker
         if (currentLocationMarker == null){
             currentLocationMarker = mMap.addMarker(new MarkerOptions()
                     .position(currentLatLng)
@@ -274,16 +253,12 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         }else{
             currentLocationMarker.setPosition(currentLatLng);
         }
-
     }
 
     private void updateDeviceLocation(Location mLastLocation) {
-        //update the device location
         userDevice.setLatitude((float) mLastLocation.getLatitude());
         userDevice.setLongitude((float) mLastLocation.getLongitude());
         userDevice.setRadius(DEFAULT_USER_RADIUS);
-
-        //update the device record on the server
         APIUserConnect.UpdateDevice(userDevice, this);
     }
 
@@ -291,7 +266,6 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         mLocationRequest = new LocationRequest();
         mLocationRequest.setInterval(1000);
         mLocationRequest.setFastestInterval(1000);
-
         mLocationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
         mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
@@ -326,50 +300,11 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         });
     }
 
-    private void checkLocationPermission() {
-        if (!fineLocationGranted()) {
-            requestFineLocationPermissions();
-        }
-    }
-
-    private boolean fineLocationGranted() {
-        return (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-                == PackageManager.PERMISSION_GRANTED);
-    }
-
-    private void requestFineLocationPermissions() {
-        ActivityCompat.requestPermissions(this,
-                new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                LOCATION_PERMISSION_REQUEST_CODE);
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           String permissions[], int[] grantResults) {
-        switch (requestCode) {
-            case LOCATION_PERMISSION_REQUEST_CODE: {
-                // If request is cancelled, the result arrays are empty.
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    //Permission granted
-                    if (fineLocationGranted()) {
-                            buildGoogleAPIClient();
-                    }
-                } else {
-                    // Permission denied, Disable the functionality that depends on this permission.
-                    Toast.makeText(this, "Location permission denied", Toast.LENGTH_LONG).show();
-                }
-            }
-            // other cases to check for other permissions this app might request.
-        }
-    }
-
     /**
      * This sets up the connection between the user and our server.
      */
     private void setupFirebase() {
         mFirebaseRemoteConfig = FirebaseRemoteConfig.getInstance();
-        //local var
         FirebaseRemoteConfigSettings firebaseRemoteConfigSettings =
                 new FirebaseRemoteConfigSettings.Builder()
                         .setDeveloperModeEnabled(true)
@@ -406,21 +341,17 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
     }
 
     private void playNotificationMessage(String S3key){
-        if(S3key == null)
-        {
+        if(S3key == null) {
             Log.v("S3KeyNull","S3key is null");
             return;
         }
 
         receiveNotificationAudioFile = new File(Environment.getExternalStorageDirectory().getAbsolutePath(),S3key);
-        Log.v("KeyNotNull",S3key);
+        Log.v("S3Key is:",S3key);
         TransferObserver observer = mTransferUtility.download(Constants.BUCKET_NAME, receiveNotificationAudioFile.getName(), receiveNotificationAudioFile);
-
         observer.setTransferListener(new TransferListener() {
             @Override
             public void onStateChanged(int id, TransferState newState) {
-                //Enum status = newState.valueOf("Completed");
-                //Log.v("in OnStateChanged","In onstate changed");
                 switch (newState) {
                     case COMPLETED:
                         Toast.makeText(mActivity, "Download to S3 completed!", Toast.LENGTH_SHORT).show();
@@ -430,7 +361,6 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
                         try {
                             FileInputStream fd = openFile(receiveNotificationAudioFile);
                             mMediaPlayer.setDataSource(fd.getFD());
-//            Log.d(TAG, "Path: " + mAudioFile.getAbsolutePath());
                             mMediaPlayer.prepare();
                             mMediaPlayer.start();
                             mMediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
@@ -439,7 +369,6 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
                                     mMediaPlayer.reset();
                                     Log.d("receiveNotificationDL", "Finished playing downloaded audio File");
                                 }
-
 
                             });
 
