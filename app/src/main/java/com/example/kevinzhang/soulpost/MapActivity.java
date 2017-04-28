@@ -75,14 +75,10 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         LocationListener,
         buttonFragment.OnRecordButtonClickListener{
 
-    //firebase
     private FirebaseRemoteConfig mFirebaseRemoteConfig;
+    private Device userDevice = null;
 
-    //permission request codes
-    private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
     private final float DEFAULT_USER_RADIUS = 1.0f;
-
-    //sharedpreferences
     private SharedPreferences prefs;
     private SharedPreferences.Editor editor;
     private static final String SOULPREFS = "SoulcastPreferences";
@@ -97,12 +93,8 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
 
     private AudioPipeline mAudioPipeline;
 
-    //The user's device
-    private Device userDevice = null;
-
     private TransferUtility mTransferUtility;
     private Activity mActivity = this;
-    private static File mAudioFile;
     private static File receiveNotificationAudioFile;
 
     Retrofit retrofit = new Retrofit.Builder()
@@ -122,10 +114,8 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         setupMapFragment();
         setupAudioPipeline();
 
-        Intent myIntent = getIntent();
         String S3key = getIntent().getStringExtra("S3key");
         playNotificationMessage(S3key);
-
     }
 
     private void setPreferences() {
@@ -171,15 +161,6 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         mGoogleApiClient.disconnect();
     }
 
-    /**
-     * Manipulates the map once available.
-     * This callback is triggered when the map is ready to be used.
-     * This is where we can add markers or lines, add listeners or move the camera. In this case,
-     * we just add a marker near Sydney, Australia.
-     * If Google Play services is not installed on the device, the user will be prompted to install
-     * it inside the SupportMapFragment. This method will only be triggered once the user has
-     * installed Google Play services and returned to the app.
-     */
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
@@ -300,9 +281,6 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         });
     }
 
-    /**
-     * This sets up the connection between the user and our server.
-     */
     private void setupFirebase() {
         mFirebaseRemoteConfig = FirebaseRemoteConfig.getInstance();
         FirebaseRemoteConfigSettings firebaseRemoteConfigSettings =
@@ -345,7 +323,6 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
             Log.v("S3KeyNull","S3key is null");
             return;
         }
-
         receiveNotificationAudioFile = new File(Environment.getExternalStorageDirectory().getAbsolutePath(),S3key);
         Log.v("S3Key is:",S3key);
         TransferObserver observer = mTransferUtility.download(Constants.BUCKET_NAME, receiveNotificationAudioFile.getName(), receiveNotificationAudioFile);

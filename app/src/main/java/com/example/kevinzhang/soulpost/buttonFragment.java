@@ -25,17 +25,15 @@ import android.widget.Toast;
 public class buttonFragment extends Fragment {
 
     OnRecordButtonClickListener mCallback;
-    Button mRecordButton;
+    Button mButton;
     public interface OnRecordButtonClickListener {
-        public void onButtonPressed();
-
-        public void onButtonReleased();
+        void onButtonPressed();
+        void onButtonReleased();
     }
 
     @Override
     public void onAttach(Activity activity){
         super.onAttach(activity);
-
         try{
             mCallback = (OnRecordButtonClickListener) activity;
         }catch(ClassCastException e){
@@ -48,13 +46,11 @@ public class buttonFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
+        View mView = inflater.inflate(R.layout.button_fragment, container, false);
 
-        View view = inflater.inflate(R.layout.button_fragment, container, false);
+        mButton = (Button) mView.findViewById(R.id.record_button);
 
-        mRecordButton = (Button) view.findViewById(R.id.record_button);
-
-        mRecordButton.setOnTouchListener(new View.OnTouchListener() {
+        mButton.setOnTouchListener(new View.OnTouchListener() {
                                              @Override
                                              public boolean onTouch(View v, MotionEvent event) {
                                                  if(event.getAction() == MotionEvent.ACTION_DOWN){
@@ -65,10 +61,8 @@ public class buttonFragment extends Fragment {
                                                  return false;
                                              }
                                          }
-
-
         );
-        return view;
+        return mView;
     }
 
 
