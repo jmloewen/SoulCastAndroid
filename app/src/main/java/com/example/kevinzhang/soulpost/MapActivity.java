@@ -80,7 +80,6 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
 
     //permission request codes
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
-    private final int AUDIO_AND_STORAGE_PERMISSION_REQUEST_CODE = 2;
     private final float DEFAULT_USER_RADIUS = 1.0f;
 
     //sharedpreferences
@@ -108,7 +107,6 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
     private TransferUtility mTransferUtility;
     private Activity mActivity = this;
     private boolean mIsConnected = false;
-    private ConnectivityManager mCm;
     private static File mAudioFile;
     private static File receiveNotificationAudioFile;
 
@@ -123,15 +121,12 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         setContentView(R.layout.activity_map);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
-        mCm = (ConnectivityManager)getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
-        mIsConnected = mCm.getActiveNetworkInfo() != null && mCm.getActiveNetworkInfo().isConnected();
         mTransferUtility = Util.getTransferUtility(this);
 
         setPreferences();
         setupFirebase();
         setupMapFragment();
         setupAudioPipeline();
-        permissionCheck();
 
         Intent myIntent = getIntent();
         String S3key = myIntent.getStringExtra("S3key");
@@ -160,13 +155,6 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
                 beginUpload(audioFile);
             }
         });
-    }
-
-    private void permissionCheck() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            checkLocationPermission();
-            checkAudioAndStoragePermission();
-        }
     }
 
 
@@ -240,37 +228,12 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         try {
             latLng = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
             userDevice = APIUserConnect.RegisterDevice(latLng, this);
-            provideCastButton(latLng);
-
             Toast.makeText(this, "Connection Established", Toast.LENGTH_LONG).show();
         } catch(NullPointerException e){
             e.printStackTrace();
-            latLng = new LatLng(0.000, 0.000);
         }
     }
 
-    private void provideCastButton(LatLng latLng) {
-        //if we can connect to the internet, do so & register.
-        mIsConnected = mCm.getActiveNetworkInfo() != null && mCm.getActiveNetworkInfo().isConnected();
-
-        if (mIsConnected && userDevice == null){
-            userDevice = APIUserConnect.RegisterDevice(latLng, this);
-            mRecordButton.setEnabled(true);
-        }
-        else if (userDevice == null){
-            //tell the user they dont have internet available.
-            Toast.makeText(getApplicationContext(), "Please enable Internet connectivity", Toast.LENGTH_LONG);
-            mRecordButton.setEnabled(false);
-        }
-        else if (!mIsConnected && userDevice != null){
-            //userdevice is not null and user is not connected.
-            //Tell the user to connect to the internet.
-        }
-        else{
-            //userdevice is not null and the user is connected to the internet - everything is good.
-            mRecordButton.setEnabled(true);
-        }
-    }
 
 
     @Override
@@ -378,28 +341,6 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         ActivityCompat.requestPermissions(this,
                 new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                 LOCATION_PERMISSION_REQUEST_CODE);
-    }
-
-    private void checkAudioAndStoragePermission() {
-        if (!audioGranted() && !storageGranted()) {
-            requestAudioAndStoragePermissions();
-        }
-    }
-
-    private boolean audioGranted() {
-        return (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO)
-                == PackageManager.PERMISSION_GRANTED);
-    }
-
-    private boolean storageGranted() {
-        return (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                == PackageManager.PERMISSION_GRANTED);
-    }
-
-    private void requestAudioAndStoragePermissions() {
-        ActivityCompat.requestPermissions(this,
-                new String[]{Manifest.permission.RECORD_AUDIO, Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                AUDIO_AND_STORAGE_PERMISSION_REQUEST_CODE);
     }
 
     @Override
@@ -549,12 +490,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
 
     @Override
     public void onButtonPressed() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            checkAudioAndStoragePermission();
-            mAudioPipeline.startRecording();
-        } else {
-            mAudioPipeline.startRecording();
-        }
+        mAudioPipeline.startRecording();
     }
 
     @Override
