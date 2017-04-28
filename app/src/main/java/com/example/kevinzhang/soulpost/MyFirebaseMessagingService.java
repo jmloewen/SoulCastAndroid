@@ -56,6 +56,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
        Log.v("myToken","msgreceived");
         printFCMMessage(remoteMessage);
         savePrefs(remoteMessage);
+        sendNotification(prefs.getString("PushS3Key", "NO KEY STORED"));
     }
 
     private void printFCMMessage(RemoteMessage remoteMessage) {
@@ -76,8 +77,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         //editor.putString("PushS3Key", remoteMessage.getData().get("S3key"));
         editor.commit();
         Log.d(TAG, "S3Key: " + prefs.getString("PushS3Key", "NO KEY STORED"));
-        sendNotification(prefs.getString("PushS3Key", "NO KEY STORED"));
-
     }
 
     private void playSoul(final String S3key) {
@@ -118,12 +117,10 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     }
 
     public void beginDownload(final String S3key){
-        Log.d(TAG, "Download has begun");
 
         TransferUtility mTransferUtility = Util.getTransferUtility(this);
         File audioFile = new File(Environment.getExternalStorageDirectory().getAbsolutePath(),
                 String.valueOf(S3key));
-
         TransferObserver observer = mTransferUtility.download(Constants.BUCKET_NAME, S3key, audioFile);
 
         observer.setTransferListener(new TransferListener() {
@@ -132,7 +129,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 switch (newState) {
                     case COMPLETED:
                         Log.v("transferListener", " download completed");
-                        //playSoul(S3key);
+                        playSoul(S3key);
                 }
             }
 
@@ -164,9 +161,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 .setSound(defaultSoundUri)
                 .setContentIntent(pendingIntent);
 
-        NotificationManager notificationManager =
-                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        Log.v("sendNotification","finished building notification");
+        NotificationManager notificationManager = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
+        Log.v("Notification:","finished building notification");
         notificationManager.notify(0 /* ID of notification */, notificationBuilder.build());
     }
 

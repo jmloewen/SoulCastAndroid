@@ -60,8 +60,7 @@ public class AudioPipeline {
             mMediaRecorder.stop();
             recordingFinishedTimeInMillis = System.currentTimeMillis();
         } catch (RuntimeException ex){
-            Log.d(TAG, "STOP RECORD CATCH");
-
+            Log.d(TAG, "mMediaRecorder stop recording Runtimeexception");
         }
         mMediaRecorder.reset();
         mHasAudioRecordingBeenStarted = false;
@@ -79,7 +78,6 @@ public class AudioPipeline {
         try {
             mAudioPipelineListener.onRecordingFinished(mAudioFile);
             mMediaPlayer.setDataSource(mAudioFile.getAbsolutePath());
-
             mMediaPlayer.prepare();
             mMediaPlayer.start();
 
@@ -89,7 +87,6 @@ public class AudioPipeline {
                     mMediaPlayer.reset();
                 }
             });
-
         } catch (IOException e) {
             e.printStackTrace();
         }

@@ -25,9 +25,6 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.MotionEvent;
-import android.view.View;
 
 import android.widget.Toast;
 
@@ -171,7 +168,6 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
             checkAudioAndStoragePermission();
         }
     }
-
 
 
     @Override
