@@ -263,7 +263,6 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
                     case COMPLETED:
                         Toast.makeText(mActivity, "Upload to S3 completed!", Toast.LENGTH_SHORT).show();
                         uploadSoulToServer(audioFile.getName());
-                        Toast.makeText(mActivity, "Soul Casted to Server", Toast.LENGTH_SHORT).show();
                 }
                 Log.v("transfer listener", "here");
             }
@@ -299,7 +298,6 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
 
     //TODO: be refactored out
     void uploadSoulToServer(String fileName) {
-        Toast.makeText(MapActivity.this, "In uploadToServer. S3Key is: " + fileName, Toast.LENGTH_SHORT).show();
         SoulpostAPI myAPI = retrofit.create(SoulpostAPI.class);
 
         Soul mSoul = new Soul("Android", fileName, System.currentTimeMillis(), userDevice);
