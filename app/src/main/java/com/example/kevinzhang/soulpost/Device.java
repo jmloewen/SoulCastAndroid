@@ -14,11 +14,13 @@ public class Device {
     @SerializedName("token") private String token;
     private int id;
 
-    public Device(float latitude, float longitude, float radius, String token) {
+    public Device(String os, float latitude, float longitude, float radius, String token) {
         this.longitude = longitude;
         this.latitude = latitude;
         this.radius = radius;
         this.token = token;
+        this.os = os;
+
     }
 
     public void setLongitude(float longitude){this.longitude = longitude;}

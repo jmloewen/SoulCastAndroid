@@ -35,9 +35,7 @@ public class PermissionsManager {
                                  Manifest.permission.RECORD_AUDIO,
                                  Manifest.permission.WRITE_EXTERNAL_STORAGE},
                     LOCATION_AUDIO_STORAGE_PERMISSION_REQUEST_CODE);
-//            getLocationPermission();
-//            getAudioPermission();
-//            getStoragePermission();
+
         }
 
     }
@@ -70,7 +68,6 @@ public class PermissionsManager {
         }
 
         if (hasLocationPermission() && hasAudioPermission() && hasStoragePermission()){
-
             hasAllPermissions = true;
         }
 
@@ -83,11 +80,13 @@ public class PermissionsManager {
     }
 
     private boolean hasAudioPermission() {
-        return false;
+        return (ContextCompat.checkSelfPermission(callerContext, Manifest.permission.RECORD_AUDIO)
+                == PackageManager.PERMISSION_GRANTED);
     }
 
     private boolean hasLocationPermission() {
-        return true;
+        return (ContextCompat.checkSelfPermission(callerContext, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                == PackageManager.PERMISSION_GRANTED);
     }
 
 

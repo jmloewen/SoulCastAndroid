@@ -32,7 +32,7 @@ public class APIUserConnect {
         // prepare call in Retrofit 2.0
         SoulpostAPI soulpostAPI = retrofit.create(SoulpostAPI.class);
         final Device newdevice;
-        newdevice = new Device((float)latLng.latitude,(float)latLng.longitude,(float)0.03, FirebaseInstanceId.getInstance().getToken());
+        newdevice = new Device("Android",(float)latLng.latitude,(float)latLng.longitude,(float)0.03, FirebaseInstanceId.getInstance().getToken());
         Log.d("Token", FirebaseInstanceId.getInstance().getToken() + "");
         Call<Device> call = soulpostAPI.devicePost(newdevice);
         call.enqueue(new Callback<Device>() {

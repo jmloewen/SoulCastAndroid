@@ -14,19 +14,15 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         permissionsMan = new PermissionsManager(this);
         if (permissionsMan.hasAllPermissions()) {
             Intent mapIntent = new Intent(this, MapActivity.class);
             startActivity(mapIntent);
         }else{
-
-            //upon completion of getting all permissions, start map activity
             permissionsMan.getAllPermissions();
         }
 
     }
-
 
     /**
      *
@@ -38,6 +34,20 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onRequestPermissionsResult(int requestCode,
                                            String permissions[], int[] grantResults){
+
+        printPermissionResults(requestCode, permissions, grantResults);
+
+        if (grantResults.length == 3){
+            Log.d("grResArray", "length is 3");
+            if (grantResults[0]==0 && grantResults[1]==0 && grantResults[2]==0){
+                Intent mapIntent = new Intent(this, MapActivity.class);
+                startActivity(mapIntent);
+            }
+        }
+
+    }
+
+    private void printPermissionResults(int requestCode, String[] permissions, int[] grantResults) {
         Log.d("oRPR", "enter onrequestpermissionsresult");
         Log.d("reqCode", "" + requestCode);
         for (int i = 0; i < permissions.length; i++)
@@ -48,17 +58,6 @@ public class MainActivity extends AppCompatActivity {
         {
             Log.d("grResArray", "" + grantResults[i]);
         }
-
-        if (grantResults.length == 3){
-            Log.d("grResArray", "length is 3");
-            if (grantResults[0]==0 && grantResults[1]==0 && grantResults[2]==0){
-                Intent mapIntent = new Intent(this, MapActivity.class);
-                startActivity(mapIntent);
-            }
-        }else{
-            Toast.makeText(this, "Permissions denied, please reinstall the app again", Toast.LENGTH_LONG).show();
-        }
-
 
     }
 
