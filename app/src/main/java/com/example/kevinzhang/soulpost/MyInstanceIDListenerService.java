@@ -15,13 +15,7 @@ public class MyInstanceIDListenerService extends FirebaseInstanceIdService {
     private static final String TAG = "MyFirebaseIIDService";
     private static final String FRIENDLY_ENGAGE_TOPIC = "friendly_engage";
 
-    //HAX
-    public String deviceToken;
 
-    public String getToken(){
-        this.onTokenRefresh();
-        return this.deviceToken;
-    }
     /**
      * The Application's current Instance ID token is no longer valid
      * and thus a new one must be requested.
@@ -32,9 +26,7 @@ public class MyInstanceIDListenerService extends FirebaseInstanceIdService {
         // after a refresh this is where you should do that.
         String token = FirebaseInstanceId.getInstance().getToken();
         Log.d(TAG, "FCM Token: " + token);
-        //HAX
-        deviceToken = token;
-
+    
         // Once a token is generated, we subscribe to topic.
         FirebaseMessaging.getInstance()
                 .subscribeToTopic(FRIENDLY_ENGAGE_TOPIC);
