@@ -1,6 +1,5 @@
 package com.example.kevinzhang.soulpost;
 
-import android.app.Activity;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -12,24 +11,19 @@ import android.net.Uri;
 import android.os.Environment;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferListener;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferObserver;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferState;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferUtility;
 
-import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
 import java.io.File;
-import java.io.FileDescriptor;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.Date;
 import java.util.Map;
 
 /**
@@ -55,8 +49,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
         //TODO if app is foreground, begin download. if app is background, send notification
 
-//        beginDownload(prefs.getString("PushS3Key", "NO KEY STORED"));
-        sendNotification(prefs.getString("PushS3Key", "NO KEY STORED"));
+        beginDownload(prefs.getString("PushS3Key", "NO KEY STORED"));
+//        sendNotification(prefs.getString("PushS3Key", "NO KEY STORED"));
 
     }
 
