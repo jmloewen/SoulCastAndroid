@@ -98,10 +98,10 @@ public class APIUserConnect {
         //sends to the server userRadius, gets back a number in JSON
     }
 
-    public static void createSoul(Device userDevice, String fileName, final Context context) {
+    public static void createSoul(Device userDevice, String s3Key, final Context context) {
         SoulpostAPI myAPI = getRetrofitConnection().create(SoulpostAPI.class);
 
-        Soul mSoul = new Soul("Android", fileName, System.currentTimeMillis(), userDevice);
+        Soul mSoul = new Soul("testSoulType1", s3Key, System.currentTimeMillis(), userDevice);
         Call<Soul> call = myAPI.soulPost(mSoul);
 
         call.enqueue(new Callback<Soul>() {

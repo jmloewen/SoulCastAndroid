@@ -1,25 +1,26 @@
 package com.example.kevinzhang.soulpost;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * Created by kevinzhang on 2016-12-14.
  */
 
 public class Soul {
-    private String soulType;
-    private String s3Key;
-    private long epoch;
-    private double longitude;
-    private double latitude;
-    private double radius;
-    private String token;
+    @SerializedName("soulType") private String soulType;
+    @SerializedName("s3Key") private String s3Key;
+    @SerializedName("epoch") private long epoch;
+    @SerializedName("latitude") private float latitude;
+    @SerializedName("longitude") private float longitude;
+    @SerializedName("radius") private float radius;
+    @SerializedName("token") private String token;
     private Device userDevice;
 
     public Soul(String soulType, String s3Key, long epoch, Device userDevice) {
-        this.userDevice = userDevice;
         this.soulType = soulType;
         this.s3Key = s3Key;
         this.epoch = epoch;
-        this.latitude = userDevice.getLatitude();
+        this.latitude =userDevice.getLatitude();
         this.longitude = userDevice.getLongitude();
         this.radius = userDevice.getRadius();
         this.token = userDevice.getToken();
