@@ -84,15 +84,19 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-        mTransferUtility = Util.getTransferUtility(this);
+        initializeTransferUtility();
 
         setPreferences();
         setupFirebase();
         setupMapFragment();
         setupAudioPipeline();
 
-        String S3key = getIntent().getStringExtra("S3key");
-        playNotificationMessage(S3key);
+//        String S3key = getIntent().getStringExtra("S3key");
+        playNotificationMessage(getIntent().getStringExtra("S3key"));
+    }
+
+    private void initializeTransferUtility() {
+        mTransferUtility = Util.getTransferUtility(this);
     }
 
     private void setPreferences() {
@@ -278,11 +282,8 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
             Log.v("S3KeyNull","S3key is null");
             return;
         }
-
         receiveNotificationAudioFile = new File(Environment.getExternalStorageDirectory().getAbsolutePath(),S3key);
-
         TransferObserver observer = mTransferUtility.download(Constants.BUCKET_NAME, receiveNotificationAudioFile.getName(), receiveNotificationAudioFile);
-
         observer.setTransferListener(new TransferListener() {
             @Override
             public void onStateChanged(int id, TransferState newState) {
@@ -290,7 +291,6 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
                     case COMPLETED:
                         Toast.makeText(mActivity, "Download to S3 completed!", Toast.LENGTH_SHORT).show();
                         final MediaPlayer mMediaPlayer = new MediaPlayer();
-
                         try {
                             FileInputStream fd = openFile(receiveNotificationAudioFile);
                             mMediaPlayer.setDataSource(fd.getFD());
@@ -304,13 +304,11 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
                                 }
 
                             });
-
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
                 }
             }
-
             @Override
             public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
                 String str = Long.toString(bytesCurrent);
