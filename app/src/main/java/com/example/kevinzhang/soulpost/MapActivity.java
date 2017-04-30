@@ -351,16 +351,14 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
      * @param S3key The S3Key of the sent message, to be used to query the server for the audio file.
      */
     private void playNotificationMessage(String S3key){
-
         //If the S3Key doesn't exist, we've accessed this function improperly, somehow.  Exit.
         if(S3key == null) {
             Log.v("S3KeyNull","S3key is null");
             return;
         }
-         //Grab the audio file that we were sent, identified by the S3Key.
+        //Grab the audio file that we were sent, identified by the S3Key.
         receiveNotificationAudioFile = new File(Environment.getExternalStorageDirectory().getAbsolutePath(), S3key);
         TransferObserver observer = mTransferUtility.download(Constants.BUCKET_NAME, receiveNotificationAudioFile.getName(), receiveNotificationAudioFile);
-
         //create our transfer listener for this audio message.
         observer.setTransferListener(new TransferListener() {
             @Override
