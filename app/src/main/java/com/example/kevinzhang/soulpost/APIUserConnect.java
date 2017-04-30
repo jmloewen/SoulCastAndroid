@@ -107,7 +107,13 @@ public class APIUserConnect {
         call.enqueue(new Callback<Soul>() {
             @Override
             public void onResponse(Call<Soul> call, Response<Soul> response) {
-                Toast.makeText(context, " Soul uploaded to Soulcast server", Toast.LENGTH_SHORT).show();
+                if (response.isSuccessful()){
+                    Toast.makeText(context, " Soul uploaded to Soulcast server", Toast.LENGTH_SHORT).show();
+                }else {
+                    //some kind of server error
+                    Log.d("Server response error",new Gson().toJson(response));
+                    Log.d("ERIC Server error :",response.body() + "");
+                }
             }
 
             @Override
