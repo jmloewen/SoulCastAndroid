@@ -97,11 +97,6 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
     private Activity mActivity = this;
     private static File receiveNotificationAudioFile;
 
-    Retrofit retrofit = new Retrofit.Builder()
-            .baseUrl("http://soulcast.ml")
-            .addConverterFactory(GsonConverterFactory.create())
-            .build();
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -262,7 +257,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
                 switch (newState) {
                     case COMPLETED:
                         Toast.makeText(mActivity, "Upload to S3 completed!", Toast.LENGTH_SHORT).show();
-                        uploadSoulToServer(audioFile.getName());
+                        APIUserConnect.createSoul(userDevice, audioFile.getName(), getApplicationContext());
                 }
                 Log.v("transfer listener", "here");
             }
@@ -294,26 +289,6 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         mFirebaseRemoteConfig.setConfigSettings(firebaseRemoteConfigSettings);
         mFirebaseRemoteConfig.setDefaults(defaultConfigMap);
         FirebaseMessaging.getInstance().subscribeToTopic("friendly_engage");
-    }
-
-    //TODO: be refactored out
-    void uploadSoulToServer(String fileName) {
-        SoulpostAPI myAPI = retrofit.create(SoulpostAPI.class);
-
-        Soul mSoul = new Soul("Android", fileName, System.currentTimeMillis(), userDevice);
-        Call<Soul> call = myAPI.soulPost(mSoul);
-
-        call.enqueue(new Callback<Soul>() {
-            @Override
-            public void onResponse(Call<Soul> call, Response<Soul> response) {
-                Toast.makeText(MapActivity.this, " Soul uploaded to Soulcast server", Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onFailure(Call<Soul> call, Throwable t) {
-                Toast.makeText(MapActivity.this, t.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
     }
 
     private void playNotificationMessage(String S3key){

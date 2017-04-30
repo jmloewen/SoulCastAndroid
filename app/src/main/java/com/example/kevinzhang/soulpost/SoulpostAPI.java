@@ -23,7 +23,7 @@ public interface SoulpostAPI {
 
     @Headers("Accept: application/json")
     @PATCH("/devices/{id}")
-    Call<Device> deviceUpdate(@Body Device device, @Path("id") int  id);
+    Call<Device> deviceUpdate(@Body Device device, @Path("id") int id);
 
     @Headers("Accept: application/json")
     @GET("/nearby/{id}")

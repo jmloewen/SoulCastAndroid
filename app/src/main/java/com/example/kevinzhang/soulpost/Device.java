@@ -20,7 +20,6 @@ public class Device {
         this.radius = radius;
         this.token = token;
         this.os = os;
-
     }
 
     public void setLongitude(float longitude){this.longitude = longitude;}

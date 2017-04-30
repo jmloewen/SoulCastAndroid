@@ -20,17 +20,19 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class APIUserConnect {
 
+    private static Retrofit getRetrofitConnection(){
+        return (new Retrofit.Builder()
+                .baseUrl("http://soulcast.ml")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build());
+    }
+
     /***
      * This is for first time user connection, creates a registration with a location-device id tuple.
      */
     public static Device RegisterDevice(LatLng latLng, final Context context){
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://soulcast.ml")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-
         // prepare call in Retrofit 2.0
-        SoulpostAPI soulpostAPI = retrofit.create(SoulpostAPI.class);
+        SoulpostAPI soulpostAPI = getRetrofitConnection().create(SoulpostAPI.class);
         final Device newdevice;
         newdevice = new Device("android",(float)latLng.latitude,(float)latLng.longitude,(float)0.03, FirebaseInstanceId.getInstance().getToken());
         Log.d("Token", FirebaseInstanceId.getInstance().getToken() + "");
@@ -64,13 +66,8 @@ public class APIUserConnect {
      */
     public static void UpdateDevice(Device userDevice, final Context context){
 
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://soulcast.ml")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-
         Log.d("Update", "Update Function");
-        SoulpostAPI soulpostAPI = retrofit.create(SoulpostAPI.class);
+        SoulpostAPI soulpostAPI = getRetrofitConnection().create(SoulpostAPI.class);
         Call<Device> call = soulpostAPI.deviceUpdate(userDevice, userDevice.getId());
         call.enqueue(new Callback<Device>() {
             @Override
@@ -102,4 +99,23 @@ public class APIUserConnect {
     }
 
 
+    //TODO: be refactored out into apiuserconnect
+    public static void createSoul(Device userDevice, String fileName, final Context context) {
+        SoulpostAPI myAPI = getRetrofitConnection().create(SoulpostAPI.class);
+
+        Soul mSoul = new Soul("Android", fileName, System.currentTimeMillis(), userDevice);
+        Call<Soul> call = myAPI.soulPost(mSoul);
+
+        call.enqueue(new Callback<Soul>() {
+            @Override
+            public void onResponse(Call<Soul> call, Response<Soul> response) {
+                Toast.makeText(context, " Soul uploaded to Soulcast server", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onFailure(Call<Soul> call, Throwable t) {
+                Toast.makeText(context, t.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
 }
