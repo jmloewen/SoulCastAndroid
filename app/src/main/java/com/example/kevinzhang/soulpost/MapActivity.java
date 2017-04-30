@@ -60,6 +60,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
     private FirebaseRemoteConfig mFirebaseRemoteConfig;
     private Device userDevice = null;
 
+    private int DEFAULT_LOCATION_REQUEST_INTERVAL = 1000;
     private final float DEFAULT_USER_RADIUS = 1.0f;
     private SharedPreferences prefs;
     private SharedPreferences.Editor editor;
@@ -79,19 +80,25 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
     private Activity mActivity = this;
     private static File receiveNotificationAudioFile;
 
+
+    /**
+     * onCreate is the basic setup function for MapActivity.  We will enter this activity assuming that a few things are already set up.
+     * These things are Permissions, the Button Fragment, and the Audio Pipeline.
+     * The first of these things is currently implemented, the latter two are not yet set up on MainActivity.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        //basic setup for the activity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         initializeTransferUtility();
 
-        setPreferences();
         setupFirebase();
+        setPreferences();
         setupMapFragment();
         setupAudioPipeline();
 
-//        String S3key = getIntent().getStringExtra("S3key");
         playNotificationMessage(getIntent().getStringExtra("S3key"));
     }
 
@@ -99,11 +106,17 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         mTransferUtility = Util.getTransferUtility(this);
     }
 
+    /**
+     * Grab existing Shared Preferences.
+     */
     private void setPreferences() {
         prefs = getSharedPreferences(SOULPREFS, Context.MODE_PRIVATE);
         editor = prefs.edit();
     }
 
+    /**
+     * Set up the Map Fragment Asynchronously within the application
+     */
     private void setupMapFragment() {
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -111,6 +124,9 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         mapFragment.getMapAsync(this);
     }
 
+    /**
+     * Set up the Audio Pipeline and the listener for file uploads.
+     */
     private void setupAudioPipeline() {
         mAudioPipeline = new AudioPipeline();
         mAudioPipeline.setmAudioPipelineListener(new AudioPipeline.AudioPipelineListener() {
@@ -121,6 +137,9 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         });
     }
 
+    /**
+     * If we're paused, stop location updates to conserve battery power.
+     */
     @Override
     protected void onPause() {
         super.onPause();
@@ -129,6 +148,10 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         }
     }
 
+
+    /**
+     * Disconnect from Maps API if we close the application.
+     */
     @Override
     protected void onStop() {
         super.onStop();// ATTENTION: This was auto-generated to implement the App Indexing API.
@@ -142,6 +165,10 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         mGoogleApiClient.disconnect();
     }
 
+    /**
+     * When the map is ready, grab the pointer to it and allow the user to interact with it.
+     * @param googleMap
+     */
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
@@ -150,6 +177,9 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         buildGoogleAPIClient();
     }
 
+    /**
+     * Builds the google api client, connects, and assigns it to a pointer.
+     */
     protected synchronized void buildGoogleAPIClient() {
         if (mGoogleApiClient == null) {
             mGoogleApiClient = new GoogleApiClient.Builder(this)
@@ -161,6 +191,10 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         mGoogleApiClient.connect();
     }
 
+    /**
+     * When we have successfully connected to the Maps API, start requesting location updates and register the user's device with our server.
+     * @param bundle
+     */
     @Override
     public void onConnected(@Nullable Bundle bundle) {
         requestLocationUpdates();
@@ -171,27 +205,42 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         registerNewUserDevice();
     }
 
+    /**
+     * A funciton for registering new devices with the server.
+     * Grab the user's location, register the device with the server, and assign this device to our local variable for device.
+     */
     private void registerNewUserDevice() {
-        LatLng latLng;
         try {
-            latLng = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
-            userDevice = APIUserConnect.RegisterDevice(latLng, this);
+            userDevice = APIUserConnect.RegisterDevice(new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude()), this);
             Toast.makeText(this, "Connection Established", Toast.LENGTH_LONG).show();
         } catch(NullPointerException e){
             e.printStackTrace();
+            Toast.makeText(this, "Connection Failed in registerNewUserDevice", Toast.LENGTH_LONG).show();
         }
     }
 
+    /**
+     * When the app is moved to the background and we lose API Connectivity, continue to update the user's location.
+     * @param i
+     */
     @Override
     public void onConnectionSuspended(int i) {
         //TODO update device location
     }
 
+    /**
+     * When the connection fails, tell the user.
+     * @param connectionResult    A result of the attempted connection with the server.
+     */
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
         Toast.makeText(this, "Connection Failed, try again", Toast.LENGTH_LONG).show();
     }
 
+    /**
+     * Update the user's location when it changes Device-side.
+     * @param location
+     */
     @Override
     public void onLocationChanged(Location location) {
         mLastLocation = location;
@@ -203,6 +252,10 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         }
     }
 
+    /**
+     * moves the map to the user's current location automatically.
+     * @param mLastLocation The last known location of the user.
+     */
     private void moveMaptoCurrentLocation(Location mLastLocation) {
         LatLng currentLatLng = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
         mMap.moveCamera(CameraUpdateFactory.newLatLng(currentLatLng));
@@ -217,6 +270,10 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         }
     }
 
+    /**
+     * Update the device's location with our server.
+     * @param mLastLocation the last known location of the user, device-side.
+     */
     private void updateDeviceLocation(Location mLastLocation) {
         userDevice.setLatitude((float) mLastLocation.getLatitude());
         userDevice.setLongitude((float) mLastLocation.getLongitude());
@@ -224,21 +281,29 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         APIUserConnect.UpdateDevice(userDevice, this);
     }
 
+    /**
+     * Set up the frequency of location requests and the priority of these requests
+     */
     private void requestLocationUpdates() {
         mLocationRequest = new LocationRequest();
-        mLocationRequest.setInterval(1000);
-        mLocationRequest.setFastestInterval(1000);
+        mLocationRequest.setInterval(DEFAULT_LOCATION_REQUEST_INTERVAL);
+        mLocationRequest.setFastestInterval(DEFAULT_LOCATION_REQUEST_INTERVAL);
         mLocationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
         mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
     }
 
+    /**
+     * Begin an audio file upload to the Firebase server.
+     * @param audioFile The file that we're uploading to our server.
+     */
     private void beginUpload(final File audioFile) {
-        TransferObserver observer = mTransferUtility.upload(Constants.BUCKET_NAME, audioFile.getName(), audioFile);
-
-        observer.setTransferListener(new TransferListener() {
+        mTransferUtility.upload(Constants.BUCKET_NAME, audioFile.getName(), audioFile)
+        .setTransferListener(new TransferListener()
+        {
             @Override
-            public void onStateChanged(int id, TransferState newState) {
+            public void onStateChanged(int id, TransferState newState)
+            {
                 //Enum status = newState.valueOf("Completed");
                 switch (newState) {
                     case COMPLETED:
@@ -261,6 +326,9 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         });
     }
 
+    /**
+     * Set up the firebase connection.
+     */
     private void setupFirebase() {
         mFirebaseRemoteConfig = FirebaseRemoteConfig.getInstance();
         FirebaseRemoteConfigSettings firebaseRemoteConfigSettings =
@@ -277,13 +345,23 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         FirebaseMessaging.getInstance().subscribeToTopic("friendly_engage");
     }
 
+    /**
+     * Plays the message attached to the Android notification sent to the user.
+     * This is a temporary function that will only exist until we have a proper message queue for our users.
+     * @param S3key The S3Key of the sent message, to be used to query the server for the audio file.
+     */
     private void playNotificationMessage(String S3key){
+
+        //If the S3Key doesn't exist, we've accessed this function improperly, somehow.  Exit.
         if(S3key == null) {
             Log.v("S3KeyNull","S3key is null");
             return;
         }
-        receiveNotificationAudioFile = new File(Environment.getExternalStorageDirectory().getAbsolutePath(),S3key);
+         //Grab the audio file that we were sent, identified by the S3Key.
+        receiveNotificationAudioFile = new File(Environment.getExternalStorageDirectory().getAbsolutePath(), S3key);
         TransferObserver observer = mTransferUtility.download(Constants.BUCKET_NAME, receiveNotificationAudioFile.getName(), receiveNotificationAudioFile);
+
+        //create our transfer listener for this audio message.
         observer.setTransferListener(new TransferListener() {
             @Override
             public void onStateChanged(int id, TransferState newState) {
@@ -302,21 +380,36 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
                                     mMediaPlayer.reset();
                                     Log.d("receiveNotificationDL", "Finished playing downloaded audio File");
                                 }
-
                             });
-                        } catch (IOException e) {
+                        }
+                        catch (IOException e) {
                             e.printStackTrace();
                         }
                 }
             }
+
+            /**
+             * This conceivably exists to be able to show a progress bar for our file download.
+             * It is not being used.
+             * @param id
+             * @param bytesCurrent
+             * @param bytesTotal
+             */
             @Override
             public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
                 String str = Long.toString(bytesCurrent);
                 Log.v("transfer listener", str);
             }
+
+            /**
+             * If there is an error in download, throw an error log into the android message queue.
+             * @param id
+             * @param e
+             */
             @Override
             public void onError(int id, Exception e) {
                 e.printStackTrace();
+                Log.v("PNMoE", "Error in downloading audio message.");
             }
         });
 
@@ -338,22 +431,34 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
                 .build();
     }
 
+    /**
+     * Create a fileinputstream for the downloaded file
+     * @param file
+     * @return
+     * @throws FileNotFoundException
+     * @throws IOException
+     */
     private FileInputStream openFile(File file) throws FileNotFoundException, IOException {
         FileInputStream fos = new FileInputStream(file);
         // remember th 'fos' reference somewhere for later closing it
         return fos;
     }
 
+    /**
+     * An interface reference to the button fragment - if the button is pressed, start recording the message in the audiopipeline.
+     */
     @Override
     public void onButtonPressed() {
         mAudioPipeline.startRecording();
     }
 
+    /**
+     * An interface reference to the button fragment - if the button is released, tsop recording the message in the audio pipeline.
+     */
     @Override
     public void onButtonReleased() {
         if (mAudioPipeline.mHasAudioRecordingBeenStarted) {
             mAudioPipeline.stopRecording();
         }
     }
-
 }
