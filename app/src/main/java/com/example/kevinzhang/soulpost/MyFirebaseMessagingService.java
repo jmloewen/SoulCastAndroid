@@ -51,16 +51,12 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
      */
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
-
-      //  Map<String,String> data = remoteMessage.getData();
-       Log.v("myToken","msgreceived");
         printFCMMessage(remoteMessage);
         savePrefs(remoteMessage);
         sendNotification(prefs.getString("PushS3Key", "NO KEY STORED"));
     }
 
     private void printFCMMessage(RemoteMessage remoteMessage) {
-//         Handle data payload of FCM messages.
          Log.d(TAG, "FCM Message Id: " + remoteMessage.getMessageId());
          Log.d(TAG, "FCM Notification Message: " +
                remoteMessage.getNotification());
