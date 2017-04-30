@@ -98,8 +98,6 @@ public class APIUserConnect {
         //sends to the server userRadius, gets back a number in JSON
     }
 
-
-    //TODO: be refactored out into apiuserconnect
     public static void createSoul(Device userDevice, String fileName, final Context context) {
         SoulpostAPI myAPI = getRetrofitConnection().create(SoulpostAPI.class);
 
