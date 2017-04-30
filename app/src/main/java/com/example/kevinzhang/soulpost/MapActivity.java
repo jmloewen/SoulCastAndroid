@@ -321,16 +321,17 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
             Log.v("S3KeyNull","S3key is null");
             return;
         }
+
         receiveNotificationAudioFile = new File(Environment.getExternalStorageDirectory().getAbsolutePath(),S3key);
-        Log.v("S3Key is:",S3key);
+
         TransferObserver observer = mTransferUtility.download(Constants.BUCKET_NAME, receiveNotificationAudioFile.getName(), receiveNotificationAudioFile);
+
         observer.setTransferListener(new TransferListener() {
             @Override
             public void onStateChanged(int id, TransferState newState) {
                 switch (newState) {
                     case COMPLETED:
                         Toast.makeText(mActivity, "Download to S3 completed!", Toast.LENGTH_SHORT).show();
-                        Log.v("DownloadStateComplete"," Download completed");
                         final MediaPlayer mMediaPlayer = new MediaPlayer();
 
                         try {
@@ -348,10 +349,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
                             });
 
                         } catch (IOException e) {
-
                             e.printStackTrace();
-                            Log.d("receiveNotificationDL", e.getMessage());
-                            Log.d("receiveNotificationDL", e.toString());
                         }
                 }
             }
@@ -361,7 +359,6 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
                 String str = Long.toString(bytesCurrent);
                 Log.v("transfer listener", str);
             }
-
             @Override
             public void onError(int id, Exception e) {
                 e.printStackTrace();

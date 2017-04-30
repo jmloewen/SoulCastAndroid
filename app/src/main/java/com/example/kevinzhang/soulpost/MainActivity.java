@@ -14,12 +14,14 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         permissionsMan = new PermissionsManager(this);
+
         if (permissionsMan.hasAllPermissions()) {
             Intent mapIntent = new Intent(this, MapActivity.class);
             startActivity(mapIntent);
         }else{
             permissionsMan.getAllPermissions();
         }
+
 
     }
 
