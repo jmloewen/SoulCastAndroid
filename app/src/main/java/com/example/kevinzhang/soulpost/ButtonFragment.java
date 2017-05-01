@@ -1,6 +1,7 @@
 package com.example.kevinzhang.soulpost;
 
 import android.app.Fragment;
+import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -22,22 +23,22 @@ import android.widget.Toast;
  * Created by Administrator on 2017-04-13.
  */
 
-public class buttonFragment extends Fragment {
+public class ButtonFragment extends Fragment {
 
-    OnRecordButtonClickListener mCallback;
-    Button mButton;
+    private OnRecordButtonClickListener mCallback;
+    private Button mButton;
     public interface OnRecordButtonClickListener {
         void onButtonPressed();
         void onButtonReleased();
     }
 
     @Override
-    public void onAttach(Activity activity){
-        super.onAttach(activity);
+    public void onAttach(Context context){
+        super.onAttach(context);
         try{
-            mCallback = (OnRecordButtonClickListener) activity;
+            mCallback = (OnRecordButtonClickListener) context;
         }catch(ClassCastException e){
-            throw new ClassCastException(activity.toString()
+            throw new ClassCastException(context.toString()
                     + " must implement OnHeadlineSelectedListener");
         }
 
@@ -64,13 +65,5 @@ public class buttonFragment extends Fragment {
         );
         return mView;
     }
-
-
-
-
-
-
-
-
 }
 

@@ -1,29 +1,19 @@
 package com.example.kevinzhang.soulpost;
 
-import android.Manifest;
-
-import android.app.Fragment;
 import android.content.Context;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
-import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationManager;
 import android.media.MediaPlayer;
-import android.media.MediaRecorder;
-import android.net.ConnectivityManager;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
-import android.support.v4.content.ContextCompat;
 import android.util.Log;
 
 import android.widget.Toast;
@@ -38,11 +28,9 @@ import com.amazonaws.mobileconnectors.s3.transferutility.TransferObserver;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferState;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferUtility;
 import com.google.android.gms.appindexing.Action;
-import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.appindexing.Thing;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.FusedLocationProviderApi;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
@@ -56,24 +44,30 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
-import com.google.firebase.iid.FirebaseInstanceId;
 
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 
 public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
         LocationListener,
-        buttonFragment.OnRecordButtonClickListener{
+        ButtonFragment.OnRecordButtonClickListener,
+        IncomingSoulsFragment.OnIncomingSoulClickListener{
+
+    public interface FragmentRefreshListener{
+        void addSoulToQueue(String S3Key);
+    }
+    public FragmentRefreshListener fragmentRefreshListener;
+    public void setFragmentRefreshListener(FragmentRefreshListener fragmentRefreshListener){
+        this.fragmentRefreshListener = fragmentRefreshListener;
+    }
+    public FragmentRefreshListener getFragmentRefreshListener(){
+        return fragmentRefreshListener;
+    }
+
 
     private FirebaseRemoteConfig mFirebaseRemoteConfig;
     private Device userDevice = null;
@@ -121,7 +115,10 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         setupAudioPipeline();
 
         //play the sent message if we're opening from a notification.
-        playNotificationMessage(getIntent().getStringExtra("S3key"));
+
+        if ((getIntent().getStringExtra("S3key") != null)) {
+            addSoulToQueue(getIntent().getStringExtra("S3key"));
+        }
     }
 
     /**
@@ -481,5 +478,18 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         if (mAudioPipeline.mHasAudioRecordingBeenStarted) {
             mAudioPipeline.stopRecording();
         }
+    }
+
+    public void onSoulPressed(CharSequence textFromListView){
+        playNotificationMessage((String)textFromListView);
+
+    }
+    public void addSoulToQueue(String S3Key){
+        if (S3Key.length() > 0){
+            if (getFragmentRefreshListener() != null){
+                getFragmentRefreshListener().addSoulToQueue(S3Key);
+            }
+        }
+        S3Key = "";
     }
 }

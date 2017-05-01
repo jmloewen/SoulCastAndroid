@@ -15,7 +15,7 @@
         android:layout_height="match_parent"
         />
 
-    <fragment android:name="com.example.kevinzhang.soulpost.buttonFragment"
+    <fragment android:name="com.example.kevinzhang.soulpost.ButtonFragment"
         android:id="@+id/button_fragment"
         android:layout_weight="1"
         android:layout_width="match_parent"

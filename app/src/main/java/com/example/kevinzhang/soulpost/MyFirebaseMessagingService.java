@@ -53,6 +53,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     public void onMessageReceived(RemoteMessage remoteMessage) {
         printFCMMessage(remoteMessage);
         savePrefs(remoteMessage);
+
+        //this will have to become an array, or some sort of queue system.
         sendNotification(prefs.getString("PushS3Key", "NO KEY STORED"));
     }
 
