@@ -4,10 +4,10 @@ android:orientation="vertical" android:layout_width="match_parent"
 android:layout_height="wrap_content">
 
         <Button
-            android:id="@+id/record_button"
+            android:id="@+id/soul_button"
             android:layout_width="60dp"
             android:layout_height="60dp"
-            android:background="@drawable/record_button_states"
+            android:background="@drawable/soul_button_states"
             android:layout_marginBottom="23dp"
             android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true" />

@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--This will ultimately have to be a custom listview.  For now, it's simply a relativelayout with a listview inside of it.-->
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="wrap_content">
+
     <ListView
         android:id="@+id/incoming_listview"
         android:layout_width="match_parent"
-        android:layout_height="80dp"
-        android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true"/>
-        <!--android:visibility="gone"-->
-
-    <!--Mark as invisible until we have a message, then make it appear.-->
+        android:layout_height="200dp"
+        android:layout_centerHorizontal="true" />
+    <!--This is eventually height=wrap_content and width=(something less than full) once we know it works.-->
+    <!--Will mark as invisible until we have a message, then make it appear.-->
+    <!--android:visibility="gone"-->
 </RelativeLayout>

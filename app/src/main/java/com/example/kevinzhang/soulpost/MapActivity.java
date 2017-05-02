@@ -54,7 +54,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
         LocationListener,
-        ButtonFragment.OnRecordButtonClickListener,
+        ButtonFragment.OnButtonClickListener,
         IncomingSoulsFragment.OnIncomingSoulClickListener{
 
     public interface FragmentRefreshListener{
@@ -115,9 +115,10 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         setupAudioPipeline();
 
         //play the sent message if we're opening from a notification.
-
-        if ((getIntent().getStringExtra("S3key") != null)) {
-            addSoulToQueue(getIntent().getStringExtra("S3key"));
+        if (!(getIntent().getStringExtra("PushS3key").equals("NO KEY STORED"))) {
+            addSoulToQueue(getIntent().getStringExtra("PushS3key"));
+            //reset the key once we've added it to the queue.  This will have to be done in a more elegant way in the future.
+            editor.putString("PushS3Key", "NO KEY STORED");
         }
     }
 
@@ -213,7 +214,6 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
     @Override
     public void onConnected(@Nullable Bundle bundle) {
         requestLocationUpdates();
-
         LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
         mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
 

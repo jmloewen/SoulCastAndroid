@@ -6,36 +6,40 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.Toast;
 
+/**
+ * MainActivity serves as a launching point for the app - we handle things here related to preparing the app for use, like
+ * Permissions and setting up the audio input/output streams.  Once completed, it automatically sends to the MapActivity.
+ */
 public class MainActivity extends AppCompatActivity {
 
-    PermissionsManager permissionsMan;
+    private PermissionsManager permissionsMan;
 
     @Override
+    /**
+     * Currently, our oncreate just checks for permissions, and launches if we have all of them.
+     * Eventually we will create things like Fragments and the Audio Pipeline here, but that is not in the current implementation.
+     */
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         permissionsMan = new PermissionsManager(this);
-
         if (permissionsMan.hasAllPermissions()) {
             Intent mapIntent = new Intent(this, MapActivity.class);
             startActivity(mapIntent);
         }else{
             permissionsMan.getAllPermissions();
         }
-
-
     }
 
     /**
      *
-     * @param requestCode
-     * @param permissions
-     * @param grantResults
-     * success is grantresults = 0, failure is -1.
+     * @param requestCode   The code of the permission being requested
+     * @param permissions   An array of permissions that exist in the application
+     * @param grantResults  An array of results of permission requests - 0 for success, -1 for failure;.
+     * onRequestPermissionsResult handles the permission requests that are called within Permissionman.
      */
     @Override
     public void onRequestPermissionsResult(int requestCode,
                                            String permissions[], int[] grantResults){
-
         printPermissionResults(requestCode, permissions, grantResults);
 
         if (grantResults.length == 3){
@@ -45,9 +49,15 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(mapIntent);
             }
         }
-
     }
 
+    /**
+     * A class for error checking the permission results.  Will eventually be removed, exists for bugtesting.
+     * Variables are as above.
+     * @param requestCode
+     * @param permissions
+     * @param grantResults
+     */
     private void printPermissionResults(int requestCode, String[] permissions, int[] grantResults) {
         Log.d("oRPR", "enter onrequestpermissionsresult");
         Log.d("reqCode", "" + requestCode);
