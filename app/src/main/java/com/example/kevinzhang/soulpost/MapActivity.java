@@ -308,7 +308,9 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
                 switch (newState) {
                     case COMPLETED:
                         Toast.makeText(mActivity, "Upload to S3 completed!", Toast.LENGTH_SHORT).show();
+                        APIUserConnect.echo(userDevice, audioFile.getName(), getApplicationContext());
                         APIUserConnect.createSoul(userDevice, audioFile.getName(), getApplicationContext());
+
                 }
                 Log.v("transfer listener", "here");
             }

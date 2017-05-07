@@ -22,6 +22,10 @@ public interface SoulpostAPI {
     Call<Soul> soulPost(@Body Soul soul);
 
     @Headers("Accept: application/json")
+    @POST("/echo")
+    Call<Soul> echo(@Body Soul soul);
+
+    @Headers("Accept: application/json")
     @PATCH("/devices/{id}")
     Call<Device> deviceUpdate(@Body Device device, @Path("id") int id);
 

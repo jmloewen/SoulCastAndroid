@@ -123,4 +123,29 @@ public class APIUserConnect {
             }
         });
     }
+
+    public static void echo(Device userDevice, String s3Key, final Context context) {
+        SoulpostAPI myAPI = getRetrofitConnection().create(SoulpostAPI.class);
+
+        Soul mSoul = new Soul("testSoulType1", s3Key, System.currentTimeMillis()/1000, userDevice);
+        Call<Soul> call = myAPI.echo(mSoul);
+
+        call.enqueue(new Callback<Soul>() {
+            @Override
+            public void onResponse(Call<Soul> call, Response<Soul> response) {
+                if (response.isSuccessful()){
+                    Toast.makeText(context, " Soul echoed to Soulcast server", Toast.LENGTH_SHORT).show();
+                }else {
+                    //some kind of server error
+                    Log.d("Server response error",new Gson().toJson(response));
+                    Log.d("ERIC Server error :",response.body() + "");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Soul> call, Throwable t) {
+                Toast.makeText(context, t.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
 }
