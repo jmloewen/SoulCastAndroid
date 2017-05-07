@@ -102,7 +102,7 @@ public class APIUserConnect {
     public static void createSoul(Device userDevice, String s3Key, final Context context) {
         SoulpostAPI myAPI = getRetrofitConnection().create(SoulpostAPI.class);
 
-        Soul mSoul = new Soul("testSoulType1", s3Key, System.currentTimeMillis(), userDevice);
+        Soul mSoul = new Soul("testSoulType1", s3Key, System.currentTimeMillis()/1000, userDevice);
         Call<Soul> call = myAPI.soulPost(mSoul);
 
         call.enqueue(new Callback<Soul>() {
