@@ -5,6 +5,6 @@ package com.example.kevinzhang.soulpost;
  */
 
 public class Constants {
-    public static final String COGNITO_POOL_ID = "us-west-2_qOguEwve8";
+    public static final String COGNITO_POOL_ID = "us-west-2:51fa302a-6c5d-4714-9d08-af795d811cf5";
     public static final String BUCKET_NAME = "soulcast";
 }
