@@ -20,6 +20,8 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class APIUserConnect {
 
+    static Device newdevice;
+
     private static Retrofit getRetrofitConnection(){
         return (new Retrofit.Builder()
                 .baseUrl("http://soulcast.ml")
@@ -33,7 +35,6 @@ public class APIUserConnect {
     public static Device RegisterDevice(LatLng latLng, final Context context){
         // prepare call in Retrofit 2.0
         SoulpostAPI soulpostAPI = getRetrofitConnection().create(SoulpostAPI.class);
-        final Device newdevice;
         newdevice = new Device("android",(float)latLng.latitude,(float)latLng.longitude,(float)0.03, FirebaseInstanceId.getInstance().getToken());
         Log.d("Token", FirebaseInstanceId.getInstance().getToken() + "");
         Call<Device> call = soulpostAPI.devicePost(newdevice);
@@ -41,8 +42,8 @@ public class APIUserConnect {
             @Override
             public void onResponse(Call<Device> call, Response<Device> response) {
                 if (response.isSuccessful()){
-                    //Log.d("Server response success", new Gson().toJson(response));
-                    Log.d("ID is :",response.body().getId() + "");
+                    Log.d(" Server response success", new Gson().toJson(response.body()));
+                    Log.d(" ID is :",response.body().getId() + "");
                     newdevice.setId(response.body().getId());
                 }else {
                     //some kind of server error

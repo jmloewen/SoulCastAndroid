@@ -48,7 +48,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         savePrefs(remoteMessage);
 
         //TODO if app is foreground, begin download. if app is background, send notification
-
 //        beginDownload(prefs.getString("PushS3Key", "NO KEY STORED"));
         sendNotification(prefs.getString("PushS3Key", "NO KEY STORED"));
 
