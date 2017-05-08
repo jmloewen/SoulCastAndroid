@@ -52,6 +52,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
+        GoogleMap.OnCameraMoveStartedListener,
+        GoogleMap.OnCameraMoveListener,
+        GoogleMap.OnCameraMoveCanceledListener,
+        GoogleMap.OnCameraIdleListener,
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
         LocationListener,
@@ -99,7 +103,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         setupMapFragment();
         setupAudioPipeline();
 
-        playNotificationMessage(getIntent().getStringExtra("S3key"));
+        playNotificationMessage(getIntent().getStringExtra("s3Key"));
     }
 
     private void initializeTransferUtility() {
@@ -174,7 +178,48 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         mMap = googleMap;
         mMap.getUiSettings().setScrollGesturesEnabled(false);
         mMap.animateCamera(CameraUpdateFactory.zoomTo(17));
+
+        mMap.setOnCameraIdleListener(this);
+        mMap.setOnCameraMoveStartedListener(this);
+        mMap.setOnCameraMoveListener(this);
+        mMap.setOnCameraMoveCanceledListener(this);
+
         buildGoogleAPIClient();
+    }
+
+    @Override
+    public void onCameraMoveStarted(int reason) {
+
+        if (reason == GoogleMap.OnCameraMoveStartedListener.REASON_GESTURE) {
+            Toast.makeText(this, "The user gestured on the map.",
+                    Toast.LENGTH_SHORT).show();
+        } else if (reason == GoogleMap.OnCameraMoveStartedListener
+                .REASON_API_ANIMATION) {
+            Toast.makeText(this, "The user tapped something on the map.",
+                    Toast.LENGTH_SHORT).show();
+        } else if (reason == GoogleMap.OnCameraMoveStartedListener
+                .REASON_DEVELOPER_ANIMATION) {
+            Toast.makeText(this, "The app moved the camera.",
+                    Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    public void onCameraMove() {
+        Toast.makeText(this, "The camera is moving.",
+                Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onCameraMoveCanceled() {
+        Toast.makeText(this, "Camera movement canceled.",
+                Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onCameraIdle() {
+        Toast.makeText(this, "The camera has stopped moving.",
+                Toast.LENGTH_SHORT).show();
     }
 
     /**
@@ -350,16 +395,16 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
     /**
      * Plays the message attached to the Android notification sent to the user.
      * This is a temporary function that will only exist until we have a proper message queue for our users.
-     * @param S3key The S3Key of the sent message, to be used to query the server for the audio file.
+     * @param s3Key The s3Key of the sent message, to be used to query the server for the audio file.
      */
-    private void playNotificationMessage(String S3key){
-        //If the S3Key doesn't exist, we've accessed this function improperly, somehow.  Exit.
-        if(S3key == null) {
-            Log.v("S3KeyNull","S3key is null");
+    private void playNotificationMessage(String s3Key){
+        //If the s3Key doesn't exist, we've accessed this function improperly, somehow.  Exit.
+        if(s3Key == null) {
+            Log.v("s3KeyNull","s3Key is null");
             return;
         }
-        //Grab the audio file that we were sent, identified by the S3Key.
-        receiveNotificationAudioFile = new File(Environment.getExternalStorageDirectory().getAbsolutePath(), S3key);
+        //Grab the audio file that we were sent, identified by the s3Key.
+        receiveNotificationAudioFile = new File(Environment.getExternalStorageDirectory().getAbsolutePath(), s3Key + ".mp3");
         TransferObserver observer = mTransferUtility.download(Constants.BUCKET_NAME, receiveNotificationAudioFile.getName(), receiveNotificationAudioFile);
         //create our transfer listener for this audio message.
         observer.setTransferListener(new TransferListener() {
