@@ -52,10 +52,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
-        GoogleMap.OnCameraMoveStartedListener,
         GoogleMap.OnCameraMoveListener,
-        GoogleMap.OnCameraMoveCanceledListener,
-        GoogleMap.OnCameraIdleListener,
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
         LocationListener,
@@ -176,50 +173,22 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+
         mMap.getUiSettings().setScrollGesturesEnabled(false);
         mMap.animateCamera(CameraUpdateFactory.zoomTo(17));
 
-        mMap.setOnCameraIdleListener(this);
-        mMap.setOnCameraMoveStartedListener(this);
         mMap.setOnCameraMoveListener(this);
-        mMap.setOnCameraMoveCanceledListener(this);
 
         buildGoogleAPIClient();
     }
 
     @Override
-    public void onCameraMoveStarted(int reason) {
-
-        if (reason == GoogleMap.OnCameraMoveStartedListener.REASON_GESTURE) {
-            Toast.makeText(this, "The user gestured on the map.",
-                    Toast.LENGTH_SHORT).show();
-        } else if (reason == GoogleMap.OnCameraMoveStartedListener
-                .REASON_API_ANIMATION) {
-            Toast.makeText(this, "The user tapped something on the map.",
-                    Toast.LENGTH_SHORT).show();
-        } else if (reason == GoogleMap.OnCameraMoveStartedListener
-                .REASON_DEVELOPER_ANIMATION) {
-            Toast.makeText(this, "The app moved the camera.",
-                    Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    @Override
     public void onCameraMove() {
-        Toast.makeText(this, "The camera is moving.",
-                Toast.LENGTH_SHORT).show();
-    }
+        Log.d("map", "current zoom: " + mMap.getCameraPosition().zoom);
+        //TODO: float kilometersFromZoomLevel(float zoomLevel) {}
+        // currentZoom = mMap.getCameraPosition().zoom
+        // and when casting, refer to currentZoom..
 
-    @Override
-    public void onCameraMoveCanceled() {
-        Toast.makeText(this, "Camera movement canceled.",
-                Toast.LENGTH_SHORT).show();
-    }
-
-    @Override
-    public void onCameraIdle() {
-        Toast.makeText(this, "The camera has stopped moving.",
-                Toast.LENGTH_SHORT).show();
     }
 
     /**
