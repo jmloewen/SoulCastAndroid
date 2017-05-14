@@ -19,6 +19,8 @@ import com.amazonaws.mobileconnectors.s3.transferutility.TransferUtility;
 
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -48,10 +50,9 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         savePrefs(remoteMessage);
 
         //TODO if app is foreground, begin download. if app is background, send notification
-//      beginDownload(prefs.getString("PushS3Key", "NO KEY STORED"));
 
-        sendNotification(prefs.getString("PushS3Key", "NO KEY STORED"));
-
+//      beginDownload(prefs.getString("Pushs3Key", "NO KEY STORED"));
+        sendNotification(prefs.getString("Pushs3Key", "NO KEY STORED"));
     }
 
     private void printFCMMessage(RemoteMessage remoteMessage) {
@@ -65,16 +66,19 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         prefs = getSharedPreferences(SOULPREFS, Context.MODE_PRIVATE);
         editor = prefs.edit();
         Map<String,String> data = remoteMessage.getData();
-        editor.putString("PushS3Key",data.get("S3key"));
+
+        SoulPostResponse remoteMessageJSON = new Gson().fromJson(remoteMessage.getData().get("soulObject"), SoulPostResponse.class);
+
+        editor.putString("Pushs3Key",remoteMessageJSON.s3Key);
         editor.commit();
     }
 
-    private void playSoul(final String S3key) {
+    private void playSoul(final String s3Key) {
         Log.d(TAG, "Begin playing soul");
 
         mMediaPlayer = new MediaPlayer();
         mAudioFile = new File(Environment.getExternalStorageDirectory().getAbsolutePath(),
-                String.valueOf(S3key));
+                String.valueOf(s3Key));
 
         try {
             FileInputStream fd = openFile(mAudioFile);
@@ -105,12 +109,12 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         return fos;
     }
 
-    public void beginDownload(final String S3key){
+    public void beginDownload(final String s3Key){
 
         TransferUtility mTransferUtility = Util.getTransferUtility(this);
         File audioFile = new File(Environment.getExternalStorageDirectory().getAbsolutePath(),
-                String.valueOf(S3key));
-        TransferObserver observer = mTransferUtility.download(Constants.BUCKET_NAME, S3key, audioFile);
+                String.valueOf(s3Key));
+        TransferObserver observer = mTransferUtility.download(Constants.BUCKET_NAME, s3Key, audioFile);
 
         observer.setTransferListener(new TransferListener() {
             @Override
@@ -118,7 +122,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 switch (newState) {
                     case COMPLETED:
                         Log.v("transferListener", " download completed");
-                        playSoul(S3key);
+                        playSoul(s3Key);
                 }
             }
             @Override
@@ -158,7 +162,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
     private Intent buildIntent(String messageBody) {
         Intent intent = new Intent(this, MapActivity.class);
-        intent.putExtra("S3key",messageBody);
+        intent.putExtra("s3Key",messageBody);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
         return intent;

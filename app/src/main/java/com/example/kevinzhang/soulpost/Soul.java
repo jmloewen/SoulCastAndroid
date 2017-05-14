@@ -26,9 +26,9 @@ public class Soul {
     }
 
     public void setSoulType(String soulType){this.soulType = soulType;}
-    public void setS3Key(String s3Key){this.s3Key = s3Key;}
+    public void sets3Key(String s3Key){this.s3Key = s3Key;}
     public void setEpoch(long epoch){this.epoch = epoch;}
     public String getSoulType(){return soulType;}
-    public String getS3Key(){return s3Key;}
+    public String gets3Key(){return s3Key;}
     public long getEpoch(){return epoch;}
 }

@@ -52,7 +52,7 @@ public class AudioPipeline {
     private void setNewFile() {
         recordingStartedTimeInMillis = System.currentTimeMillis();
         mAudioFile = new File(Environment.getExternalStorageDirectory().getAbsolutePath(),
-                String.valueOf(recordingStartedTimeInMillis));
+                String.valueOf(recordingStartedTimeInMillis) + ".mp3");
     }
 
     public void stopRecording(){

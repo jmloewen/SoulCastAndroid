@@ -50,6 +50,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
+        GoogleMap.OnCameraMoveListener,
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
         LocationListener,
@@ -57,7 +58,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         IncomingSoulsFragment.OnIncomingSoulClickListener{
 
     public interface FragmentRefreshListener{
-        void addSoulToQueue(String S3Key);
+        void addSoulToQueue(String s3Key);
     }
     public FragmentRefreshListener fragmentRefreshListener;
     public void setFragmentRefreshListener(FragmentRefreshListener fragmentRefreshListener){
@@ -83,7 +84,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
     private LocationRequest mLocationRequest;
     private LocationManager mLocationManager;
     private Location mLastLocation;
-    Marker currentLocationMarker;
+    private Marker currentLocationMarker;
 
     private AudioPipeline mAudioPipeline;
 
@@ -111,12 +112,14 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         setupAudioPipeline();
 
         //play the sent message if we're opening from a notification.
-        if (!(getIntent().getStringExtra("PushS3key").equals("NO KEY STORED"))) {
-            addSoulToQueue(getIntent().getStringExtra("PushS3key"));
-            //reset the key once we've added it to the queue.  This will have to be done in a more elegant way in the future.
-            editor.putString("PushS3Key", "NO KEY STORED");
+        if (getIntent().getStringExtra("Pushs3key") != null) {
+            if (!(getIntent().getStringExtra("Pushs3key").equals("NO KEY STORED"))) {
+                addSoulToQueue(getIntent().getStringExtra("Pushs3key"));
+                //reset the key once we've added it to the queue.  This will have to be done in a more elegant way in the future.
+                editor.putString("Pushs3Key", "NO KEY STORED");
+            }
+            playNotificationMessage(getIntent().getStringExtra("s3key"));
         }
-        playNotificationMessage(getIntent().getStringExtra("S3key"));
     }
 
     private void initializeTransferUtility() {
@@ -189,9 +192,22 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+
         mMap.getUiSettings().setScrollGesturesEnabled(false);
         mMap.animateCamera(CameraUpdateFactory.zoomTo(17));
+
+        mMap.setOnCameraMoveListener(this);
+
         buildGoogleAPIClient();
+    }
+
+    @Override
+    public void onCameraMove() {
+        Log.d("map", "current zoom: " + mMap.getCameraPosition().zoom);
+        //TODO: float kilometersFromZoomLevel(float zoomLevel) {}
+        // currentZoom = mMap.getCameraPosition().zoom
+        // and when casting, refer to currentZoom..
+
     }
 
     /**
@@ -366,16 +382,16 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
     /**
      * Plays the message attached to the Android notification sent to the user.
      * This is a temporary function that will only exist until we have a proper message queue for our users.
-     * @param S3key The S3Key of the sent message, to be used to query the server for the audio file.
+     * @param s3Key The s3Key of the sent message, to be used to query the server for the audio file.
      */
-    private void playNotificationMessage(String S3key){
-        //If the S3Key doesn't exist, we've accessed this function improperly, somehow.  Exit.
-        if(S3key == null) {
-            Log.v("S3KeyNull","S3key is null");
+    private void playNotificationMessage(String s3Key){
+        //If the s3Key doesn't exist, we've accessed this function improperly, somehow.  Exit.
+        if(s3Key == null) {
+            Log.v("s3KeyNull","s3Key is null");
             return;
         }
-        //Grab the audio file that we were sent, identified by the S3Key.
-        receiveNotificationAudioFile = new File(Environment.getExternalStorageDirectory().getAbsolutePath(), S3key);
+        //Grab the audio file that we were sent, identified by the s3Key.
+        receiveNotificationAudioFile = new File(Environment.getExternalStorageDirectory().getAbsolutePath(), s3Key + ".mp3");
         TransferObserver observer = mTransferUtility.download(Constants.BUCKET_NAME, receiveNotificationAudioFile.getName(), receiveNotificationAudioFile);
         //create our transfer listener for this audio message.
         observer.setTransferListener(new TransferListener() {
@@ -482,12 +498,12 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         playNotificationMessage((String)textFromListView);
 
     }
-    public void addSoulToQueue(String S3Key){
-        if (S3Key.length() > 0){
+    public void addSoulToQueue(String s3Key){
+        if (s3Key.length() > 0){
             if (getFragmentRefreshListener() != null){
-                getFragmentRefreshListener().addSoulToQueue(S3Key);
+                getFragmentRefreshListener().addSoulToQueue(s3Key);
             }
         }
-        S3Key = "";
+        s3Key = "";
     }
 }

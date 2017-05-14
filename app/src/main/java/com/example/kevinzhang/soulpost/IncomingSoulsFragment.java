@@ -28,7 +28,7 @@ public class IncomingSoulsFragment extends Fragment {
     private ArrayList<String> listOfSouls;
     public interface OnIncomingSoulClickListener {
         void onSoulPressed(CharSequence textFromListView);
-        void addSoulToQueue(String S3Key);
+        void addSoulToQueue(String s3Key);
     }
 
     @Override
@@ -60,8 +60,8 @@ public class IncomingSoulsFragment extends Fragment {
 
         mListView.setAdapter(arrayAdapter);
         ((MapActivity)getActivity()).setFragmentRefreshListener(new MapActivity.FragmentRefreshListener(){
-            public void addSoulToQueue(String S3Key){
-                listOfSouls.add(S3Key);
+            public void addSoulToQueue(String s3Key){
+                listOfSouls.add(s3Key);
                 arrayAdapter.notifyDataSetChanged();
             }
         });
