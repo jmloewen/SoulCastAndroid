@@ -49,7 +49,6 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
-
 public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
@@ -104,12 +103,9 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        initializeTransferUtility();
 
-        //set up Amazon AWS functionality
-        mTransferUtility = Util.getTransferUtility(this);
         setupFirebase();
-
-
         setPreferences();
         setupMapFragment();
         setupAudioPipeline();
@@ -120,6 +116,11 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
             //reset the key once we've added it to the queue.  This will have to be done in a more elegant way in the future.
             editor.putString("PushS3Key", "NO KEY STORED");
         }
+        playNotificationMessage(getIntent().getStringExtra("S3key"));
+    }
+
+    private void initializeTransferUtility() {
+        mTransferUtility = Util.getTransferUtility(this);
     }
 
     /**
@@ -323,7 +324,9 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
                 switch (newState) {
                     case COMPLETED:
                         Toast.makeText(mActivity, "Upload to S3 completed!", Toast.LENGTH_SHORT).show();
+                        APIUserConnect.echo(userDevice, audioFile.getName(), getApplicationContext());
                         APIUserConnect.createSoul(userDevice, audioFile.getName(), getApplicationContext());
+
                 }
                 Log.v("transfer listener", "here");
             }
@@ -366,17 +369,14 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
      * @param S3key The S3Key of the sent message, to be used to query the server for the audio file.
      */
     private void playNotificationMessage(String S3key){
-
         //If the S3Key doesn't exist, we've accessed this function improperly, somehow.  Exit.
         if(S3key == null) {
             Log.v("S3KeyNull","S3key is null");
             return;
         }
-
         //Grab the audio file that we were sent, identified by the S3Key.
         receiveNotificationAudioFile = new File(Environment.getExternalStorageDirectory().getAbsolutePath(), S3key);
         TransferObserver observer = mTransferUtility.download(Constants.BUCKET_NAME, receiveNotificationAudioFile.getName(), receiveNotificationAudioFile);
-
         //create our transfer listener for this audio message.
         observer.setTransferListener(new TransferListener() {
             @Override
@@ -385,7 +385,6 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
                     case COMPLETED:
                         Toast.makeText(mActivity, "Download to S3 completed!", Toast.LENGTH_SHORT).show();
                         final MediaPlayer mMediaPlayer = new MediaPlayer();
-
                         try {
                             FileInputStream fd = openFile(receiveNotificationAudioFile);
                             mMediaPlayer.setDataSource(fd.getFD());
@@ -399,8 +398,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
                                 }
                             });
                         }
-                        catch (IOException e)
-                        {
+                        catch (IOException e) {
                             e.printStackTrace();
                         }
                 }

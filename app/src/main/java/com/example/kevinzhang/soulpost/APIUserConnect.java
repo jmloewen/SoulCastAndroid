@@ -20,6 +20,8 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class APIUserConnect {
 
+    static Device newdevice;
+
     private static Retrofit getRetrofitConnection(){
         return (new Retrofit.Builder()
                 .baseUrl("http://soulcast.ml")
@@ -33,7 +35,6 @@ public class APIUserConnect {
     public static Device RegisterDevice(LatLng latLng, final Context context){
         // prepare call in Retrofit 2.0
         SoulpostAPI soulpostAPI = getRetrofitConnection().create(SoulpostAPI.class);
-        final Device newdevice;
         newdevice = new Device("android",(float)latLng.latitude,(float)latLng.longitude,(float)0.03, FirebaseInstanceId.getInstance().getToken());
         Log.d("Token", FirebaseInstanceId.getInstance().getToken() + "");
         Call<Device> call = soulpostAPI.devicePost(newdevice);
@@ -41,8 +42,8 @@ public class APIUserConnect {
             @Override
             public void onResponse(Call<Device> call, Response<Device> response) {
                 if (response.isSuccessful()){
-                    //Log.d("Server response success", new Gson().toJson(response));
-                    Log.d("ID is :",response.body().getId() + "");
+                    Log.d(" Server response success", new Gson().toJson(response.body()));
+                    Log.d(" ID is :",response.body().getId() + "");
                     newdevice.setId(response.body().getId());
                 }else {
                     //some kind of server error
@@ -98,16 +99,47 @@ public class APIUserConnect {
         //sends to the server userRadius, gets back a number in JSON
     }
 
-    public static void createSoul(Device userDevice, String fileName, final Context context) {
+    public static void createSoul(Device userDevice, String s3Key, final Context context) {
         SoulpostAPI myAPI = getRetrofitConnection().create(SoulpostAPI.class);
 
-        Soul mSoul = new Soul("Android", fileName, System.currentTimeMillis(), userDevice);
+        Soul mSoul = new Soul("testSoulType1", s3Key, System.currentTimeMillis()/1000, userDevice);
         Call<Soul> call = myAPI.soulPost(mSoul);
 
         call.enqueue(new Callback<Soul>() {
             @Override
             public void onResponse(Call<Soul> call, Response<Soul> response) {
-                Toast.makeText(context, " Soul uploaded to Soulcast server", Toast.LENGTH_SHORT).show();
+                if (response.isSuccessful()){
+                    Toast.makeText(context, " Soul uploaded to Soulcast server", Toast.LENGTH_SHORT).show();
+                }else {
+                    //some kind of server error
+                    Log.d("Server response error",new Gson().toJson(response));
+                    Log.d("ERIC Server error :",response.body() + "");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Soul> call, Throwable t) {
+                Toast.makeText(context, t.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    public static void echo(Device userDevice, String s3Key, final Context context) {
+        SoulpostAPI myAPI = getRetrofitConnection().create(SoulpostAPI.class);
+
+        Soul mSoul = new Soul("testSoulType1", s3Key, System.currentTimeMillis()/1000, userDevice);
+        Call<Soul> call = myAPI.echo(mSoul);
+
+        call.enqueue(new Callback<Soul>() {
+            @Override
+            public void onResponse(Call<Soul> call, Response<Soul> response) {
+                if (response.isSuccessful()){
+                    Toast.makeText(context, " Soul echoed to Soulcast server", Toast.LENGTH_SHORT).show();
+                }else {
+                    //some kind of server error
+                    Log.d("Server response error",new Gson().toJson(response));
+                    Log.d("ERIC Server error :",response.body() + "");
+                }
             }
 
             @Override
