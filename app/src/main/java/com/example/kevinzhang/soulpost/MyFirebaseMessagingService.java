@@ -51,8 +51,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
         //TODO if app is foreground, begin download. if app is background, send notification
 
-//      beginDownload(prefs.getString("Pushs3Key", "NO KEY STORED"));
-        sendNotification(prefs.getString("Pushs3Key", "NO KEY STORED"));
+        //beginDownload(prefs.getString("s3Key", "NO KEY STORED"));
+        sendNotification(prefs.getString("s3Key", "NO KEY STORED"));
     }
 
     private void printFCMMessage(RemoteMessage remoteMessage) {
@@ -68,8 +68,9 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         Map<String,String> data = remoteMessage.getData();
 
         SoulPostResponse remoteMessageJSON = new Gson().fromJson(remoteMessage.getData().get("soulObject"), SoulPostResponse.class);
+        Log.d("savePrefsTest", "spt:" + remoteMessageJSON.s3Key);
 
-        editor.putString("Pushs3Key",remoteMessageJSON.s3Key);
+        editor.putString("s3Key",remoteMessageJSON.s3Key);
         editor.commit();
     }
 
@@ -164,7 +165,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         Intent intent = new Intent(this, MapActivity.class);
         intent.putExtra("s3Key",messageBody);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-
         return intent;
     }
 

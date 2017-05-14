@@ -111,15 +111,23 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         setupMapFragment();
         setupAudioPipeline();
 
+
+
+
         //play the sent message if we're opening from a notification.
-        if (getIntent().getStringExtra("Pushs3key") != null) {
-            if (!(getIntent().getStringExtra("Pushs3key").equals("NO KEY STORED"))) {
-                addSoulToQueue(getIntent().getStringExtra("Pushs3key"));
+        if (getIntent().getStringExtra("s3Key") != null) {
+            Log.d("s3KeyNullTest", "s3Key Not Null");
+            if (!(getIntent().getStringExtra("s3Key").equals("NO KEY STORED"))) {
+                addSoulToQueue(getIntent().getStringExtra("s3Key"));
                 //reset the key once we've added it to the queue.  This will have to be done in a more elegant way in the future.
-                editor.putString("Pushs3Key", "NO KEY STORED");
+                editor.putString("s3Key", "NO KEY STORED");
             }
-            playNotificationMessage(getIntent().getStringExtra("s3key"));
+            playNotificationMessage(getIntent().getStringExtra("s3Key"));
         }
+        else{
+            Log.d("s3KeyNullTest", "s3Key Null");
+        }
+
     }
 
     private void initializeTransferUtility() {
