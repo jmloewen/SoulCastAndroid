@@ -373,7 +373,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
             return;
         }
         //Grab the audio file that we were sent, identified by the s3Key.
-        receiveNotificationAudioFile = new File(Environment.getExternalStorageDirectory().getAbsolutePath(), s3Key + ".mp3");
+        receiveNotificationAudioFile = new File(Environment.getExternalStorageDirectory().getAbsolutePath(), s3Key);
         TransferObserver observer = mTransferUtility.download(Constants.BUCKET_NAME, receiveNotificationAudioFile.getName(), receiveNotificationAudioFile);
         //create our transfer listener for this audio message.
         observer.setTransferListener(new TransferListener() {
