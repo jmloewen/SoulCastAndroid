@@ -66,9 +66,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         prefs = getSharedPreferences(SOULPREFS, Context.MODE_PRIVATE);
         editor = prefs.edit();
 
-
-        Map<String,String> data = remoteMessage.getData();
-
         SoulPostResponse remoteMessageJSON = new Gson().fromJson(remoteMessage.getData().get("soulObject"), SoulPostResponse.class);
 
         editor.putString("Pushs3Key",remoteMessageJSON.s3Key);
@@ -164,7 +161,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
     private Intent buildIntent(String messageBody) {
         Intent intent = new Intent(this, MapActivity.class);
-        intent.putExtra("s3Key",messageBody);
+        intent.putExtra(Constants.s3Key,messageBody);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
         return intent;

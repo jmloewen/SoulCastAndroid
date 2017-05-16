@@ -100,7 +100,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         setupMapFragment();
         setupAudioPipeline();
 
-        playNotificationMessage(getIntent().getStringExtra("s3Key"));
+        playNotificationMessage(getIntent().getStringExtra(Constants.s3Key));
     }
 
     private void initializeTransferUtility() {
