@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.kevinzhang.soulpost">
+    package="com.camvy.kevinzhang.soulcast">
 
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
@@ -20,18 +20,18 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key"/>
         
-        <activity android:name=".MainActivity">
+        <activity android:name="com.camvy.kevinzhang.soulcast.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
-        <activity android:name=".MapActivity">
+        <activity android:name="com.camvy.kevinzhang.soulcast.MapActivity">
             <!--Does anything need to go here? -Jon-->
         </activity>
         <service
-            android:name=".MyFirebaseMessagingService">
+            android:name="com.camvy.kevinzhang.soulcast.MyFirebaseMessagingService">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT"/>
             </intent-filter>
@@ -41,7 +41,7 @@
             android:enabled="true" />
 
         <service
-            android:name=".MyInstanceIDListenerService"
+            android:name="com.camvy.kevinzhang.soulcast.MyInstanceIDListenerService"
             android:exported="false">
             <intent-filter>
                 <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
