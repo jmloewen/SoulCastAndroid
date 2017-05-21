@@ -1,4 +1,4 @@
-package com.example.kevinzhang.soulpost;
+package com.camvy.kevinzhang.soulcast;
 
 import retrofit2.Call;
 import retrofit2.http.Body;

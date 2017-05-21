@@ -1,8 +1,6 @@
-package com.example.kevinzhang.soulpost;
+package com.camvy.kevinzhang.soulcast;
 
 import android.util.Log;
-
-import com.google.firebase.iid.FirebaseInstanceId;
 
 import retrofit2.Call;
 import retrofit2.Callback;

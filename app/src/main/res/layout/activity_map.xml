@@ -3,7 +3,7 @@
                 xmlns:tools="http://schemas.android.com/tools"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                tools:context="com.example.kevinzhang.soulpost.MapActivity">
+                tools:context="com.camvy.kevinzhang.soulcast.MapActivity">
 
     <fragment
         xmlns:android="http://schemas.android.com/apk/res/android"
@@ -15,7 +15,7 @@
         android:layout_height="match_parent"
         />
 
-    <fragment android:name="com.example.kevinzhang.soulpost.ButtonFragment"
+    <fragment android:name="com.camvy.kevinzhang.soulcast.ButtonFragment"
         android:id="@+id/button_fragment"
         android:layout_weight="1"
         android:layout_width="match_parent"

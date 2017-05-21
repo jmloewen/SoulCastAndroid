@@ -1,4 +1,4 @@
-package com.example.kevinzhang.soulpost;
+package com.camvy.kevinzhang.soulcast;
 
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;

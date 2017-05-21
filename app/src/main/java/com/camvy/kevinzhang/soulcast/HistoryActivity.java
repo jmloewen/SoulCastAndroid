@@ -1,4 +1,4 @@
-package com.example.kevinzhang.soulpost;
+package com.camvy.kevinzhang.soulcast;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;

@@ -1,4 +1,4 @@
-package com.example.kevinzhang.soulpost;
+package com.camvy.kevinzhang.soulcast;
 
 /**
  * Created by kai on 2017-05-07.

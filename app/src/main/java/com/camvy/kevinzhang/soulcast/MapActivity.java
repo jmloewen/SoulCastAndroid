@@ -1,4 +1,4 @@
-package com.example.kevinzhang.soulpost;
+package com.camvy.kevinzhang.soulcast;
 
 import android.content.Context;
 
@@ -27,6 +27,7 @@ import com.amazonaws.mobileconnectors.s3.transferutility.TransferListener;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferObserver;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferState;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferUtility;
+import com.camvy.kevinzhang.soulcast.ButtonFragment;
 import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.appindexing.Thing;
 import com.google.android.gms.common.ConnectionResult;
@@ -54,7 +55,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
         LocationListener,
-        ButtonFragment.OnButtonClickListener,
+        ButtonFragment.OnRecordButtonClickListener,
         IncomingSoulsFragment.OnIncomingSoulClickListener{
 
     public interface FragmentRefreshListener{
@@ -111,9 +112,6 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         setupMapFragment();
         setupAudioPipeline();
 
-
-
-
         //play the sent message if we're opening from a notification.
         if (getIntent().getStringExtra("s3Key") != null) {
             Log.d("s3KeyNullTest", "s3Key Not Null");
@@ -127,7 +125,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         else{
             Log.d("s3KeyNullTest", "s3Key Null");
         }
-
+        playNotificationMessage(getIntent().getStringExtra(Constants.s3Key));
     }
 
     private void initializeTransferUtility() {
@@ -347,8 +345,8 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
                 //Enum status = newState.valueOf("Completed");
                 switch (newState) {
                     case COMPLETED:
-                        Toast.makeText(mActivity, "Upload to S3 completed!", Toast.LENGTH_SHORT).show();
-                        APIUserConnect.echo(userDevice, audioFile.getName(), getApplicationContext());
+//                        Toast.makeText(mActivity, "Upload to S3 completed!", Toast.LENGTH_SHORT).show();
+//                        APIUserConnect.echo(userDevice, audioFile.getName(), getApplicationContext());
                         APIUserConnect.createSoul(userDevice, audioFile.getName(), getApplicationContext());
 
                 }
@@ -407,7 +405,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
             public void onStateChanged(int id, TransferState newState) {
                 switch (newState) {
                     case COMPLETED:
-                        Toast.makeText(mActivity, "Download to S3 completed!", Toast.LENGTH_SHORT).show();
+//                        Toast.makeText(mActivity, "Download to S3 completed!", Toast.LENGTH_SHORT).show();
                         final MediaPlayer mMediaPlayer = new MediaPlayer();
                         try {
                             FileInputStream fd = openFile(receiveNotificationAudioFile);

@@ -1,4 +1,4 @@
-package com.example.kevinzhang.soulpost;
+package com.camvy.kevinzhang.soulcast;
 
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -20,7 +20,6 @@ import com.amazonaws.mobileconnectors.s3.transferutility.TransferUtility;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 import com.google.gson.Gson;
-import com.google.gson.JsonElement;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -163,7 +162,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
     private Intent buildIntent(String messageBody) {
         Intent intent = new Intent(this, MapActivity.class);
-        intent.putExtra("s3Key",messageBody);
+        intent.putExtra(Constants.s3Key,messageBody);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         return intent;
     }

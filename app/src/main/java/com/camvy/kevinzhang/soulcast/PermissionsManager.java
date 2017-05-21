@@ -1,6 +1,5 @@
-package com.example.kevinzhang.soulpost;
+package com.camvy.kevinzhang.soulcast;
 
-import android.*;
 import android.Manifest;
 import android.app.Activity;
 import android.content.Context;

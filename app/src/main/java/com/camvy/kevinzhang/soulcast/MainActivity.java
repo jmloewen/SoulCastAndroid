@@ -1,10 +1,9 @@
-package com.example.kevinzhang.soulpost;
+package com.camvy.kevinzhang.soulcast;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.widget.Toast;
 
 /**
  * MainActivity serves as a launching point for the app - we handle things here related to preparing the app for use, like

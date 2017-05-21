@@ -1,4 +1,4 @@
-package com.example.kevinzhang.soulpost;
+package com.camvy.kevinzhang.soulcast;
 
 import android.content.Context;
 import android.util.Log;
@@ -109,7 +109,7 @@ public class APIUserConnect {
             @Override
             public void onResponse(Call<Soul> call, Response<Soul> response) {
                 if (response.isSuccessful()){
-                    Toast.makeText(context, " Soul uploaded to Soulcast server", Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(context, " Soul uploaded to Soulcast server", Toast.LENGTH_SHORT).show();
                 }else {
                     //some kind of server error
                     Log.d("Server response error",new Gson().toJson(response));
@@ -119,7 +119,7 @@ public class APIUserConnect {
 
             @Override
             public void onFailure(Call<Soul> call, Throwable t) {
-                Toast.makeText(context, t.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+//                Toast.makeText(context, t.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }
