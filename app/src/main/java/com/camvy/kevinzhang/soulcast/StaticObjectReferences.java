@@ -5,4 +5,5 @@ package com.camvy.kevinzhang.soulcast;
  */
 
 public class StaticObjectReferences {
+    public static Device mUserDevice;
 }

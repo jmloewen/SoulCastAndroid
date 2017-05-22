@@ -3,6 +3,7 @@ package com.camvy.kevinzhang.soulcast;
 import android.content.Context;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.location.Location;
@@ -16,6 +17,8 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 
+import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 import java.io.FileInputStream;
@@ -92,6 +95,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
     private TransferUtility mTransferUtility;
     private Activity mActivity = this;
     private static File receiveNotificationAudioFile;
+    private Button mHistoryButton;
 
 
     /**
@@ -126,6 +130,17 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
             Log.d("s3KeyNullTest", "s3Key Null");
         }
         playNotificationMessage(getIntent().getStringExtra(Constants.s3Key));
+
+        mHistoryButton = (Button)findViewById(R.id.btn_history);
+
+        mHistoryButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                StaticObjectReferences.mUserDevice = userDevice;
+                Intent historyIntent = new Intent(getApplicationContext(), HistoryActivity.class);
+                startActivity(historyIntent);
+            }
+        });
     }
 
     private void initializeTransferUtility() {
