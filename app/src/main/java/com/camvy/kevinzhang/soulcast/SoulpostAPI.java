@@ -1,5 +1,8 @@
 package com.camvy.kevinzhang.soulcast;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
@@ -16,6 +19,11 @@ public interface SoulpostAPI {
     @Headers("Accept: application/json")
     @POST("/devices")
     Call<Device> devicePost(@Body Device device);
+
+    @Headers("Accept: application/json")
+    @GET("/device_history/1")
+    Call<ArrayList<Soul>> getHistory();
+    //Call<Device> getHistory(@Path("id") int id);
 
     @Headers("Accept: application/json")
     @POST("/souls")

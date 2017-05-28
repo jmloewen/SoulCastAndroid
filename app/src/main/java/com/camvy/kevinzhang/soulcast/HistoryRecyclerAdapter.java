@@ -36,9 +36,7 @@ public class HistoryRecyclerAdapter extends RecyclerView.Adapter<HistoryRecycler
         public HistoryHolder(View v){
             super(v);
             v.setOnClickListener(this);
-
         }
-
 
         public void onClick(View v){
 
@@ -68,6 +66,8 @@ public class HistoryRecyclerAdapter extends RecyclerView.Adapter<HistoryRecycler
     public void onBindViewHolder(HistoryRecyclerAdapter.HistoryHolder holder, int position) {
 
     }
+
+
 
     @Override
     public int getItemCount() {

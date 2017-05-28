@@ -2,6 +2,8 @@ package com.camvy.kevinzhang.soulcast;
 
 import android.util.Log;
 
+import java.util.List;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -24,8 +26,12 @@ public class SoulService {
                 .build();
     }
 
+    public SoulpostAPI createSoulpostAPI(){
+        return retrofit.create(SoulpostAPI.class);
+    }
+
     public void getNearby() {
-        SoulpostAPI soulpostAPI = retrofit.create(SoulpostAPI.class);
+        SoulpostAPI soulpostAPI = createSoulpostAPI();
         Call<Nearby> call = soulpostAPI.getNearby(newdevice.getId());
         call.enqueue(new Callback<Nearby>() {
             @Override
@@ -48,7 +54,7 @@ public class SoulService {
 
     public void soulPost() {
         // prepare call in Retrofit 2.0
-        SoulpostAPI soulpostAPI = retrofit.create(SoulpostAPI.class);
+        SoulpostAPI soulpostAPI = createSoulpostAPI();
         Call<Soul> call = soulpostAPI.soulPost(newSoul);
         call.enqueue(new Callback<Soul>() {
             @Override

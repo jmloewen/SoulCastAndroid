@@ -8,6 +8,8 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.gson.Gson;
 
+import java.util.ArrayList;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -42,7 +44,7 @@ public class APIUserConnect {
             @Override
             public void onResponse(Call<Device> call, Response<Device> response) {
                 if (response.isSuccessful()){
-                    Log.d(" Server response success", new Gson().toJson(response.body()));
+                    Log.d("Server response success", new Gson().toJson(response.body()));
                     Log.d(" ID is :",response.body().getId() + "");
                     newdevice.setId(response.body().getId());
                 }else {
@@ -145,6 +147,26 @@ public class APIUserConnect {
             @Override
             public void onFailure(Call<Soul> call, Throwable t) {
                 Toast.makeText(context, t.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+    public static void getHistory(final HistoryInterface callback){
+        SoulpostAPI soulpostAPI = getRetrofitConnection().create(SoulpostAPI.class);
+        Call<ArrayList<Soul>> call = soulpostAPI.getHistory();
+        call.enqueue(new Callback<ArrayList<Soul>>() {
+            @Override
+            public void onResponse(Call<ArrayList<Soul>> call, Response<ArrayList<Soul>> response) {
+                if (response.isSuccessful()) {
+                    callback.onSuccess(response);
+                }
+                else{
+                    callback.onAPICallError(response);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ArrayList<Soul>> call, Throwable t) {
+                callback.onConnectionError(t);
             }
         });
     }
