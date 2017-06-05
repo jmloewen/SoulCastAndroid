@@ -136,7 +136,6 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         mHistoryButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                StaticObjectReferences.mUserDevice = userDevice;
                 Intent historyIntent = new Intent(getApplicationContext(), HistoryActivity.class);
                 startActivity(historyIntent);
             }
@@ -170,6 +169,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
      */
     private void setupAudioPipeline() {
         mAudioPipeline = new AudioPipeline();
+        StaticObjectReferences.mAudioPipeline = mAudioPipeline;
         mAudioPipeline.setmAudioPipelineListener(new AudioPipeline.AudioPipelineListener() {
             @Override
             public void onRecordingFinished(File audioFile) {
@@ -254,7 +254,6 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         requestLocationUpdates();
         LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
         mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
-
         registerNewUserDevice();
     }
 
@@ -265,6 +264,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
     private void registerNewUserDevice() {
         try {
             userDevice = APIUserConnect.RegisterDevice(new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude()), this);
+            StaticObjectReferences.mUserDevice = userDevice;
             Toast.makeText(this, "Connection Established", Toast.LENGTH_LONG).show();
         } catch(NullPointerException e){
             e.printStackTrace();
@@ -331,7 +331,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         userDevice.setLatitude((float) mLastLocation.getLatitude());
         userDevice.setLongitude((float) mLastLocation.getLongitude());
         userDevice.setRadius(DEFAULT_USER_RADIUS);
-        APIUserConnect.UpdateDevice(userDevice, this);
+        APIUserConnect.updateDevice(userDevice, this);
     }
 
     /**
@@ -405,7 +405,8 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
      * This is a temporary function that will only exist until we have a proper message queue for our users.
      * @param s3Key The s3Key of the sent message, to be used to query the server for the audio file.
      */
-    private void playNotificationMessage(String s3Key){
+    private void playNotificationMessage(String s3Key)
+    {
         //If the s3Key doesn't exist, we've accessed this function improperly, somehow.  Exit.
         if(s3Key == null) {
             Log.v("s3KeyNull","s3Key is null");

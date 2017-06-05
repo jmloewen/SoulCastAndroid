@@ -12,7 +12,7 @@ public class Device {
     @SerializedName("latitude") private float latitude;
     @SerializedName("radius") private float radius;
     @SerializedName("token") private String token;
-    private static int id;
+    @SerializedName("id") private int id;
 
     public Device(String os, float latitude, float longitude, float radius, String token) {
         this.longitude = longitude;

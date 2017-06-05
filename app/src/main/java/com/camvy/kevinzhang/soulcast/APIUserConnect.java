@@ -45,7 +45,7 @@ public class APIUserConnect {
             public void onResponse(Call<Device> call, Response<Device> response) {
                 if (response.isSuccessful()){
                     Log.d("Server response success", new Gson().toJson(response.body()));
-                    Log.d(" ID is :",response.body().getId() + "");
+                    Log.d("ID is :",response.body().getId() + "");
                     newdevice.setId(response.body().getId());
                 }else {
                     //some kind of server error
@@ -67,7 +67,7 @@ public class APIUserConnect {
     /***
      * This is for updating user geolocation, minute to minute.
      */
-    public static void UpdateDevice(Device userDevice, final Context context){
+    public static void updateDevice(Device userDevice, final Context context){
 
         Log.d("Update", "Update Function");
         SoulpostAPI soulpostAPI = getRetrofitConnection().create(SoulpostAPI.class);
@@ -101,7 +101,7 @@ public class APIUserConnect {
         //sends to the server userRadius, gets back a number in JSON
     }
 
-    public static void createSoul(Device userDevice, String s3Key, final Context context) {
+    public static void createSoul(final Device userDevice, String s3Key, final Context context) {
         SoulpostAPI myAPI = getRetrofitConnection().create(SoulpostAPI.class);
 
         Soul mSoul = new Soul("testSoulType1", s3Key, System.currentTimeMillis()/1000, userDevice);
@@ -111,7 +111,8 @@ public class APIUserConnect {
             @Override
             public void onResponse(Call<Soul> call, Response<Soul> response) {
                 if (response.isSuccessful()){
-//                    Toast.makeText(context, " Soul uploaded to Soulcast server", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, " Soul uploaded to Soulcast server", Toast.LENGTH_SHORT).show();
+                    Log.d("UserID", userDevice.getId() + "");
                 }else {
                     //some kind of server error
                     Log.d("Server response error",new Gson().toJson(response));
@@ -150,9 +151,9 @@ public class APIUserConnect {
             }
         });
     }
-    public static void getHistory(final HistoryInterface callback){
+    public static void getHistory(Device userDevice, final HistoryInterface callback){
         SoulpostAPI soulpostAPI = getRetrofitConnection().create(SoulpostAPI.class);
-        Call<ArrayList<Soul>> call = soulpostAPI.getHistory();
+        Call<ArrayList<Soul>> call = soulpostAPI.getHistory(userDevice.getId());
         call.enqueue(new Callback<ArrayList<Soul>>() {
             @Override
             public void onResponse(Call<ArrayList<Soul>> call, Response<ArrayList<Soul>> response) {

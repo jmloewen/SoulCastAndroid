@@ -21,8 +21,8 @@ public interface SoulpostAPI {
     Call<Device> devicePost(@Body Device device);
 
     @Headers("Accept: application/json")
-    @GET("/device_history/1")
-    Call<ArrayList<Soul>> getHistory();
+    @GET("/device_history/{id}")
+    Call<ArrayList<Soul>> getHistory(@Path("id") int id);
     //Call<Device> getHistory(@Path("id") int id);
 
     @Headers("Accept: application/json")

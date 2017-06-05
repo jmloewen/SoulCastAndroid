@@ -6,4 +6,5 @@ package com.camvy.kevinzhang.soulcast;
 
 public class StaticObjectReferences {
     public static Device mUserDevice;
+    public static AudioPipeline mAudioPipeline;
 }

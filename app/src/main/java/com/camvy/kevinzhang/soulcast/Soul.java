@@ -31,4 +31,6 @@ public class Soul {
     public String getSoulType(){return soulType;}
     public String gets3Key(){return s3Key;}
     public long getEpoch(){return epoch;}
+    public void setRadius(float radius){this.radius = radius;}
+    public float getRadius(){return radius;}
 }
