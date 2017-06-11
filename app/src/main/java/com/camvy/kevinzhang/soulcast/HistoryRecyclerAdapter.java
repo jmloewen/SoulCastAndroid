@@ -60,7 +60,7 @@ public class HistoryRecyclerAdapter extends RecyclerView.Adapter<HistoryRecycler
 
         private FileInputStream openFile(File file) throws FileNotFoundException, IOException {
             FileInputStream fos = new FileInputStream(file);
-            // remember th 'fos' reference somewhere for later closing it
+            // remember the 'fos' reference somewhere for later closing it
             return fos;
         }
 
@@ -80,7 +80,8 @@ public class HistoryRecyclerAdapter extends RecyclerView.Adapter<HistoryRecycler
             observer.setTransferListener(new TransferListener() {
                 @Override
                 public void onStateChanged(int id, TransferState newState) {
-                    switch (newState) {
+                    switch (newState)
+                    {
                         case COMPLETED:
 //                        Toast.makeText(mActivity, "Download to S3 completed!", Toast.LENGTH_SHORT).show();
                             final MediaPlayer mMediaPlayer = new MediaPlayer();
