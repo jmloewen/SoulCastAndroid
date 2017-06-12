@@ -82,7 +82,7 @@ public class APIUserConnect {
                 }else {
                     //some kind of server error
                     //Log.d("Server response error",new Gson().toJson(response));
-                    Log.d("Server error :",response.body() + "");
+                    Log.d("Update srvr err:",response.body() + "");
                 }
             }
 

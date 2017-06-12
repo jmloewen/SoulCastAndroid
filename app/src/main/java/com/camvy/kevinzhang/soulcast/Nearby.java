@@ -6,6 +6,4 @@ package com.camvy.kevinzhang.soulcast;
 
 public class Nearby {
     public int devicesNearby;
-
-
 }

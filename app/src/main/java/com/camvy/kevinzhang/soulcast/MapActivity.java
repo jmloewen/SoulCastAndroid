@@ -61,6 +61,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         ButtonFragment.OnRecordButtonClickListener,
         IncomingSoulsFragment.OnIncomingSoulClickListener{
 
+
     public interface FragmentRefreshListener{
         void addSoulToQueue(String s3Key);
     }
@@ -137,6 +138,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
             @Override
             public void onClick(View v) {
                 Intent historyIntent = new Intent(getApplicationContext(), HistoryActivity.class);
+                StaticObjectReferences.mUserDevice = userDevice;
                 startActivity(historyIntent);
             }
         });
@@ -184,10 +186,23 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
     @Override
     protected void onPause() {
         super.onPause();
+
         if (mGoogleApiClient != null && mGoogleApiClient.isConnected()) {
             LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
         }
     }
+
+    /*
+    @Override
+    protected void onResume(){
+        super.onResume();
+
+        if (mGoogleApiClient == null && !mGoogleApiClient)
+        requestLocationUpdates();
+        LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
+        mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+    }*/
+
 
 
     /**
@@ -215,10 +230,11 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         mMap = googleMap;
 
         mMap.getUiSettings().setScrollGesturesEnabled(false);
+        mMap.getUiSettings().setZoomControlsEnabled(false);
+        mMap.getUiSettings().setZoomGesturesEnabled(false);
         mMap.animateCamera(CameraUpdateFactory.zoomTo(17));
 
         mMap.setOnCameraMoveListener(this);
-
         buildGoogleAPIClient();
     }
 
@@ -297,6 +313,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
     @Override
     public void onLocationChanged(Location location) {
         mLastLocation = location;
+        Toast.makeText(getApplicationContext(), "OLC", Toast.LENGTH_SHORT);
         if (userDevice == null) {
             throw new AssertionError("userDevice cannot be null during onLocationChanged");
         } else {
@@ -330,8 +347,15 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
     private void updateDeviceLocation(Location mLastLocation) {
         userDevice.setLatitude((float) mLastLocation.getLatitude());
         userDevice.setLongitude((float) mLastLocation.getLongitude());
+
+        Log.d("uDLat", userDevice.getLatitude() + "");
+        Log.d("uDLon", userDevice.getLongitude() + "");
+
+        Toast.makeText(getApplicationContext(), "LAT: " + userDevice.getLatitude() + " LON: " + userDevice.getLongitude(), Toast.LENGTH_SHORT).show();
+        //This is what's defaulting it to 1.
         userDevice.setRadius(DEFAULT_USER_RADIUS);
         APIUserConnect.updateDevice(userDevice, this);
+        StaticObjectReferences.mUserDevice = userDevice;
     }
 
     /**

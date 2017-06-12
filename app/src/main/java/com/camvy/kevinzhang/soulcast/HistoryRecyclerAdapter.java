@@ -16,6 +16,7 @@ import com.amazonaws.mobileconnectors.s3.transferutility.TransferListener;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferObserver;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferState;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferUtility;
+import com.amazonaws.util.DateUtils;
 
 import org.w3c.dom.Text;
 
@@ -26,7 +27,6 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-
 /**
  * Created by Jonathan on 5/14/2017.
  */
@@ -35,6 +35,7 @@ import java.util.Date;
 
 public class HistoryRecyclerAdapter extends RecyclerView.Adapter<HistoryRecyclerAdapter.HistoryHolder>{
 
+    public final static double AVERAGE_RADIUS_OF_EARTH_KM = 6371;
     private ArrayList<Soul> mHistory;
 
     /**
@@ -150,11 +151,48 @@ public class HistoryRecyclerAdapter extends RecyclerView.Adapter<HistoryRecycler
      */
     @Override
     public void onBindViewHolder(HistoryRecyclerAdapter.HistoryHolder holder, int position) {
-        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
         Soul soul = mHistory.get(position);
-        holder.item_description.setText(soul.getRadius() + "km away");
-        holder.item_date.setText("Received on: " + sdf.format(new Date(soul.getEpoch())));
+        Date d = new Date();
+
+        CharSequence s = android.text.format.DateUtils.getRelativeTimeSpanString(soul.getEpoch() * 1000L, d.getTime() * 1000L, android.text.format.DateUtils.DAY_IN_MILLIS);
+        Device userDevice = StaticObjectReferences.mUserDevice;
+        String dateLongStr = new SimpleDateFormat("dd-MMM HH:mm").format(d);
+        double kmsAway = calculateDistanceInKilometer(
+                (double)userDevice.getLatitude(),
+                (double)userDevice.getLongitude(),
+                (double)soul.getLatitude(),
+                (double)soul.getLongitude());
+
+        holder.item_date.setText("Received on: " + s);
         holder.audioS3Key = soul.gets3Key();
+        holder.item_description.setText(kmsAway + "km away");
+
+        Log.d("kmsAway", kmsAway + "");
+    }
+
+    /**
+     * This is an implementation of the Haversine function found here
+     * https://stackoverflow.com/questions/27928/calculate-distance-between-two-latitude-longitude-points-haversine-formula/21623206
+     *
+     * @param userLat
+     * @param userLng
+     * @param venueLat
+     * @param venueLng
+     * @return
+     */
+    public double calculateDistanceInKilometer(double userLat, double userLng,
+                                            double venueLat, double venueLng) {
+
+        double latDistance = Math.toRadians(userLat - venueLat);
+        double lngDistance = Math.toRadians(userLng - venueLng);
+
+        double a = Math.sin(latDistance / 2) * Math.sin(latDistance / 2)
+                + Math.cos(Math.toRadians(userLat)) * Math.cos(Math.toRadians(venueLat))
+                * Math.sin(lngDistance / 2) * Math.sin(lngDistance / 2);
+
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+        return (AVERAGE_RADIUS_OF_EARTH_KM * c);
     }
 
     @Override

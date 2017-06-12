@@ -25,6 +25,8 @@ public class Soul {
         this.token = userDevice.getToken();
     }
 
+    public float getLatitude(){return this.latitude;}
+    public float getLongitude(){return this.longitude;}
     public void setSoulType(String soulType){this.soulType = soulType;}
     public void sets3Key(String s3Key){this.s3Key = s3Key;}
     public void setEpoch(long epoch){this.epoch = epoch;}

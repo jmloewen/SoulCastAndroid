@@ -33,27 +33,25 @@ public class HistoryActivity extends AppCompatActivity{
     private HistoryRecyclerAdapter mAdapter;
     private ArrayList<Soul> historySouls;
     private HistoryInterface historyInterface;
-    private Context context;
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_history);
-        historySouls = new ArrayList<Soul>();
 
-        //ArrayList<Soul> dummySouls = new ArrayList<Soul>();
-        //public Soul(String soulType, String s3Key, long epoch, Device userDevice) {
-        //Soul dummySoul = new Soul("android", "dummyKey", 12312312, StaticObjectReferences.mUserDevice);
-        //dummySouls.add(dummySoul);
 
+        historySouls = new ArrayList<>();
         mRecyclerView = (RecyclerView) findViewById(R.id.recyclerView);
         mLinearLayoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(mLinearLayoutManager);
+
+
         historyInterface = new HistoryInterface() {
             @Override
             public void onSuccess(Response<ArrayList<Soul>> listOfSouls) {
 
                 for (int i = 0; i < listOfSouls.body().size(); i++){
                     historySouls.add(listOfSouls.body().get(i));
+                    Log.d("SOULADD", "Soul Added: " + i);
                 }
 
                 mAdapter.notifyDataSetChanged();
@@ -74,6 +72,8 @@ public class HistoryActivity extends AppCompatActivity{
                 Log.d("HistCNXNER", "Connection error in History. Error: " + t.getMessage());
             }
         };
+
+
         APIUserConnect.getHistory(StaticObjectReferences.mUserDevice, historyInterface);
         mAdapter = new HistoryRecyclerAdapter(historySouls);
         mRecyclerView.setAdapter(mAdapter);

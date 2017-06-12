@@ -55,13 +55,4 @@ public class ButtonFragment extends Fragment {
         );
         return mView;
     }
-
-
-
-
-
-
-
-
 }
-

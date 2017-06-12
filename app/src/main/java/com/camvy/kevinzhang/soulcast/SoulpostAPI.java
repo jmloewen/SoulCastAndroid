@@ -21,11 +21,6 @@ public interface SoulpostAPI {
     Call<Device> devicePost(@Body Device device);
 
     @Headers("Accept: application/json")
-    @GET("/device_history/{id}")
-    Call<ArrayList<Soul>> getHistory(@Path("id") int id);
-    //Call<Device> getHistory(@Path("id") int id);
-
-    @Headers("Accept: application/json")
     @POST("/souls")
     Call<Soul> soulPost(@Body Soul soul);
 
@@ -41,4 +36,7 @@ public interface SoulpostAPI {
     @GET("/nearby/{id}")
     Call<Nearby> getNearby(@Path("id") int  id);
 
+    @Headers("Accept: application/json")
+    @GET("/device_history/{id}")
+    Call<ArrayList<Soul>> getHistory(@Path("id") int id);
 }
