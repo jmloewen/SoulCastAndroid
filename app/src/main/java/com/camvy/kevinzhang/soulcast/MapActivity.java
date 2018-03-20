@@ -203,8 +203,6 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
     }*/
 
-
-
     /**
      * Disconnect from Maps API if we close the application.
      */
