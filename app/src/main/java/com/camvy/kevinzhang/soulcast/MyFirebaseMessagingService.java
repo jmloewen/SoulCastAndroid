@@ -105,7 +105,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
     private FileInputStream openFile(File file) throws FileNotFoundException, IOException {
         FileInputStream fos = new FileInputStream(file);
-        // remember th 'fos' reference somewhere for later closing it
+        // remember the 'fos' reference somewhere for later closing it
         return fos;
     }
 

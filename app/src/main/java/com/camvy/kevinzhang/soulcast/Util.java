@@ -29,7 +29,7 @@ public class Util {
             sCredProvider = new CognitoCachingCredentialsProvider(
                     context.getApplicationContext(),
                     Constants.COGNITO_POOL_ID,
-                    Regions.US_WEST_2);
+                    Regions.US_EAST_1);
         }
         return sCredProvider;
     }

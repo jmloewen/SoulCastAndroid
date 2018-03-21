@@ -32,12 +32,4 @@ public class Device {
     public float getRadius(){return radius;}
     public String getToken(){return token;}
     public int getId(){return id;}
-
-
-
-//    public void setID(int idFromServer){
-//        id = idFromServer;
-//    }
-
-
 }

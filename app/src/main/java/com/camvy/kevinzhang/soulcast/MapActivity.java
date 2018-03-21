@@ -1,11 +1,14 @@
 package com.camvy.kevinzhang.soulcast;
 
+import android.*;
+import android.Manifest;
 import android.content.Context;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
+import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationManager;
 import android.media.MediaPlayer;
@@ -14,7 +17,9 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 
 import android.view.View;
@@ -50,6 +55,7 @@ import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
 
 import java.io.File;
+import java.security.Permission;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -266,13 +272,14 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
     @Override
     public void onConnected(@Nullable Bundle bundle) {
         requestLocationUpdates();
+        //Permission Request is handled back in Main, and doesn't need to be worried about.
         LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
         mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
         registerNewUserDevice();
     }
 
     /**
-     * A funciton for registering new devices with the server.
+     * A function for registering new devices with the server.
      * Grab the user's location, register the device with the server, and assign this device to our local variable for device.
      */
     private void registerNewUserDevice() {
